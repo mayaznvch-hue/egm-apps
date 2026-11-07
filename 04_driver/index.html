@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EGM · Приложение водителя</title>
+<style>
+:root{--or:#F07A1A;--or2:#d96a10;--gr:#1F2329;--bg:#f4f5f7;--line:#e3e6ea;--mut:#6b7380;--ok:#1e9e57;--bad:#d63b3b;--warn:#e6a100}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--gr);font-size:16px;line-height:1.4}
+header{background:var(--gr);color:#fff;padding:12px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;position:sticky;top:0;z-index:5}
+header h1{font-size:16px;min-width:0;margin:0;font-weight:600}
+header h1 b{color:var(--or)}
+.tag{font-size:11px;background:var(--or);color:#fff;border-radius:10px;padding:2px 8px;text-transform:uppercase;letter-spacing:.5px}
+header .sp{flex:1}
+header button{white-space:nowrap;background:transparent;border:1px solid #555c66;color:#cfd3d9;border-radius:8px;padding:6px 10px;font-size:13px;cursor:pointer}
+nav.tabs{display:flex;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:52px;z-index:4}
+nav.tabs button{flex:1;padding:13px 6px;border:0;background:none;font-size:15px;font-weight:600;color:var(--mut);border-bottom:3px solid transparent;cursor:pointer}
+nav.tabs button.on{color:var(--gr);border-bottom-color:var(--or)}
+nav.tabs .badge{background:var(--bad);color:#fff;border-radius:10px;font-size:11px;padding:1px 6px;margin-left:4px}
+main{max-width:1100px;margin:0 auto;padding:14px}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+.card h2,.card h3{margin:0 0 8px;font-size:17px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.sp1{flex:1}
+.mut{color:var(--mut);font-size:14px}
+.btn{background:var(--or);color:#fff;border:0;border-radius:10px;padding:13px 16px;font-size:16px;font-weight:600;cursor:pointer;min-height:48px}
+.btn:active{background:var(--or2)}
+.btn.sec{background:#fff;color:var(--gr);border:1.5px solid var(--gr)}
+.btn.dark{background:var(--gr)}
+.btn.red{background:var(--bad)}
+.btn.sm{padding:8px 12px;font-size:14px;min-height:36px;border-radius:8px}
+.btn:disabled{background:#cfd3d9;color:#fff;border-color:#cfd3d9;cursor:not-allowed}
+.st{display:inline-block;font-size:12px;font-weight:600;padding:3px 9px;border-radius:10px;background:#eceff2;color:#444}
+.st.wait{background:#eceff2}.st.go{background:#fff0e0;color:#b85a00}.st.done{background:#e0f5ea;color:#157a43}.st.bad{background:#fde6e6;color:#b52626}
+.trip{cursor:pointer;display:block}
+.trip:hover{border-color:var(--or)}
+.trip .rt{font-weight:600;margin:4px 0}
+.kv{display:grid;grid-template-columns:110px 1fr;gap:6px 10px;font-size:15px}
+.kv span:nth-child(odd){color:var(--mut)}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.step{border:1.5px solid var(--line);border-radius:10px;padding:8px 4px;text-align:center;font-size:13px;background:#fafbfc}
+.step.done{border-color:var(--ok);background:#e9f8ef}
+.step .tm{font-weight:700;font-size:15px;min-height:20px}
+.big{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.big .btn{width:100%}
+canvas#sig{width:100%;height:170px;border:2px dashed #aab0b9;border-radius:10px;background:#fff;touch-action:none;display:block}
+.thumbs{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.thumbs img{width:84px;height:84px;object-fit:cover;border-radius:8px;border:1px solid var(--line);cursor:pointer}
+input[type=text],input[type=tel],select,textarea{width:100%;padding:11px;border:1.5px solid var(--line);border-radius:10px;font:inherit;background:#fff}
+textarea{min-height:64px;resize:vertical}
+label.f{display:block;font-size:13px;color:var(--mut);margin:8px 0 3px}
+.sum{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}
+.sum div{background:#fff7ef;border:1px solid #fbd9b8;border-radius:10px;padding:10px 4px}
+.sum b{display:block;font-size:24px;color:var(--or2)}
+.sum span{font-size:12px;color:var(--mut)}
+.ev{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.ev:last-child{border:0}
+.ev .t{width:48px;font-weight:700;color:var(--mut);flex:none}
+.ev.problem .what{color:var(--bad);font-weight:600}
+.msg{background:#eef6ff;border-left:4px solid #2f7de1;padding:8px 12px;border-radius:6px;margin:6px 0;font-size:15px}
+.back{background:none;border:0;color:var(--or2);font-size:15px;font-weight:600;padding:4px 0 10px;cursor:pointer}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+.tbl{width:100%;border-collapse:collapse;font-size:14px}
+.tbl th,.tbl td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl th{color:var(--mut);font-weight:600;font-size:12px;text-transform:uppercase}
+.tblwrap{overflow-x:auto}
+.timer{font-size:28px;font-weight:700;color:var(--bad);text-align:center;margin:6px 0}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;z-index:20;padding:10px}
+.modal.on{display:flex}
+.modal img{max-width:100%;max-height:90vh;border-radius:8px}
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--gr);color:#fff;padding:10px 18px;border-radius:20px;font-size:14px;opacity:0;transition:.3s;pointer-events:none;z-index:30;max-width:90%}
+.toast.on{opacity:1}
+.hide{display:none!important}
+@media(min-width:900px){
+ .grid2{grid-template-columns:1fr 1fr}
+ .driverwrap{max-width:520px;margin:0 auto}
+ .dispgrid{display:grid;grid-template-columns:420px minmax(0,1fr);gap:14px;align-items:start}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1><b>EGM</b> · Приложение водителя</h1><span class="tag">демо</span><span class="sp"></span>
+  <button id="reset">Сброс</button>
+</header>
+<nav class="tabs">
+  <button data-tab="driver" class="on">Водитель</button>
+  <button data-tab="disp">Диспетчер <span class="badge hide" id="bdg">0</span></button>
+</nav>
+<main>
+<section id="tab-driver"><div class="driverwrap" id="driverView"></div></section>
+<section id="tab-disp" class="hide"><div id="dispView"></div></section>
+</main>
+<div class="modal" id="modal"><img id="modalImg" alt=""></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+'use strict';
+var KEY='egm_driver_demo_v1';
+var DRIVER={name:'Сергей Николаевич Кравец',plate:'А 482 ТО 750',car:'МАЗ-6501 самосвал, 20 т'};
+var state, curId=null, tab='driver', dispSel=null;
+
+function seed(){
+  var d=new Date(); var ds=d.toISOString().slice(0,10);
+  return {date:ds,shiftEnded:false,msgs:[],events:[],trips:[
+   {id:1,from:'Карьер «Дмитровский», г. Дмитров',to:'ЖК «Новое Подрезково», Химки, ул. Заводская, 12',material:'Щебень гранитный 20-40',tons:20,km:48,contact:{name:'Андрей Павлович (прораб)',phone:'+7 916 245-31-08'},client:'ООО «СтройАльянс»',st:{},photos:{load:[],ttn:[]},sign:null,signName:'',down:[],problems:[]},
+   {id:2,from:'Карьер «Дмитровский», г. Дмитров',to:'Склад ООО «ДорСтрой», Мытищи, Промзона-2',material:'Щебень гранитный 5-20',tons:20,km:39,contact:{name:'Ирина Власова (снабжение)',phone:'+7 925 710-44-92'},client:'ООО «ДорСтрой»',st:{},photos:{load:[],ttn:[]},sign:null,signName:'',down:[],problems:[]},
+   {id:3,from:'Песчаный карьер «Луховицы»',to:'КП «Лесные озёра», Раменское, уч. 41',material:'Песок карьерный',tons:20,km:96,contact:{name:'Виктор (бригадир)',phone:'+7 903 118-76-20'},client:'ИП Захаров В. А.',st:{},photos:{load:[],ttn:[]},sign:null,signName:'',down:[],problems:[]},
+   {id:4,from:'Карьер «Дмитровский», г. Дмитров',to:'БЗ «Бетон-Центр», Лобня, ул. Промышленная, 3',material:'ПГС',tons:20,km:31,contact:{name:'Диспетчер БЗ',phone:'+7 495 540-12-77'},client:'АО «Бетон-Центр»',st:{},photos:{load:[],ttn:[]},sign:null,signName:'',down:[],problems:[]}
+  ]};
+}
+function load(){try{var s=JSON.parse(localStorage.getItem(KEY));if(s&&s.trips)return s}catch(e){}return seed()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){toast('Память заполнена — удалите часть фото')}}
+function $(s,r){return (r||document).querySelector(s)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function hhmm(ts){var d=new Date(ts);return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)}
+function toast(t){var e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(function(){e.classList.remove('on')},2200)}
+function ev(trip,text,kind,extra){state.events.unshift({ts:Date.now(),trip:trip.id,text:text,kind:kind||'info',extra:extra||null,read:false});}
+var STEPS=[['loaded','Загрузился'],['departed','Выехал'],['arrived','На объекте'],['unloaded','Выгрузился']];
+function tripStatus(t){
+  if(t.st.unloaded)return['done','Выгружен'];
+  if(t.problems.some(function(p){return !p.resolved}))return['bad','Проблема'];
+  if(t.st.arrived)return['go','На объекте'];
+  if(t.st.departed)return['go','В пути'];
+  if(t.st.loaded)return['go','Загружен'];
+  return['wait','Ожидает'];
+}
+function nextStep(t){for(var i=0;i<STEPS.length;i++)if(!t.st[STEPS[i][0]])return STEPS[i];return null}
+function get(id){return state.trips.filter(function(t){return t.id===id})[0]}
+function downMs(t){var s=0;t.down.forEach(function(d){s+=(d.end||Date.now())-d.start});return s}
+function fmtDur(ms){var m=Math.floor(ms/60000),s=Math.floor(ms/1000)%60;return m+' мин '+('0'+s).slice(-2)+' с'}
+
+/* ---------- водитель ---------- */
+function renderDriver(){
+  var v=$('#driverView');
+  if(curId==null){v.innerHTML=listHtml();bindList();return}
+  v.innerHTML=tripHtml(get(curId));bindTrip(get(curId));
+}
+function dayLabel(){var d=new Date(state.date+'T12:00:00');return d.toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long'})}
+function listHtml(){
+  var h='<div class="card"><div class="row"><div class="sp1"><h2>'+esc(DRIVER.name)+'</h2><div class="mut">'+esc(DRIVER.plate)+' · '+esc(DRIVER.car)+'</div></div></div><div class="mut" style="margin-top:6px">Смена: '+esc(dayLabel())+'</div></div>';
+  state.msgs.slice(0,3).forEach(function(m){h+='<div class="msg"><b>Диспетчер, '+hhmm(m.ts)+':</b> '+esc(m.text)+'</div>'});
+  h+='<h3 style="margin:14px 2px 8px">Мои рейсы на сегодня</h3>';
+  state.trips.forEach(function(t){
+    var s=tripStatus(t);
+    h+='<a class="card trip" data-id="'+t.id+'"><div class="row"><b>Рейс №'+t.id+'</b><span class="st '+s[0]+'">'+s[1]+'</span><span class="sp1"></span><span class="mut">'+t.tons+' т · '+t.km+' км</span></div>'+
+    '<div class="rt">'+esc(t.material)+'</div><div class="mut">'+esc(t.from)+'</div><div class="mut">→ '+esc(t.to)+'</div></a>';
+  });
+  h+=summaryHtml();
+  h+='<div class="big"><button class="btn dark" id="endShift"'+(state.shiftEnded?' disabled':'')+'>'+(state.shiftEnded?'Смена закрыта':'Завершить смену')+'</button></div>';
+  return h;
+}
+function totals(){
+  var done=state.trips.filter(function(t){return t.st.unloaded});
+  var tons=0,km=0;done.forEach(function(t){tons+=t.tons;km+=t.km*2});
+  var dn=0;state.trips.forEach(function(t){dn+=downMs(t)});
+  return{n:done.length,tons:tons,km:km,down:dn};
+}
+function summaryHtml(){
+  var s=totals();
+  return '<div class="card" style="margin-top:12px"><h3>Итог смены</h3><div class="sum"><div><b>'+s.n+' / '+state.trips.length+'</b><span>рейсов сделано</span></div><div><b>'+s.tons+'</b><span>тонн довезено</span></div><div><b>'+s.km+'</b><span>км (туда-обратно)</span></div></div>'+
+  '<div class="mut" style="margin-top:8px">Простой за смену: '+fmtDur(s.down)+'</div></div>';
+}
+function bindList(){
+  document.querySelectorAll('.trip').forEach(function(a){a.onclick=function(){curId=+a.dataset.id;renderDriver();window.scrollTo(0,0)}});
+  var b=$('#endShift');if(b)b.onclick=function(){
+    var open=state.trips.filter(function(t){return !t.st.unloaded}).length;
+    if(open&&!confirm('Не закрыто рейсов: '+open+'. Всё равно завершить смену?'))return;
+    state.shiftEnded=true;var s=totals();
+    state.events.unshift({ts:Date.now(),trip:0,kind:'shift',read:false,text:'Смена завершена: рейсов '+s.n+', '+s.tons+' т, '+s.km+' км, простой '+fmtDur(s.down)});
+    save();renderAll();toast('Смена закрыта, итог отправлен диспетчеру');
+  };
+}
+function navUrl(t){return 'https://yandex.ru/maps/?rtext=~'+encodeURIComponent(t.to)+'&rtt=auto'}
+function tripHtml(t){
+  var s=tripStatus(t),nx=nextStep(t),openDown=t.down.length&&!t.down[t.down.length-1].end;
+  var h='<button class="back" id="back">← Все рейсы</button>';
+  h+='<div class="card"><div class="row"><h2 style="margin:0">Рейс №'+t.id+'</h2><span class="st '+s[0]+'">'+s[1]+'</span></div>'+
+   '<div class="kv" style="margin-top:10px"><span>Откуда</span><span>'+esc(t.from)+'</span><span>Куда</span><span>'+esc(t.to)+'</span><span>Материал</span><span><b>'+esc(t.material)+'</b></span><span>Масса</span><span>'+t.tons+' т</span><span>Расстояние</span><span>'+t.km+' км</span><span>Заказчик</span><span>'+esc(t.client)+'</span><span>Прораб</span><span>'+esc(t.contact.name)+'<br><a href="tel:'+t.contact.phone.replace(/[^+\d]/g,'')+'" style="color:var(--or2);font-weight:600">'+esc(t.contact.phone)+'</a></span></div>'+
+   '<div class="big"><a class="btn" style="text-align:center;text-decoration:none" href="'+navUrl(t)+'" target="_blank" rel="noopener">Открыть навигатор</a>'+
+   '<a class="btn sec" style="text-align:center;text-decoration:none" href="tel:'+t.contact.phone.replace(/[^+\d]/g,'')+'">Позвонить прорабу</a></div></div>';
+  h+='<div class="card"><h3>Этапы рейса</h3><div class="steps">';
+  STEPS.forEach(function(p){h+='<div class="step'+(t.st[p[0]]?' done':'')+'"><div class="tm">'+(t.st[p[0]]?hhmm(t.st[p[0]]):'—')+'</div>'+p[1]+'</div>'});
+  h+='</div><div class="big">'+(nx?'<button class="btn" id="stepBtn">Отметить: '+nx[1]+'</button>':'<div class="msg" style="background:#e9f8ef;border-color:var(--ok)">Рейс завершён. Спасибо!</div>')+'</div></div>';
+  h+='<div class="card"><h3>Фото</h3><div class="mut">Загрузка в кузове и накладная (ТТН)</div>'+
+   '<div class="row" style="margin-top:8px"><label class="btn sec sm">Фото загрузки<input type="file" accept="image/*" capture="environment" data-k="load" class="hide fileIn"></label>'+
+   '<label class="btn sec sm">Фото накладной<input type="file" accept="image/*" capture="environment" data-k="ttn" class="hide fileIn"></label></div>'+
+   '<div class="thumbs" id="thumbs">'+thumbs(t)+'</div></div>';
+  h+='<div class="card"><h3>Подпись получателя</h3>';
+  if(t.sign){h+='<img src="'+t.sign+'" alt="подпись" style="width:100%;border:1px solid var(--line);border-radius:10px;background:#fff"><div class="mut" style="margin-top:6px">Принял: <b>'+esc(t.signName)+'</b></div><div class="big"><button class="btn sec sm" id="sigClear">Подписать заново</button></div>';}
+  else{h+='<label class="f">ФИО получателя</label><input type="text" id="signName" placeholder="Например, Андрей Павлович" value="'+esc(t.contact.name.split(' (')[0])+'"><label class="f">Подпись пальцем</label><canvas id="sig" width="600" height="300"></canvas><div class="row" style="margin-top:8px"><button class="btn sec sm" id="sigWipe">Стереть</button><button class="btn sm sp1" id="sigSave">Сохранить подпись</button></div>';}
+  h+='</div>';
+  h+='<div class="card"><h3>Простой и проблемы</h3>';
+  if(openDown){h+='<div class="timer" id="timer">'+fmtDur(Date.now()-t.down[t.down.length-1].start)+'</div><button class="btn red" style="width:100%" id="downStop">Простой закончился</button>'}
+  else{h+='<button class="btn sec" style="width:100%" id="downStart">Начать отметку простоя</button>'}
+  if(t.down.length)h+='<div class="mut" style="margin-top:8px">Простой по рейсу: '+fmtDur(downMs(t))+' ('+t.down.length+' раз)</div>';
+  h+='<label class="f" style="margin-top:12px">Сообщить о проблеме</label><select id="pType"><option>Не пускают на объект</option><option>Нет прораба на месте</option><option>Нет места для выгрузки</option><option>Дорога закрыта / пробка</option><option>Поломка машины</option><option>Не тот материал / количество</option><option>Другое</option></select>'+
+   '<textarea id="pText" placeholder="Что случилось (по желанию)" style="margin-top:8px"></textarea><button class="btn red" style="width:100%;margin-top:8px" id="pSend">Отправить диспетчеру</button>';
+  t.problems.forEach(function(p){h+='<div class="msg" style="'+(p.resolved?'background:#e9f8ef;border-color:var(--ok)':'background:#fde6e6;border-color:var(--bad)')+'"><b>'+hhmm(p.ts)+' · '+esc(p.type)+'</b>'+(p.text?'<br>'+esc(p.text):'')+(p.reply?'<br><b>Диспетчер:</b> '+esc(p.reply):'')+(p.resolved?'<br>✔ Решено':'')+'</div>'});
+  h+='</div>';
+  return h;
+}
+function thumbs(t){
+  var h='';['load','ttn'].forEach(function(k){t.photos[k].forEach(function(p,i){h+='<div><img src="'+p+'" data-full="1" alt=""><div class="mut" style="font-size:11px;text-align:center">'+(k==='load'?'загрузка':'накладная')+'</div></div>'})});
+  return h||'<span class="mut">Фото пока нет</span>';
+}
+function shrink(file,cb){
+  var r=new FileReader();
+  r.onload=function(){var im=new Image();im.onload=function(){
+    var m=640,sc=Math.min(1,m/Math.max(im.width,im.height)),c=document.createElement('canvas');
+    c.width=Math.round(im.width*sc);c.height=Math.round(im.height*sc);c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+    cb(c.toDataURL('image/jpeg',.6))};im.onerror=function(){toast('Не удалось открыть фото')};im.src=r.result};
+  r.readAsDataURL(file);
+}
+var timerH=null;
+function bindTrip(t){
+  $('#back').onclick=function(){curId=null;renderDriver()};
+  var sb=$('#stepBtn');if(sb)sb.onclick=function(){
+    var nx=nextStep(t);t.st[nx[0]]=Date.now();
+    var msgs={loaded:'Загрузился',departed:'Выехал с карьера',arrived:'Прибыл на объект',unloaded:'Выгрузился'};
+    ev(t,msgs[nx[0]],'step');save();renderAll();toast(nx[1]+' · '+hhmm(t.st[nx[0]]));
+  };
+  document.querySelectorAll('.fileIn').forEach(function(inp){inp.onchange=function(){
+    var f=inp.files[0];if(!f)return;var k=inp.dataset.k;
+    shrink(f,function(data){t.photos[k].push(data);ev(t,'Прислал фото: '+(k==='load'?'загрузка':'накладная'),'photo',data);save();$('#thumbs').innerHTML=thumbs(t);bindThumbs();updBadge();toast('Фото отправлено')});
+    inp.value='';
+  }});
+  bindThumbs();
+  var cv=$('#sig');
+  if(cv){
+    var ctx=cv.getContext('2d'),draw=false,moved=false;
+    ctx.lineWidth=3;ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle='#1F2329';
+    function pos(e){var r=cv.getBoundingClientRect();return[(e.clientX-r.left)*cv.width/r.width,(e.clientY-r.top)*cv.height/r.height]}
+    cv.onpointerdown=function(e){draw=true;cv.setPointerCapture(e.pointerId);var p=pos(e);ctx.beginPath();ctx.moveTo(p[0],p[1]);ctx.lineTo(p[0]+.1,p[1]+.1);ctx.stroke();moved=true;e.preventDefault()};
+    cv.onpointermove=function(e){if(!draw)return;var p=pos(e);ctx.lineTo(p[0],p[1]);ctx.stroke();e.preventDefault()};
+    cv.onpointerup=cv.onpointercancel=function(){draw=false};
+    $('#sigWipe').onclick=function(){ctx.clearRect(0,0,cv.width,cv.height);moved=false};
+    $('#sigSave').onclick=function(){
+      var nm=$('#signName').value.trim();
+      if(!moved){toast('Сначала распишитесь на экране');return}
+      if(!nm){toast('Укажите ФИО получателя');return}
+      var out=document.createElement('canvas');out.width=cv.width;out.height=cv.height;var o=out.getContext('2d');o.fillStyle='#fff';o.fillRect(0,0,out.width,out.height);o.drawImage(cv,0,0);
+      t.sign=out.toDataURL('image/png');t.signName=nm;ev(t,'Получена подпись: '+nm,'sign',t.sign);save();renderAll();toast('Подпись сохранена');
+    };
+  }
+  var sc=$('#sigClear');if(sc)sc.onclick=function(){t.sign=null;save();renderDriver()};
+  var ds=$('#downStart');if(ds)ds.onclick=function(){t.down.push({start:Date.now()});ev(t,'Начался простой','down');save();renderAll();toast('Простой отмечен')};
+  var de=$('#downStop');if(de)de.onclick=function(){var d=t.down[t.down.length-1];d.end=Date.now();ev(t,'Простой закончился: '+fmtDur(d.end-d.start),'down');save();renderAll();toast('Простой закрыт')};
+  $('#pSend').onclick=function(){
+    var type=$('#pType').value,txt=$('#pText').value.trim();
+    t.problems.push({ts:Date.now(),type:type,text:txt,resolved:false,reply:''});
+    ev(t,'ПРОБЛЕМА: '+type+(txt?' — '+txt:''),'problem');save();renderAll();toast('Диспетчер уведомлён');
+  };
+  clearInterval(timerH);var tm=$('#timer');
+  if(tm)timerH=setInterval(function(){var e=$('#timer');if(!e){clearInterval(timerH);return}var d=t.down[t.down.length-1];e.textContent=fmtDur(Date.now()-d.start)},1000);
+}
+function bindThumbs(){document.querySelectorAll('img[data-full]').forEach(function(i){i.onclick=function(){openImg(i.src)}})}
+function openImg(src){$('#modalImg').src=src;$('#modal').classList.add('on')}
+$('#modal').onclick=function(){this.classList.remove('on')};
+
+/* ---------- диспетчер ---------- */
+function renderDisp(){
+  var v=$('#dispView');
+  var h='<div class="dispgrid"><div>';
+  h+='<div class="card"><h3>Машина</h3><div class="mut">'+esc(DRIVER.name)+' · '+esc(DRIVER.plate)+'</div><div class="mut">'+(state.shiftEnded?'Смена закрыта':'На линии')+'</div></div>';
+  h+='<div class="card"><h3>Рейсы</h3><div class="tblwrap"><table class="tbl"><tr><th>№</th><th>Куда</th><th>Статус</th></tr>';
+  state.trips.forEach(function(t){var s=tripStatus(t);
+    h+='<tr style="cursor:pointer" data-id="'+t.id+'"><td>'+t.id+'</td><td>'+esc(t.to.split(',').slice(0,2).join(','))+'<div class="mut">'+esc(t.material)+'</div></td><td><span class="st '+s[0]+'">'+s[1]+'</span>'+(t.sign?'<div class="mut">подпись ✔</div>':'')+'</td></tr>'});
+  h+='</table></div></div>';
+  var s=totals();
+  h+='<div class="card"><h3>Итог смены</h3><div class="sum"><div><b>'+s.n+'</b><span>рейсов</span></div><div><b>'+s.tons+'</b><span>тонн</span></div><div><b>'+s.km+'</b><span>км</span></div></div></div>';
+  h+='<div class="card"><h3>Написать водителю</h3><textarea id="dmsg" placeholder="Например: разгрузка на втором въезде"></textarea><button class="btn sm" style="margin-top:8px" id="dsend">Отправить</button></div>';
+  h+='</div><div>';
+  if(dispSel){
+    var t=get(dispSel);
+    h+='<div class="card"><div class="row"><h3 style="margin:0">Рейс №'+t.id+' — что прислал водитель</h3><span class="sp1"></span><button class="btn sec sm" id="dall">Все события</button></div>';
+    h+='<div class="kv" style="margin-top:8px">';STEPS.forEach(function(p){h+='<span>'+p[1]+'</span><span>'+(t.st[p[0]]?hhmm(t.st[p[0]]):'—')+'</span>'});
+    h+='<span>Простой</span><span>'+fmtDur(downMs(t))+'</span></div>';
+    var all=t.photos.load.concat(t.photos.ttn);
+    if(all.length){h+='<div class="thumbs">';all.forEach(function(p){h+='<img src="'+p+'" data-full="1" alt="">'});h+='</div>'}
+    if(t.sign)h+='<div style="margin-top:8px"><img src="'+t.sign+'" style="height:80px;border:1px solid var(--line);border-radius:8px" alt=""> <span class="mut">'+esc(t.signName)+'</span></div>';
+    t.problems.forEach(function(p,i){if(!p.resolved)h+='<div class="msg" style="background:#fde6e6;border-color:var(--bad)"><b>'+esc(p.type)+'</b> '+esc(p.text)+'<div class="row" style="margin-top:6px"><input type="text" id="rep'+i+'" placeholder="Ответ водителю" style="flex:1;min-width:140px"><button class="btn sm" data-res="'+i+'">Решено</button></div></div>'});
+    h+='</div>';
+  }
+  h+='<div class="card"><h3>Лента событий'+(dispSel?' · рейс №'+dispSel:'')+'</h3>';
+  var evs=state.events.filter(function(e){return !dispSel||e.trip===dispSel||e.trip===0});
+  if(!evs.length)h+='<div class="mut">Пока ничего не пришло. Откройте вкладку «Водитель» и отметьте этап рейса.</div>';
+  evs.forEach(function(e){h+='<div class="ev '+e.kind+'"><div class="t">'+hhmm(e.ts)+'</div><div class="what">'+(e.trip?'Рейс №'+e.trip+': ':'')+esc(e.text)+(e.kind==='photo'&&e.extra?'<br><img src="'+e.extra+'" data-full="1" style="height:60px;border-radius:6px;margin-top:4px" alt="">':'')+'</div></div>'});
+  h+='</div></div></div>';
+  v.innerHTML=h;
+  v.querySelectorAll('tr[data-id]').forEach(function(r){r.onclick=function(){dispSel=+r.dataset.id;renderDisp()}});
+  var da=$('#dall');if(da)da.onclick=function(){dispSel=null;renderDisp()};
+  bindThumbs();
+  v.querySelectorAll('[data-res]').forEach(function(b){b.onclick=function(){
+    var t=get(dispSel),i=+b.dataset.res,p=t.problems[i];p.resolved=true;p.reply=($('#rep'+i).value||'').trim()||'Вопрос решаем, ожидайте';
+    state.events.unshift({ts:Date.now(),trip:t.id,kind:'info',read:true,text:'Диспетчер закрыл проблему: '+p.type});save();renderAll();toast('Отмечено как решённое')}});
+  $('#dsend').onclick=function(){var x=$('#dmsg').value.trim();if(!x){toast('Напишите текст');return}state.msgs.unshift({ts:Date.now(),text:x});save();renderAll();toast('Отправлено водителю')};
+  state.events.forEach(function(e){e.read=true});save();updBadge();
+}
+function updBadge(){var n=state.events.filter(function(e){return !e.read}).length,b=$('#bdg');b.textContent=n;b.classList.toggle('hide',!n||tab==='disp')}
+function renderAll(){
+  if(tab==='driver')renderDriver();else renderDisp();
+  updBadge();
+}
+document.querySelectorAll('nav.tabs button').forEach(function(b){b.onclick=function(){
+  tab=b.dataset.tab;document.querySelectorAll('nav.tabs button').forEach(function(x){x.classList.toggle('on',x===b)});
+  $('#tab-driver').classList.toggle('hide',tab!=='driver');$('#tab-disp').classList.toggle('hide',tab!=='disp');
+  renderAll();window.scrollTo(0,0);
+}});
+$('#reset').onclick=function(){if(confirm('Сбросить все данные демо?')){localStorage.removeItem(KEY);state=seed();curId=null;dispSel=null;renderAll()}};
+state=load();renderAll();
+window.__egm={state:function(){return state},go:function(i){curId=i;renderAll()}};
+})();
+</script>
+</body>
+</html>

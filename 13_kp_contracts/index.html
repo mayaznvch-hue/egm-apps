@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EGM · Генератор КП и договоров</title>
+<style>
+:root{--or:#F07A1A;--or2:#d46a10;--gr:#1F2329;--g2:#5b636d;--bd:#e3e6ea;--bg:#f5f6f8;--ok:#2e9e5b;--bad:#d64545}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--gr);font-size:15px;line-height:1.4}
+header{background:var(--gr);color:#fff;padding:12px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;position:sticky;top:0;z-index:10}
+header h1{font-size:18px;margin:0;font-weight:600}
+header h1 b{color:var(--or)}
+.tag{font-size:11px;background:var(--or);color:#fff;border-radius:10px;padding:2px 9px;text-transform:uppercase;letter-spacing:.5px}
+nav{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap}
+nav button{background:transparent;color:#cfd3d8;border:0;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:14px}
+nav button.on{background:var(--or);color:#fff}
+main{max-width:1400px;margin:0 auto;padding:16px}
+.grid{display:grid;grid-template-columns:minmax(340px,480px) 1fr;gap:16px;align-items:start}
+.card{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:14px;margin-bottom:14px}
+.card h2{font-size:15px;margin:0 0 10px;text-transform:uppercase;letter-spacing:.4px;color:var(--g2)}
+label{display:block;font-size:12px;color:var(--g2);margin:8px 0 3px}
+input,select,textarea{width:100%;padding:8px 10px;border:1px solid #cfd4da;border-radius:6px;font:inherit;background:#fff;color:var(--gr)}
+input:focus,select:focus,textarea:focus{outline:2px solid #f6c9a3;border-color:var(--or)}
+.row{display:flex;gap:8px;align-items:flex-end}
+.row>*{flex:1}
+.row>.s{flex:0 0 auto}
+button.b{background:var(--or);color:#fff;border:0;border-radius:6px;padding:9px 14px;cursor:pointer;font:inherit;font-weight:600}
+button.b:hover{background:var(--or2)}
+button.b2{background:#fff;color:var(--gr);border:1px solid #cfd4da;border-radius:6px;padding:8px 12px;cursor:pointer;font:inherit}
+button.b2:hover{border-color:var(--or);color:var(--or2)}
+button.x{background:none;border:0;color:var(--bad);cursor:pointer;font-size:18px;padding:0 6px}
+.hint{font-size:12px;color:var(--g2);margin-top:4px}
+.ok{color:var(--ok)}.err{color:var(--bad)}
+.items .it{display:grid;grid-template-columns:1fr 70px 80px 24px;gap:6px;align-items:center;padding:6px 0;border-bottom:1px dashed var(--bd);font-size:13px}
+.items .it input{padding:5px 6px}
+.items .hd{display:grid;grid-template-columns:1fr 70px 80px 24px;gap:6px;font-size:11px;color:var(--g2)}
+.items .hd span:nth-child(n+2){padding-left:2px}
+.items .nm small{display:block;color:var(--g2)}
+.sum{display:flex;justify-content:space-between;padding:3px 0}
+.sum.t{font-weight:700;font-size:17px;border-top:2px solid var(--gr);margin-top:6px;padding-top:6px}
+.pv{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:10px;overflow:auto}
+.sheet{background:#fff;width:100%;max-width:800px;margin:0 auto;padding:28px 32px;font-family:"Times New Roman",Georgia,serif;font-size:14px;color:#111;border:1px solid #eee}
+.sheet .lh{display:flex;justify-content:space-between;gap:14px;border-bottom:3px solid var(--or);padding-bottom:10px;margin-bottom:14px;font-family:system-ui,"Segoe UI",sans-serif}
+.sheet .lh .lg{font-size:26px;font-weight:800;color:var(--gr)}.sheet .lh .lg span{color:var(--or)}
+.sheet .lh .lg small{display:block;font-size:11px;font-weight:400;color:#555}
+.sheet .lh .ct{font-size:11px;text-align:right;color:#444}
+.sheet h3{text-align:center;font-size:17px;margin:10px 0 4px}
+.sheet h4{font-size:14px;margin:12px 0 4px}
+.sheet p{margin:5px 0;text-align:justify}
+.sheet table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13px}
+.sheet th,.sheet td{border:1px solid #444;padding:4px 6px}
+.sheet th{background:#f1f1f1}
+.sheet td.r{text-align:right;white-space:nowrap}
+.sheet .tot{text-align:right;margin:6px 0}
+.sheet .sg{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:22px;font-size:13px}
+.sheet .sg div{white-space:pre-line}
+.sheet .line{border-bottom:1px solid #000;height:26px;margin-top:10px}
+.tb{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+table.lg{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--bd);border-radius:10px;overflow:hidden}
+table.lg td:nth-child(4),table.lg td:nth-child(1),table.lg td:nth-child(2){white-space:nowrap}
+table.lg th,table.lg td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--bd);font-size:14px}
+table.lg th{background:#eef0f3;font-size:12px;text-transform:uppercase;color:var(--g2)}
+.st{padding:2px 9px;border-radius:10px;font-size:12px;font-weight:600;display:inline-block}
+.st.sent{background:#e8eefc;color:#2a55c0}.st.seen{background:#fff1de;color:#b55f0a}.st.acc{background:#e0f4e8;color:#1d7a43}.st.rej{background:#fbe5e5;color:#b13030}
+.stat{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.stat div{background:#fff;border:1px solid var(--bd);border-left:4px solid var(--or);border-radius:8px;padding:10px}
+.stat b{display:block;font-size:20px}.stat span{font-size:12px;color:var(--g2)}
+.view{display:none}.view.on{display:block}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--gr);color:#fff;padding:10px 18px;border-radius:8px;opacity:0;pointer-events:none;transition:.3s;z-index:50}
+.toast.on{opacity:1}
+.lgw{overflow-x:auto}
+@media(max-width:600px){.row{flex-wrap:wrap}.row>*{flex:1 1 100%}.row>.s{flex:1 1 100%}header h1{font-size:16px}nav button{font-size:13px;padding:8px 2px}button.x{font-size:22px;padding:4px 8px}.items .it,.items .hd{grid-template-columns:1fr 62px 72px 28px}}
+@media(max-width:900px){.grid{grid-template-columns:1fr}.stat{grid-template-columns:1fr 1fr}.sheet{padding:16px 14px;font-size:13px}.sheet .lh{flex-direction:column}.sheet .lh .ct{text-align:left}.sheet .sg{grid-template-columns:1fr}nav{margin-left:0;width:100%}nav button{flex:1;padding:8px 4px}}
+@media print{
+ body{background:#fff}header,nav,.noprint,.toast,.card,.tb,.stat{display:none!important}
+ main{padding:0;max-width:none}.grid{display:block}.view{display:none!important}
+ body.p-kp #v-kp,body.p-ct #v-ct{display:block!important}
+ .pv{border:0;padding:0;overflow:visible}.sheet{border:0;max-width:none;padding:0}
+ @page{size:A4;margin:15mm}
+}
+</style>
+</head>
+<body class="p-kp">
+<header>
+ <h1><b>EGM</b> · Генератор КП и договоров</h1><span class="tag">демо</span>
+ <nav>
+  <button data-v="kp" class="on">Коммерческое предложение</button>
+  <button data-v="ct">Договор</button>
+  <button data-v="lg">Журнал КП</button>
+ </nav>
+</header>
+<main>
+
+<section id="v-kp" class="view on">
+ <div class="grid">
+  <div>
+   <div class="card">
+    <h2>1. Клиент</h2>
+    <label>ИНН (10 или 12 цифр)</label>
+    <div class="row"><input id="inn" inputmode="numeric" maxlength="12" placeholder="например 5029123456"><button class="b s" id="innBtn">Найти</button></div>
+    <div class="hint" id="innHint">Демо-справочник: <a href="#" id="innDemo">показать примеры ИНН</a></div>
+    <label>Название</label><input id="cName">
+    <div class="row"><div><label>КПП</label><input id="cKpp"></div><div><label>Контактное лицо</label><input id="cPerson"></div></div>
+    <label>Адрес</label><input id="cAddr">
+    <label>Объект / адрес доставки</label><input id="cObj" placeholder="например, г. Мытищи, ул. Колпакова, 12">
+   </div>
+   <div class="card">
+    <h2>2. Позиции прайса</h2>
+    <div class="row"><div><label>Группа</label><select id="grp"></select></div></div>
+    <div class="row"><div><label>Позиция</label><select id="itm"></select></div><button class="b s" id="addBtn">Добавить</button></div>
+    <div class="items" id="items"></div>
+    <div class="hint">Количество и цену можно править прямо в строке.</div>
+   </div>
+   <div class="card">
+    <h2>3. Условия</h2>
+    <div class="row"><div><label>Скидка, %</label><input id="disc" type="number" min="0" max="30" value="0"></div><div><label>Срок действия, дней</label><input id="valid" type="number" min="1" value="7"></div></div>
+    <div class="row"><div><label>Номер КП</label><input id="kpNum"></div><div><label>Дата</label><input id="kpDate" type="date"></div></div>
+    <label>Оплата</label>
+    <select id="pay"><option>100% предоплата</option><option>50% предоплата, остаток по факту доставки</option><option>Оплата по факту разгрузки</option><option>Отсрочка 14 календарных дней</option></select>
+    <label>Примечание</label><textarea id="note" rows="2">Цены указаны с НДС 20%. Отгрузка со склада в Московской области, доставка собственными самосвалами.</textarea>
+    <label>Подписант</label><input id="mgr" value="Коротков Алексей, менеджер по продажам">
+    <div class="sum t" style="margin-top:12px"><span>Итого к оплате</span><span id="sideTot">0 ₽</span></div>
+   </div>
+  </div>
+  <div>
+   <div class="tb noprint">
+    <button class="b" id="saveKp">Сохранить в журнал</button>
+    <button class="b2" id="prKp">Печать / PDF</button>
+    <button class="b2" id="docKp">Скачать .doc</button>
+    <button class="b2" id="toCt">Сделать договор →</button>
+    <button class="b2" id="resetKp">Очистить</button>
+   </div>
+   <div class="pv"><div class="sheet" id="kpSheet"></div></div>
+  </div>
+ </div>
+</section>
+
+<section id="v-ct" class="view">
+ <div class="grid">
+  <div>
+   <div class="card">
+    <h2>Шаблон договора</h2>
+    <label>Вид</label>
+    <select id="ctType"><option value="sup">Договор поставки нерудных материалов</option><option value="snow">Договор на вывоз снега на сезон</option></select>
+    <div class="row"><div><label>Номер</label><input id="ctNum"></div><div><label>Дата</label><input id="ctDate" type="date"></div></div>
+    <div class="hint">Реквизиты клиента берутся из вкладки «КП».</div>
+    <div class="row"><div><label>Клиент</label><input id="ctCl" readonly></div></div>
+    <div class="row"><div><label>В лице (должность)</label><input id="ctPos" value="генерального директора"></div><div><label>ФИО</label><input id="ctFio" value="Смирнов Игорь Петрович"></div></div>
+   </div>
+   <div class="card" id="supP">
+    <h2>Условия поставки</h2>
+    <div class="row"><div><label>Срок договора</label><select id="ctTerm"><option value="до 31.12.2026">до конца года</option><option value="12 месяцев с даты подписания">12 месяцев</option><option value="до полного исполнения обязательств">до исполнения</option></select></div><div><label>Оплата, дней после поставки</label><input id="ctDays" type="number" value="5"></div></div>
+    <div class="hint">Спецификация берётся из позиций КП. Сумма: <b id="supSum">0 ₽</b></div>
+   </div>
+   <div class="card" id="snowP" style="display:none">
+    <h2>Условия вывоза снега</h2>
+    <div class="row"><div><label>Сезон с</label><input id="sFrom" type="date" value="2026-11-15"></div><div><label>по</label><input id="sTo" type="date" value="2027-03-31"></div></div>
+    <label>Объект</label><input id="sObj" value="Территория ТЦ, МО, г. Балашиха, ш. Энтузиастов, 21">
+    <div class="row"><div><label>Цена за рейс 20 т/20 м³, ₽</label><input id="sPrice" type="number" value="4800"></div><div><label>Плановых рейсов за сезон</label><input id="sTrips" type="number" value="60"></div></div>
+    <div class="row"><div><label>Подача по заявке, часов</label><input id="sHours" type="number" value="4"></div><div><label>Абонплата в месяц, ₽</label><input id="sFee" type="number" value="0"></div></div>
+    <div class="hint">Плановая сумма: <b id="snowSum">0 ₽</b>. Оплата по фактическим рейсам.</div>
+   </div>
+  </div>
+  <div>
+   <div class="tb noprint">
+    <button class="b2" id="prCt">Печать / PDF</button>
+    <button class="b2" id="docCt">Скачать .doc</button>
+   </div>
+   <div class="pv"><div class="sheet" id="ctSheet"></div></div>
+  </div>
+ </div>
+</section>
+
+<section id="v-lg" class="view">
+ <div class="stat" id="stat"></div>
+ <div class="tb">
+  <input id="lgQ" placeholder="Поиск по клиенту или номеру" style="max-width:300px">
+  <select id="lgF" style="max-width:200px"><option value="">Все статусы</option><option value="sent">Отправлено</option><option value="seen">Просмотрено</option><option value="acc">Принято</option><option value="rej">Отклонено</option></select>
+  <button class="b2" id="lgDemo">Вернуть демо-данные</button>
+ </div>
+ <div class="lgw"><table class="lg"><thead><tr><th>№</th><th>Дата</th><th>Клиент</th><th>Сумма</th><th>Статус</th><th></th></tr></thead><tbody id="lgBody"></tbody></table></div>
+</section>
+</main>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+var $=function(s){return document.querySelector(s)};
+var errs=[];window.onerror=function(m){errs.push(m);var d=document.getElementById('errs');if(!d){d=document.createElement('div');d.id='errs';d.style.display='none';document.body.appendChild(d)}d.textContent=errs.join('|')};
+var SELLER={name:'ООО «ЕГМ»',inn:'5029267841',kpp:'502901001',ogrn:'1175029012345',addr:'141000, Московская обл., г. Мытищи, Осташковское ш., 15, стр. 2',bank:'р/с 40702810400000012345 в ПАО «Сбербанк», БИК 044525225, к/с 30101810400000000225',tel:'+7 (495) 000-00-00',mail:'zakaz@egm-nerud.ru',dir:'Громов Сергей Николаевич'};
+var CLIENTS={
+'5029123456':{name:'ООО «СтройРесурс»',kpp:'502901004',person:'Прораб Андрей Лебедев',addr:'141008, МО, г. Мытищи, ул. Колпакова, 26'},
+'5001098765':{name:'ООО «ГенСтрой МО»',kpp:'500101001',person:'Снабженец Ольга Миронова',addr:'143400, МО, г. Красногорск, Ильинский б-р, 4'},
+'5024076123':{name:'ООО «Дорожник-Подмосковье»',kpp:'502401001',person:'Начальник участка Игорь Сорокин',addr:'143900, МО, г. Балашиха, ш. Энтузиастов, 54'},
+'5047231900':{name:'АО «БетонЗавод Люберцы»',kpp:'504701001',person:'Закупки Марина Ефимова',addr:'140000, МО, г. Люберцы, Октябрьский пр-т, 112'},
+'5032198877':{name:'ООО «УК Комфорт-Одинцово»',kpp:'503201001',person:'Главный инженер Павел Исаев',addr:'143000, МО, г. Одинцово, ул. Маршала Жукова, 18'},
+'5036145230':{name:'ТСЖ «Лесной квартал»',kpp:'503601001',person:'Председатель Нина Орлова',addr:'141300, МО, г. Сергиев Посад, ул. Лесная, 9'},
+'7715678912':{name:'ООО «ТЦ Рассвет»',kpp:'771501001',person:'Управляющий Дмитрий Захаров',addr:'127560, г. Москва, Алтуфьевское ш., 70'},
+'502905432109':{name:'ИП Кузнецов Виктор Олегович',kpp:'—',person:'Кузнецов Виктор',addr:'МО, г. Пушкино, ул. Институтская, 3'}};
+var PRICE=[
+{g:'Щебень',id:'s1',n:'Щебень гранитный 5-20',u:'т',p:2550},
+{g:'Щебень',id:'s2',n:'Щебень гранитный 20-40',u:'т',p:2400},
+{g:'Щебень',id:'s3',n:'Щебень гранитный 40-70',u:'т',p:2300},
+{g:'Щебень',id:'s4',n:'Щебень гравийный 5-20',u:'т',p:2050},
+{g:'Щебень',id:'s5',n:'Щебень известняковый 20-40',u:'т',p:1650},
+{g:'Щебень',id:'s6',n:'Щебень вторичный 0-70',u:'т',p:950},
+{g:'Песок и ПГС',id:'p1',n:'Песок карьерный',u:'т',p:720},
+{g:'Песок и ПГС',id:'p2',n:'Песок намывной',u:'т',p:900},
+{g:'Песок и ПГС',id:'p3',n:'ПГС природная',u:'т',p:780},
+{g:'Песок и ПГС',id:'p4',n:'ОПГС обогащённая',u:'т',p:1000},
+{g:'Песок и ПГС',id:'p5',n:'Грунт плодородный',u:'м³',p:850},
+{g:'Доставка по зонам',id:'d1',n:'Доставка, зона 1 (до 20 км от МКАД), рейс 20 т',u:'рейс',p:4200},
+{g:'Доставка по зонам',id:'d2',n:'Доставка, зона 2 (20–50 км), рейс 20 т',u:'рейс',p:5800},
+{g:'Доставка по зонам',id:'d3',n:'Доставка, зона 3 (50–80 км), рейс 20 т',u:'рейс',p:7600},
+{g:'Доставка по зонам',id:'d4',n:'Доставка, зона 4 (80–120 км), рейс 20 т',u:'рейс',p:9900},
+{g:'Аренда техники',id:'a1',n:'Экскаватор-погрузчик JCB 3CX (мин. 4 ч)',u:'час',p:2300},
+{g:'Аренда техники',id:'a2',n:'Фронтальный погрузчик (мин. 4 ч)',u:'час',p:2800},
+{g:'Аренда техники',id:'a3',n:'Самосвал 20 т, почасовая аренда',u:'час',p:1900},
+{g:'Аренда техники',id:'a4',n:'Гусеничный экскаватор 20 т',u:'час',p:3200},
+{g:'Вывоз',id:'v1',n:'Вывоз грунта, рейс 20 т (с погрузкой)',u:'рейс',p:5200},
+{g:'Вывоз',id:'v2',n:'Вывоз снега, рейс 20 м³',u:'рейс',p:4800},
+{g:'Вывоз',id:'v3',n:'Погрузка снега погрузчиком',u:'час',p:2800},
+{g:'Вывоз',id:'v4',n:'Вывоз строительного мусора, рейс 20 т',u:'рейс',p:6500}];
+var KEY='egm13';
+var S={items:[],kp:{}};
+function load(){try{var d=JSON.parse(localStorage.getItem(KEY));if(d)return d}catch(e){}return null}
+var DB=load()||{log:null,seq:1,draft:null};
+function save(){localStorage.setItem(KEY,JSON.stringify(DB))}
+function money(n){return Math.round(n).toLocaleString('ru-RU').replace(/\u00a0/g,' ')+' ₽'}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function fdate(s){if(!s)return'';var a=s.split('-');return a[2]+'.'+a[1]+'.'+a[0]}
+function today(){var d=new Date();return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2)}
+function addDays(s,n){var d=new Date(s);d.setDate(d.getDate()+n);return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2)}
+function toast(t){var e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(function(){e.classList.remove('on')},2200)}
+function words(n){n=Math.round(n);if(n===0)return'ноль рублей';
+ var o=['','один','два','три','четыре','пять','шесть','семь','восемь','девять'],o2=['','одна','две','три','четыре','пять','шесть','семь','восемь','девять'],t=['десять','одиннадцать','двенадцать','тринадцать','четырнадцать','пятнадцать','шестнадцать','семнадцать','восемнадцать','девятнадцать'],d=['','','двадцать','тридцать','сорок','пятьдесят','шестьдесят','семьдесят','восемьдесят','девяносто'],h=['','сто','двести','триста','четыреста','пятьсот','шестьсот','семьсот','восемьсот','девятьсот'];
+ function tri(x,f){var r=[],a=Math.floor(x/100),b=Math.floor(x/10)%10,c=x%10;if(a)r.push(h[a]);if(b==1)r.push(t[c]);else{if(b)r.push(d[b]);if(c)r.push((f?o2:o)[c])}return r.join(' ')}
+ function pl(x,a,b,c){x=x%100;if(x>10&&x<20)return c;x=x%10;return x==1?a:(x>1&&x<5?b:c)}
+ var mil=Math.floor(n/1e6),th=Math.floor(n/1000)%1000,rest=n%1000,r=[];
+ if(mil)r.push(tri(mil,0)+' '+pl(mil,'миллион','миллиона','миллионов'));
+ if(th)r.push(tri(th,1)+' '+pl(th,'тысяча','тысячи','тысяч'));
+ if(rest)r.push(tri(rest,0));
+ var s=r.join(' ');return s+' '+pl(n,'рубль','рубля','рублей')}
+function seed(){var t=today();return[
+{id:'КП-2026-101',date:addDays(t,-12),client:'ООО «СтройРесурс»',sum:128400,st:'acc',items:[]},
+{id:'КП-2026-102',date:addDays(t,-9),client:'ООО «Дорожник-Подмосковье»',sum:482600,st:'seen',items:[]},
+{id:'КП-2026-103',date:addDays(t,-6),client:'АО «БетонЗавод Люберцы»',sum:911000,st:'sent',items:[]},
+{id:'КП-2026-104',date:addDays(t,-4),client:'ООО «УК Комфорт-Одинцово»',sum:288000,st:'acc',items:[]},
+{id:'КП-2026-105',date:addDays(t,-2),client:'ТСЖ «Лесной квартал»',sum:96400,st:'rej',items:[]},
+{id:'КП-2026-106',date:addDays(t,-1),client:'ООО «ТЦ Рассвет»',sum:345600,st:'sent',items:[]}]}
+if(!DB.log){DB.log=seed();DB.seq=107;save()}
+
+// ---- tabs
+function show(v){document.querySelectorAll('.view').forEach(function(e){e.classList.remove('on')});$('#v-'+v).classList.add('on');document.querySelectorAll('nav button').forEach(function(b){b.classList.toggle('on',b.dataset.v===v)});
+ document.body.className=v==='ct'?'p-ct':'p-kp';if(v==='lg')renderLog();if(v==='ct')renderCt();window.scrollTo(0,0)}
+document.querySelectorAll('nav button').forEach(function(b){b.onclick=function(){show(b.dataset.v)}});
+
+// ---- price
+var grps=[];PRICE.forEach(function(p){if(grps.indexOf(p.g)<0)grps.push(p.g)});
+$('#grp').innerHTML=grps.map(function(g){return'<option>'+g+'</option>'}).join('');
+function fillItm(){$('#itm').innerHTML=PRICE.filter(function(p){return p.g===$('#grp').value}).map(function(p){return'<option value="'+p.id+'">'+esc(p.n)+' — '+p.p+' ₽/'+p.u+'</option>'}).join('')}
+$('#grp').onchange=fillItm;fillItm();
+$('#addBtn').onclick=function(){var p=PRICE.filter(function(x){return x.id===$('#itm').value})[0];if(!p)return;
+ var ex=S.items.filter(function(i){return i.id===p.id})[0];if(ex){ex.q+=1}else S.items.push({id:p.id,n:p.n,u:p.u,p:p.p,q:p.u==='т'?20:(p.u==='час'?4:1)});
+ renderItems();render()};
+function renderItems(){var h='';S.items.forEach(function(i,k){h+='<div class="it"><div class="nm">'+esc(i.n)+'<small>'+i.u+'</small></div><input type="number" min="0" step="any" value="'+i.q+'" data-k="'+k+'" data-f="q"><input type="number" min="0" step="any" value="'+i.p+'" data-k="'+k+'" data-f="p"><button class="x" data-d="'+k+'" title="Убрать">×</button></div>'});
+ $('#items').innerHTML=(h?'<div class="hd"><span>Позиция</span><span>Кол-во</span><span>Цена, ₽</span><span></span></div>':'')+h||'<div class="hint">Пока ничего не выбрано.</div>'}
+$('#items').addEventListener('input',function(e){var k=e.target.dataset.k;if(k==null)return;S.items[k][e.target.dataset.f]=parseFloat(e.target.value)||0;render(true)});
+$('#items').addEventListener('click',function(e){var d=e.target.dataset.d;if(d==null)return;S.items.splice(d,1);renderItems();render()});
+
+// ---- inn
+function findInn(){var v=$('#inn').value.replace(/\D/g,'');var h=$('#innHint');
+ if(v.length!==10&&v.length!==12){h.innerHTML='<span class="err">ИНН должен содержать 10 или 12 цифр</span>';return}
+ var c=CLIENTS[v];if(!c){h.innerHTML='<span class="err">В демо-справочнике не найден. Заполните реквизиты вручную.</span>';return}
+ $('#cName').value=c.name;$('#cKpp').value=c.kpp;$('#cPerson').value=c.person;$('#cAddr').value=c.addr;
+ h.innerHTML='<span class="ok">Найдено: '+esc(c.name)+'</span>';render()}
+$('#innBtn').onclick=findInn;$('#inn').onkeydown=function(e){if(e.key==='Enter')findInn()};
+$('#inn').oninput=function(){var v=this.value.replace(/\D/g,'');if(v.length===10||v.length===12)findInn()};
+$('#innDemo').onclick=function(e){e.preventDefault();$('#innHint').innerHTML=Object.keys(CLIENTS).map(function(k){return'<a href="#" data-i="'+k+'">'+k+'</a>'}).join(' · ')};
+$('#innHint').onclick=function(e){var i=e.target.dataset&&e.target.dataset.i;if(i){e.preventDefault();$('#inn').value=i;findInn()}};
+
+// ---- totals
+function totals(){var s=0;S.items.forEach(function(i){s+=i.q*i.p});var d=Math.min(30,Math.max(0,parseFloat($('#disc').value)||0));var da=s*d/100;return{sub:s,d:d,da:da,tot:s-da,vat:(s-da)*20/120}}
+function render(light){var t=totals();$('#sideTot').textContent=money(t.tot);renderKp();if($('#v-ct').classList.contains('on'))renderCt()}
+function letterhead(){return'<div class="lh"><div class="lg"><span>E</span>GM<small>Нерудные материалы · доставка · спецтехника</small></div><div class="ct">'+esc(SELLER.name)+'<br>ИНН '+SELLER.inn+' / КПП '+SELLER.kpp+'<br>'+esc(SELLER.addr)+'<br>'+SELLER.tel+' · '+SELLER.mail+' · egm-nerud.ru</div></div>'}
+function renderKp(){var t=totals(),num=$('#kpNum').value,dt=$('#kpDate').value,v=parseInt($('#valid').value)||7;
+ var rows='';S.items.forEach(function(i,k){rows+='<tr><td>'+(k+1)+'</td><td>'+esc(i.n)+'</td><td>'+i.u+'</td><td class="r">'+(+i.q)+'</td><td class="r">'+money(i.p)+'</td><td class="r">'+money(i.q*i.p)+'</td></tr>'});
+ if(!rows)rows='<tr><td colspan="6" style="text-align:center;color:#888">Выберите позиции слева</td></tr>';
+ $('#kpSheet').innerHTML=letterhead()+'<h3>Коммерческое предложение № '+esc(num)+'</h3><p style="text-align:center">от '+fdate(dt)+'. Действительно до '+fdate(addDays(dt,v))+' ('+v+' дн.)</p>'+
+ '<p><b>Кому:</b> '+esc($('#cName').value||'—')+(($('#inn').value)?', ИНН '+esc($('#inn').value):'')+(($('#cPerson').value)?'<br>Контактное лицо: '+esc($('#cPerson').value):'')+'<br><b>Объект поставки:</b> '+esc($('#cObj').value||'уточняется')+'</p>'+
+ '<p>Направляем вам стоимость материалов и услуг по вашему запросу:</p><table><thead><tr><th>№</th><th>Наименование</th><th>Ед.</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></tr></thead><tbody>'+rows+'</tbody></table>'+
+ '<div class="tot">Сумма: '+money(t.sub)+'</div>'+(t.d?'<div class="tot">Скидка '+t.d+'%: −'+money(t.da)+'</div>':'')+'<div class="tot"><b>Итого к оплате: '+money(t.tot)+'</b> (в т. ч. НДС 20%: '+money(t.vat)+')</div>'+
+ '<p><b>Условия оплаты:</b> '+esc($('#pay').value)+'.</p><p>'+esc($('#note').value)+'</p><p>Машина подаётся в день заявки при подтверждении до 12:00, иначе — на следующий день. Каждый рейс сопровождается ТТН и УПД.</p>'+
+ '<div class="sg"><div>'+esc($('#mgr').value)+'<div class="line"></div>подпись</div><div>Для заказа: '+SELLER.tel+'\n'+SELLER.mail+'</div></div>'}
+['disc','valid','kpNum','kpDate','pay','note','mgr','cObj','cName','cKpp','cPerson','cAddr','inn'].forEach(function(id){$('#'+id).addEventListener('input',function(){render()})});
+function nextNum(){return'КП-2026-'+DB.seq}
+function initKp(){$('#kpNum').value=nextNum();$('#kpDate').value=today()}
+
+// ---- contract
+function ctNum(){return'Д-'+(DB.seq+400)+'/26'}
+function renderCt(){var t=totals(),type=$('#ctType').value;$('#supP').style.display=type==='sup'?'':'none';$('#snowP').style.display=type==='snow'?'':'none';
+ $('#ctCl').value=$('#cName').value;var dt=$('#ctDate').value;
+ var cl=esc($('#cName').value||'__________________'),inn=$('#inn').value,fio=esc($('#ctFio').value),pos=esc($('#ctPos').value);
+ var head=letterhead()+'<h3>'+(type==='sup'?'ДОГОВОР ПОСТАВКИ № ':'ДОГОВОР № ')+esc($('#ctNum').value)+'</h3>'+(type==='snow'?'<p style="text-align:center"><b>на вывоз снега на зимний сезон</b></p>':'')+'<p style="display:flex;justify-content:space-between"><span>г. Мытищи</span><span>'+fdate(dt)+'</span></p>';
+ var pre='<p>'+esc(SELLER.name)+', именуемое в дальнейшем «'+(type==='sup'?'Поставщик':'Исполнитель')+'», в лице генерального директора '+SELLER.dir+', действующего на основании Устава, с одной стороны, и '+cl+(inn?' (ИНН '+esc(inn)+')':'')+', именуемое в дальнейшем «'+(type==='sup'?'Покупатель':'Заказчик')+'», в лице '+pos+' '+fio+', действующего на основании Устава, с другой стороны, заключили настоящий договор о нижеследующем:</p>';
+ var body='',sum=0;
+ if(type==='sup'){sum=t.tot;var rows='';S.items.forEach(function(i,k){rows+='<tr><td>'+(k+1)+'</td><td>'+esc(i.n)+'</td><td>'+i.u+'</td><td class="r">'+(+i.q)+'</td><td class="r">'+money(i.p)+'</td><td class="r">'+money(i.q*i.p)+'</td></tr>'});
+  if(!rows)rows='<tr><td colspan="6" style="text-align:center">Спецификация формируется из КП — добавьте позиции</td></tr>';
+  $('#supSum').textContent=money(sum);
+  body='<h4>1. Предмет договора</h4><p>1.1. Поставщик обязуется поставить, а Покупатель принять и оплатить нерудные материалы (далее — Товар) в ассортименте, количестве и по ценам согласно Спецификации.</p><p>1.2. Доставка осуществляется автотранспортом Поставщика на объект: '+esc($('#cObj').value||'указывается в заявке')+'. Рейс — 20 тонн.</p>'+
+  '<h4>2. Спецификация</h4><table><thead><tr><th>№</th><th>Наименование</th><th>Ед.</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></tr></thead><tbody>'+rows+'</tbody></table><div class="tot"><b>Итого'+(t.d?' с учётом скидки '+t.d+'%':'')+': '+money(sum)+'</b>, в т. ч. НДС 20% — '+money(t.vat)+'.<br>Сумма прописью: '+words(sum)+'.</div>'+
+  '<h4>3. Порядок поставки и приёмки</h4><p>3.1. Поставка осуществляется партиями по письменной или телефонной заявке Покупателя. Машина подаётся в согласованное время; простой более 1 часа при разгрузке оплачивается отдельно.</p><p>3.2. Количество Товара определяется по весам Поставщика и фиксируется в ТТН. Передача подтверждается подписанием УПД.</p><p>3.3. Качество Товара соответствует ГОСТ 8267-93 (щебень), ГОСТ 8736-2014 (песок), ГОСТ 23735-2014 (ПГС).</p>'+
+  '<h4>4. Оплата</h4><p>4.1. '+esc($('#pay').value)+'; окончательный расчёт — в течение '+(parseInt($('#ctDays').value)||5)+' банковских дней с даты поставки.</p><h4>5. Ответственность</h4><p>5.1. За просрочку оплаты Поставщик вправе начислить пеню 0,1% от неоплаченной суммы за каждый день просрочки. Стороны освобождаются от ответственности при форс-мажоре.</p><h4>6. Срок действия</h4><p>6.1. Договор действует '+esc($('#ctTerm').value)+'. Споры решаются в Арбитражном суде Московской области.</p>'}
+ else{var pr=parseFloat($('#sPrice').value)||0,tr=parseFloat($('#sTrips').value)||0,fee=parseFloat($('#sFee').value)||0;
+  var m=Math.max(1,Math.round((new Date($('#sTo').value)-new Date($('#sFrom').value))/2629800000));sum=pr*tr+fee*m;
+  $('#snowSum').textContent=money(sum);
+  body='<h4>1. Предмет договора</h4><p>1.1. Исполнитель обязуется в период с '+fdate($('#sFrom').value)+' по '+fdate($('#sTo').value)+' оказывать услуги по погрузке и вывозу снега с объекта: '+esc($('#sObj').value)+', а Заказчик — оплатить эти услуги.</p><p>1.2. Снег вывозится на согласованные полигоны. Погрузка — спецтехникой Исполнителя.</p>'+
+  '<h4>2. Порядок оказания услуг</h4><p>2.1. Заявка подаётся по телефону или на почту '+SELLER.mail+'. Техника прибывает на объект в течение '+(parseInt($('#sHours').value)||4)+' часов с момента заявки.</p><p>2.2. Каждый рейс фиксируется в путевом листе и отметке в акте; по окончании месяца стороны подписывают акт выполненных работ (УПД).</p>'+
+  '<h4>3. Стоимость и оплата</h4><p>3.1. Стоимость одного рейса (20 м³) — '+money(pr)+' с НДС 20%.</p>'+(fee?'<p>3.2. Абонентская плата — '+money(fee)+' в месяц.</p>':'')+'<p>3.'+(fee?3:2)+'. Плановый объём — '+tr+' рейсов; плановая стоимость за сезон — '+money(sum)+' ('+words(sum)+'). Оплата — по фактическому числу рейсов в течение 5 банковских дней после подписания акта.</p>'+
+  '<h4>4. Ответственность</h4><p>4.1. При несвоевременной подаче техники по вине Исполнителя Заказчик вправе требовать снижения стоимости рейса на 10%. За просрочку оплаты — пеня 0,1% в день.</p><p>4.2. Заказчик обеспечивает свободный подъезд и отсутствие припаркованных автомобилей в зоне уборки.</p><h4>5. Срок действия</h4><p>5.1. Договор действует до '+fdate($('#sTo').value)+' и может быть расторгнут с уведомлением за 10 дней.</p>'}
+ var sg='<h4>Реквизиты и подписи сторон</h4><div class="sg"><div><b>'+(type==='sup'?'Поставщик':'Исполнитель')+'</b>\n'+esc(SELLER.name)+'\nИНН '+SELLER.inn+', КПП '+SELLER.kpp+'\nОГРН '+SELLER.ogrn+'\n'+esc(SELLER.addr)+'\n'+esc(SELLER.bank)+'<div class="line"></div>'+SELLER.dir+'</div><div><b>'+(type==='sup'?'Покупатель':'Заказчик')+'</b>\n'+cl+'\nИНН '+esc(inn||'—')+', КПП '+esc($('#cKpp').value||'—')+'\n'+esc($('#cAddr').value||'—')+'\n<div class="line"></div>'+fio+'</div></div>';
+ $('#ctSheet').innerHTML=head+pre+body+sg}
+['ctType','ctNum','ctDate','ctPos','ctFio','ctTerm','ctDays','sFrom','sTo','sObj','sPrice','sTrips','sHours','sFee'].forEach(function(id){$('#'+id).addEventListener('input',renderCt);$('#'+id).addEventListener('change',renderCt)});
+
+// ---- print / doc
+function print_(cls){document.body.className=cls;setTimeout(function(){window.print()},50)}
+$('#prKp').onclick=function(){print_('p-kp')};$('#prCt').onclick=function(){print_('p-ct')};
+function doc(id,name){var css='body{font-family:"Times New Roman",serif;font-size:12pt}table{border-collapse:collapse;width:100%}th,td{border:1px solid #000;padding:3px 5px}.lh{border-bottom:3px solid #F07A1A}.sg{width:100%}.tot{text-align:right}';
+ var html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><title>'+name+'</title><style>'+css+'</style></head><body>'+$('#'+id).innerHTML+'</body></html>';
+ var b=new Blob(['\ufeff',html],{type:'application/msword'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name.replace(/[\\\/:*?"<>|]/g,'_')+'.doc';document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500);toast('Файл .doc скачан')}
+$('#docKp').onclick=function(){doc('kpSheet',$('#kpNum').value)};
+$('#docCt').onclick=function(){doc('ctSheet','Договор '+$('#ctNum').value)};
+
+// ---- log
+$('#saveKp').onclick=function(){if(!S.items.length){toast('Добавьте хотя бы одну позицию');return}if(!$('#cName').value){toast('Укажите клиента');return}
+ var t=totals(),id=$('#kpNum').value;var ex=DB.log.filter(function(x){return x.id===id})[0];
+ var rec={id:id,date:$('#kpDate').value,client:$('#cName').value,sum:t.tot,st:'sent',items:JSON.parse(JSON.stringify(S.items)),f:{inn:$('#inn').value,kpp:$('#cKpp').value,person:$('#cPerson').value,addr:$('#cAddr').value,obj:$('#cObj').value,disc:$('#disc').value,valid:$('#valid').value,pay:$('#pay').value}};
+ if(ex){rec.st=ex.st;DB.log[DB.log.indexOf(ex)]=rec}else{DB.log.unshift(rec);DB.seq++}
+ save();toast('КП '+id+' сохранено в журнал');$('#kpNum').value=nextNum();renderCt()};
+$('#resetKp').onclick=function(){S.items=[];['inn','cName','cKpp','cPerson','cAddr','cObj'].forEach(function(i){$('#'+i).value=''});$('#disc').value=0;$('#innHint').textContent='';renderItems();initKp();render()};
+$('#toCt').onclick=function(){show('ct')};
+function renderLog(){var q=$('#lgQ').value.toLowerCase(),f=$('#lgF').value;var NM={sent:'Отправлено',seen:'Просмотрено',acc:'Принято',rej:'Отклонено'};
+ var list=DB.log.filter(function(x){return(!f||x.st===f)&&(!q||(x.client+x.id).toLowerCase().indexOf(q)>=0)});
+ $('#lgBody').innerHTML=list.map(function(x){return'<tr><td>'+esc(x.id)+'</td><td>'+fdate(x.date)+'</td><td>'+esc(x.client)+'</td><td>'+money(x.sum)+'</td><td><select data-s="'+x.id+'" class="st '+x.st+'" style="width:auto">'+Object.keys(NM).map(function(k){return'<option value="'+k+'"'+(k===x.st?' selected':'')+'>'+NM[k]+'</option>'}).join('')+'</select></td><td style="white-space:nowrap"><button class="b2" data-o="'+x.id+'">Открыть</button> <button class="x" data-r="'+x.id+'" title="Удалить">×</button></td></tr>'}).join('')||'<tr><td colspan="6" style="text-align:center;color:#888">Ничего не найдено</td></tr>';
+ var tot=DB.log.length,acc=DB.log.filter(function(x){return x.st==='acc'}),sa=0;acc.forEach(function(x){sa+=x.sum});var op=DB.log.filter(function(x){return x.st==='sent'||x.st==='seen'}).length;
+ $('#stat').innerHTML='<div><b>'+tot+'</b><span>всего КП</span></div><div><b>'+op+'</b><span>ждут ответа</span></div><div><b>'+acc.length+'</b><span>принято ('+(tot?Math.round(acc.length/tot*100):0)+'%)</span></div><div><b>'+money(sa)+'</b><span>сумма принятых</span></div>'}
+$('#lgQ').oninput=renderLog;$('#lgF').onchange=renderLog;
+$('#lgBody').addEventListener('change',function(e){var id=e.target.dataset.s;if(!id)return;DB.log.filter(function(x){return x.id===id})[0].st=e.target.value;save();renderLog()});
+$('#lgBody').addEventListener('click',function(e){var o=e.target.dataset.o,r=e.target.dataset.r;
+ if(r){if(confirm('Удалить '+r+'?')){DB.log=DB.log.filter(function(x){return x.id!==r});save();renderLog()}}
+ if(o){var x=DB.log.filter(function(y){return y.id===o})[0];if(!x.items||!x.items.length){toast('Это демо-запись без позиций');return}
+  S.items=JSON.parse(JSON.stringify(x.items));var f=x.f||{};$('#cName').value=x.client;$('#inn').value=f.inn||'';$('#cKpp').value=f.kpp||'';$('#cPerson').value=f.person||'';$('#cAddr').value=f.addr||'';$('#cObj').value=f.obj||'';$('#disc').value=f.disc||0;$('#valid').value=f.valid||7;$('#kpNum').value=x.id;$('#kpDate').value=x.date;renderItems();render();show('kp')}});
+$('#lgDemo').onclick=function(){DB.log=seed();save();renderLog();toast('Демо-данные возвращены')};
+
+// ---- init
+initKp();$('#ctDate').value=today();$('#ctNum').value=ctNum();renderItems();
+// стартовый пример
+$('#inn').value='5029123456';findInn();$('#cObj').value='МО, г. Мытищи, ул. Колпакова, 12 (стройплощадка)';
+[['s2'],['p1'],['d1']].forEach(function(a){var p=PRICE.filter(function(x){return x.id===a[0]})[0];S.items.push({id:p.id,n:p.n,u:p.u,p:p.p,q:p.u==='т'?40:(p.u==='рейс'?4:1)})});
+renderItems();render();
+window.__app={S:S,DB:DB,show:show,errs:errs};
+})();
+</script>
+</body>
+</html>

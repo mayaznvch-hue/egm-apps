@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EGM · Автодокументы и 1С</title>
+<style>
+:root{--or:#F07A1A;--or2:#d96a10;--gr:#1F2329;--bg:#f4f5f7;--line:#e3e6ea;--mut:#6b7380;--ok:#1e9e57;--bad:#d63b3b}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--gr);font-size:15px;line-height:1.4}
+header{background:var(--gr);color:#fff;padding:12px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+header h1{font-size:18px;margin:0;font-weight:600}header h1 b{color:var(--or)}
+.tag{font-size:11px;background:var(--or);color:#fff;border-radius:10px;padding:2px 8px;text-transform:uppercase;letter-spacing:.5px}
+.sp{flex:1}
+header button{background:transparent;border:1px solid #555c66;color:#cfd3d9;border-radius:8px;padding:6px 10px;font-size:13px;cursor:pointer}
+nav.tabs{display:flex;background:#fff;border-bottom:1px solid var(--line);overflow-x:auto;position:sticky;top:0;z-index:5}
+nav.tabs button{flex:0 0 auto;padding:13px 16px;border:0;background:none;font-size:15px;font-weight:600;color:var(--mut);border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
+nav.tabs button.on{color:var(--gr);border-bottom-color:var(--or)}
+main{max-width:1400px;margin:0 auto;padding:14px}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+.card h2,.card h3{margin:0 0 10px;font-size:17px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.mut{color:var(--mut);font-size:13px}
+.btn{background:var(--or);color:#fff;border:0;border-radius:9px;padding:10px 15px;font-size:15px;font-weight:600;cursor:pointer;min-height:42px}
+.btn:hover{background:var(--or2)}
+.btn.sec{background:#fff;color:var(--gr);border:1.5px solid var(--gr)}.btn.sec:hover{background:#f0f1f3}
+.btn.dark{background:var(--gr)}
+.btn.sm{padding:6px 11px;font-size:13px;min-height:32px}
+.btn:disabled{background:#cfd3d9;color:#fff;cursor:not-allowed;border-color:#cfd3d9}
+select,input[type=text],input[type=month],input[type=date]{padding:9px 10px;border:1.5px solid var(--line);border-radius:9px;font:inherit;background:#fff;min-width:0}
+label.f{display:block;font-size:12px;color:var(--mut);margin-bottom:3px}
+.tblwrap{overflow-x:auto}
+table.t{width:100%;border-collapse:collapse;font-size:14px}
+table.t th,table.t td{text-align:left;padding:8px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+table.t th{font-size:12px;text-transform:uppercase;color:var(--mut);white-space:nowrap}
+table.t td.n,table.t th.n{text-align:right;white-space:nowrap}
+table.t tr.sel{background:#fff6ec}
+table.t tr.clk{cursor:pointer}table.t tr.clk:hover{background:#fafbfc}
+.st{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:10px;white-space:nowrap}
+.st.no{background:#fde9e9;color:#b52626}.st.ok{background:#e0f5ea;color:#157a43}.st.mid{background:#fff0e0;color:#b85a00}
+.bar{position:sticky;bottom:0;background:var(--gr);color:#fff;border-radius:12px;padding:12px 14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:8px}
+.bar b{color:var(--or)}
+.split{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}.split>*{min-width:0}
+@media(min-width:1000px){.split{grid-template-columns:330px minmax(0,1fr)}}
+.setitem{padding:10px;border:1.5px solid var(--line);border-radius:10px;margin-bottom:8px;cursor:pointer;background:#fff}
+.setitem.on{border-color:var(--or);background:#fff8f1}
+.dtabs{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.dtabs button{border:1.5px solid var(--line);background:#fff;border-radius:20px;padding:6px 14px;font-weight:600;cursor:pointer;font-size:14px}
+.dtabs button.on{background:var(--gr);color:#fff;border-color:var(--gr)}
+.sheetwrap{overflow-x:auto;background:#e9ebee;padding:12px;border-radius:10px}
+.sheet{background:#fff;color:#000;width:794px;max-width:none;min-height:400px;margin:0 auto;padding:30px 36px;font-family:Arial,"Liberation Sans",sans-serif;font-size:12px;line-height:1.35;box-shadow:0 1px 6px rgba(0,0,0,.15)}
+.sheet h2{font-size:17px;margin:12px 0 8px;font-weight:700}
+.sheet table{border-collapse:collapse;width:100%;margin:8px 0}
+.sheet th,.sheet td{border:1px solid #000;padding:3px 5px;font-size:11px;vertical-align:top}
+.sheet th{text-align:center;font-weight:700;background:#f2f2f2}
+.sheet td.n{text-align:right;white-space:nowrap}
+.sheet table.nb td,.sheet table.nb th{border:0;background:none;padding:2px 4px;text-align:left}
+.sheet .bank td{border:1px solid #000}
+.sheet .tot{text-align:right;margin:6px 0;font-weight:700}
+.sheet .sign{display:flex;justify-content:space-between;gap:20px;margin-top:26px}
+.sheet .sign div{flex:1;border-top:1px solid #000;padding-top:3px;font-size:11px}
+.sheet .stamp{margin-top:14px;font-size:10px;color:#666}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:12px}
+.box{border:1.5px solid var(--line);border-radius:10px;padding:12px;background:#fafbfc;margin-top:10px}
+.kv{display:grid;grid-template-columns:130px 1fr;gap:4px 10px;font-size:14px}.kv span:nth-child(odd){color:var(--mut)}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--gr);color:#fff;padding:10px 18px;border-radius:20px;font-size:14px;opacity:0;transition:.3s;pointer-events:none;z-index:30;max-width:92%}
+.toast.on{opacity:1}
+.hide{display:none!important}
+.hm{}
+@media(max-width:700px){.hm{display:none}main{padding:10px}.btn{font-size:14px}}
+#printRoot{display:none}
+@media print{
+ body{background:#fff}
+ body.printing>header,body.printing>nav,body.printing>main,body.printing>.toast{display:none!important}
+ body.printing #printRoot{display:block}
+ #printRoot .sheet{box-shadow:none;width:auto;margin:0;padding:0;page-break-after:always;min-height:0}
+ #printRoot .sheet:last-child{page-break-after:auto}
+ @page{size:A4;margin:14mm}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1><b>EGM</b> · Автодокументы и 1С</h1><span class="tag">демо</span><span class="sp"></span>
+  <button id="reset">Сбросить демо</button>
+</header>
+<nav class="tabs" id="tabs">
+  <button data-t="trips" class="on">Закрытые рейсы</button>
+  <button data-t="docs">Документы</button>
+  <button data-t="recon">Акт сверки</button>
+  <button data-t="journal">Журнал</button>
+  <button data-t="dir">Справочник по ИНН</button>
+</nav>
+<main id="main"></main>
+<div id="printRoot"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/*PURE*/
+var SELLER={name:'ООО «ЕГМ»',full:'Общество с ограниченной ответственностью «ЕГМ»',inn:'5042135707',kpp:'504201001',ogrn:'1235000012345',
+  addr:'141400, Московская обл., г. Химки, ул. Заводская, д. 7, офис 12',bank:'ПАО «Сбербанк», г. Москва',bik:'044525225',ks:'30101810400000000225',rs:'40702810938000012345',
+  head:'Ермаков Г. М.',buh:'Миронова Е. А.',tel:'+7 (495) 000-00-00'};
+function innValid(s){
+  s=String(s||'').replace(/\s/g,'');
+  if(!/^\d{10}$|^\d{12}$/.test(s))return false;
+  function ck(str,w){var t=0;for(var i=0;i<w.length;i++)t+=+str[i]*w[i];return String(t%11%10)}
+  if(s.length===10)return ck(s,[2,4,10,3,5,9,4,6,8])===s[9];
+  return ck(s,[7,2,4,10,3,5,9,4,6,8])===s[10]&&ck(s,[3,7,2,4,10,3,5,9,4,6,8])===s[11];
+}
+function r2(x){return Math.round((x+Number.EPSILON)*100)/100}
+function pick(n,f){n=Math.abs(n)%100;var n1=n%10;if(n>10&&n<20)return f[2];if(n1>1&&n1<5)return f[1];if(n1===1)return f[0];return f[2]}
+function triadWords(n,fem){
+  var h=['','сто','двести','триста','четыреста','пятьсот','шестьсот','семьсот','восемьсот','девятьсот'];
+  var t=['','','двадцать','тридцать','сорок','пятьдесят','шестьдесят','семьдесят','восемьдесят','девяносто'];
+  var te=['десять','одиннадцать','двенадцать','тринадцать','четырнадцать','пятнадцать','шестнадцать','семнадцать','восемнадцать','девятнадцать'];
+  var o=['','один','два','три','четыре','пять','шесть','семь','восемь','девять'];
+  var of=['','одна','две','три','четыре','пять','шесть','семь','восемь','девять'];
+  var r=[],a=Math.floor(n/100),b=Math.floor(n/10)%10,c=n%10;
+  if(a)r.push(h[a]);
+  if(b===1)r.push(te[c]);else{if(b)r.push(t[b]);if(c)r.push((fem?of:o)[c])}
+  return r.join(' ');
+}
+function intWords(n){
+  if(n===0)return'ноль';
+  var parts=[],units=[[['тысяча','тысячи','тысяч'],true],[['миллион','миллиона','миллионов'],false],[['миллиард','миллиарда','миллиардов'],false]];
+  var tri=[];while(n>0){tri.push(n%1000);n=Math.floor(n/1000)}
+  for(var i=tri.length-1;i>=0;i--){
+    if(!tri[i])continue;
+    var w=triadWords(tri[i],i===1);
+    if(i>0)w+=' '+pick(tri[i],units[i-1][0]);
+    parts.push(w);
+  }
+  return parts.join(' ');
+}
+function sumWords(v){
+  v=r2(v);var rub=Math.floor(v+1e-9),kop=Math.round((v-rub)*100);
+  if(kop>=100){rub+=1;kop-=100}
+  var s=intWords(rub)+' '+pick(rub,['рубль','рубля','рублей'])+' '+('0'+kop).slice(-2)+' '+pick(kop,['копейка','копейки','копеек']);
+  return s.charAt(0).toUpperCase()+s.slice(1);
+}
+function qtyWords(n){return intWords(n)}
+function fm(v){return r2(v).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,'\u00a0').replace('.',',')}
+function fmt3(v){return String(r2(v)).replace('.',',')}
+function xe(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c]})}
+function ruDate(iso){var p=iso.split('-');return p[2]+'.'+p[1]+'.'+p[0]}
+var MONTHS=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+var MONTHS_N=['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
+function ruDateLong(iso){var p=iso.split('-');return p[2]+' '+MONTHS[+p[1]-1]+' '+p[0]+' г.'}
+function lineCalc(l){
+  var matNet=r2(l.tons*l.price),matVat=r2(matNet*0.2),delNet=r2(l.delivery),delVat=r2(delNet*0.2);
+  return{matNet:matNet,matVat:matVat,matTot:r2(matNet+matVat),delNet:delNet,delVat:delVat,delTot:r2(delNet+delVat)};
+}
+function setTotals(set){
+  var m=0,mv=0,d=0,dv=0;
+  set.lines.forEach(function(l){var c=lineCalc(l);m+=c.matNet;mv+=c.matVat;d+=c.delNet;dv+=c.delVat});
+  m=r2(m);mv=r2(mv);d=r2(d);dv=r2(dv);
+  return{matNet:m,matVat:mv,matTot:r2(m+mv),delNet:d,delVat:dv,delTot:r2(d+dv),net:r2(m+d),vat:r2(mv+dv),total:r2(m+mv+d+dv)};
+}
+function buildXml(sets,clientOf){
+  var o=['<?xml version="1.0" encoding="UTF-8"?>','<КоммерческаяИнформация ВерсияСхемы="2.10" ДатаФормирования="'+new Date().toISOString().slice(0,19)+'">'];
+  sets.forEach(function(s){
+    var c=clientOf(s.inn)||{name:s.inn,inn:s.inn,kpp:''},t=setTotals(s);
+    o.push('  <Документ>');
+    o.push('    <Ид>EGM-'+xe(s.no)+'</Ид><Номер>'+xe(s.no)+'</Номер><Дата>'+xe(s.date)+'</Дата>');
+    o.push('    <ХозОперация>Реализация товаров и услуг</ХозОперация><Роль>Продавец</Роль><Валюта>руб</Валюта><Курс>1</Курс>');
+    o.push('    <Сумма>'+t.total.toFixed(2)+'</Сумма>');
+    o.push('    <Контрагенты><Контрагент><Ид>'+xe(c.inn)+'</Ид><Наименование>'+xe(c.name)+'</Наименование><ИНН>'+xe(c.inn)+'</ИНН><КПП>'+xe(c.kpp||'')+'</КПП><Роль>Покупатель</Роль></Контрагент></Контрагенты>');
+    o.push('    <Налоги><Налог><Наименование>НДС</Наименование><УчтеноВСумме>true</УчтеноВСумме><Ставка>20</Ставка><Сумма>'+t.vat.toFixed(2)+'</Сумма></Налог></Налоги>');
+    o.push('    <Товары>');
+    s.lines.forEach(function(l){
+      var k=lineCalc(l);
+      o.push('      <Товар><Ид>'+xe(l.material)+'</Ид><Наименование>'+xe(l.material)+' (рейс '+xe(l.tripNo)+', '+xe(l.plate)+')</Наименование><БазоваяЕдиница Код="168" НаименованиеПолное="Тонна">т</БазоваяЕдиница><ЦенаЗаЕдиницу>'+l.price.toFixed(2)+'</ЦенаЗаЕдиницу><Количество>'+l.tons+'</Количество><Сумма>'+k.matTot.toFixed(2)+'</Сумма><СтавкаНДС>20</СтавкаНДС><СуммаНДС>'+k.matVat.toFixed(2)+'</СуммаНДС></Товар>');
+      o.push('      <Товар><Ид>Доставка</Ид><Наименование>Доставка автотранспортом (рейс '+xe(l.tripNo)+')</Наименование><БазоваяЕдиница Код="796" НаименованиеПолное="Штука">рейс</БазоваяЕдиница><ЦенаЗаЕдиницу>'+l.delivery.toFixed(2)+'</ЦенаЗаЕдиницу><Количество>1</Количество><Сумма>'+k.delTot.toFixed(2)+'</Сумма><СтавкаНДС>20</СтавкаНДС><СуммаНДС>'+k.delVat.toFixed(2)+'</СуммаНДС></Товар>');
+    });
+    o.push('    </Товары>','  </Документ>');
+  });
+  o.push('</КоммерческаяИнформация>');
+  return o.join('\n');
+}
+function csvCell(v){v=String(v==null?'':v);return /[";\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
+function buildCsv(sets,clientOf){
+  var rows=[['Номер документа','Дата','ИНН покупателя','Покупатель','Рейс','Дата рейса','Госномер','Номенклатура','Ед.','Количество','Цена без НДС','Сумма без НДС','Ставка НДС','Сумма НДС','Всего с НДС']];
+  sets.forEach(function(s){var c=clientOf(s.inn)||{name:''};
+    s.lines.forEach(function(l){var k=lineCalc(l);
+      rows.push([s.no,s.date,s.inn,c.name,l.tripNo,l.date,l.plate,l.material,'т',String(l.tons).replace('.',','),fm(l.price).replace(/\u00a0/g,''),fm(k.matNet).replace(/\u00a0/g,''),'20%',fm(k.matVat).replace(/\u00a0/g,''),fm(k.matTot).replace(/\u00a0/g,'')]);
+      rows.push([s.no,s.date,s.inn,c.name,l.tripNo,l.date,l.plate,'Доставка автотранспортом','рейс','1',fm(l.delivery).replace(/\u00a0/g,''),fm(k.delNet).replace(/\u00a0/g,''),'20%',fm(k.delVat).replace(/\u00a0/g,''),fm(k.delTot).replace(/\u00a0/g,'')]);
+    })});
+  return rows.map(function(r){return r.map(csvCell).join(';')}).join('\r\n');
+}
+/*ENDPURE*/
+
+var KEY='egm_docs_demo_v1';
+var CLIENTS=[
+ {inn:'7701123451',name:'ООО «СтройАльянс»',kpp:'770101001',addr:'125009, г. Москва, ул. Тверская, д. 15, стр. 2',bank:'АО «Альфа-Банк»',bik:'044525593',rs:'40702810201100004711',contact:'Андрей Павлович, +7 916 245-31-08'},
+ {inn:'7726345181',name:'ООО «ДорСтрой»',kpp:'772601001',addr:'115280, г. Москва, ул. Ленинская Слобода, д. 19',bank:'ПАО «Банк ВТБ»',bik:'044525187',rs:'40702810500020013328',contact:'Ирина Власова, +7 925 710-44-92'},
+ {inn:'5029017648',name:'АО «Бетон-Центр»',kpp:'502901001',addr:'141730, Московская обл., г. Лобня, ул. Промышленная, д. 3',bank:'ПАО «Сбербанк»',bik:'044525225',rs:'40702810340000077120',contact:'Диспетчер, +7 495 540-12-77'},
+ {inn:'5077042193',name:'ООО «ГринЛайн Благоустройство»',kpp:'507701001',addr:'143900, Московская обл., г. Балашиха, ш. Энтузиастов, д. 41',bank:'АО «Райффайзенбанк»',bik:'044525700',rs:'40702810700000145522',contact:'Олег Рябов, +7 903 661-20-15'},
+ {inn:'5036118252',name:'ООО «МонолитСтрой»',kpp:'503601001',addr:'141006, Московская обл., г. Мытищи, ул. Колпакова, д. 36',bank:'ПАО «Сбербанк»',bik:'044525225',rs:'40702810138000209914',contact:'Наталья Сергеевна, +7 926 300-91-44'},
+ {inn:'7705690437',name:'ООО «Магистраль-Подряд»',kpp:'770501001',addr:'109004, г. Москва, ул. Земляной Вал, д. 34',bank:'ПАО «Промсвязьбанк»',bik:'044525555',rs:'40702810900010033871',contact:'Максим, +7 985 112-60-03'},
+ {inn:'5040113761',name:'ООО «Мосрегионтранс»',kpp:'504001001',addr:'140000, Московская обл., г. Люберцы, ул. Победы, д. 8',bank:'ПАО «Сбербанк»',bik:'044525225',rs:'40702810440000318806',contact:'Сергей Викторович, +7 909 244-17-38'},
+ {inn:'502900732251',name:'ИП Захаров Виктор Андреевич',kpp:'',addr:'143005, Московская обл., г. Одинцово, ул. Говорова, д. 52, кв. 17',bank:'ПАО «Сбербанк»',bik:'044525225',rs:'40802810138000066210',contact:'Виктор, +7 903 118-76-20'}
+];
+var MATS=[['Щебень гранитный 5-20',2450],['Щебень гранитный 20-40',2350],['Щебень гранитный 40-70',2250],['Щебень гравийный 5-20',2150],['Щебень известняковый 20-40',2000],['Щебень вторичный 20-40',2000],['Песок карьерный',750],['Песок строительный',920],['ПГС',820]];
+var PLATES=['А482ТО750','В117КХ750','Е905МР790','К330СА777','М641ОР750','Т208НУ790'];
+var state,tab='trips',selTrips={},fl={client:'',st:'',month:''},curSet=null,curDoc='invoice',reconF={client:'',month:'2026-10'},jf='';
+
+function cl(inn){for(var i=0;i<CLIENTS.length;i++)if(CLIENTS[i].inn===inn)return CLIENTS[i];return null}
+function rng(seed){var s=seed;return function(){s=(s*1664525+1013904223)%4294967296;return s/4294967296}}
+function addDays(iso,n){var d=new Date(iso+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)}
+function seed(){
+  var r=rng(20261107),trips=[],i;
+  var base='2026-10-02';
+  for(i=0;i<34;i++){
+    var day=Math.floor(i*34/34*1.0);
+    var date=addDays(base,Math.floor(i*1.0));
+    var c=CLIENTS[Math.floor(r()*CLIENTS.length)];
+    var m=MATS[Math.floor(r()*MATS.length)];
+    var tons=r()<.7?20:r2(17.5+r()*2.5);tons=r2(Math.round(tons*10)/10);
+    var km=25+Math.floor(r()*70);
+    trips.push({id:i+1,no:1200+i,date:date,inn:c.inn,material:m[0],price:m[1],tons:tons,km:km,delivery:Math.round(km*105/100)*100,plate:PLATES[Math.floor(r()*PLATES.length)],ttn:'ТТН-'+(4400+i),setId:null});
+  }
+  state={trips:trips,sets:[],journal:[],payments:[],seq:1040,paySeq:300};
+  // старые рейсы (до 20 октября) уже оформлены
+  var groups={};
+  trips.forEach(function(t){if(t.date<'2026-10-22'){var k=t.inn+'|'+Math.floor((Date.parse(t.date)-Date.parse(base))/(7*864e5));(groups[k]=groups[k]||[]).push(t)}});
+  Object.keys(groups).forEach(function(k){
+    var g=groups[k],last=g[g.length-1].date,s=makeSet(g,addDays(last,1),true);
+    var pay=r()<.78;
+    if(pay){var tt=setTotals(s).total,amt=r()<.85?tt:r2(Math.round(tt*0.6/100)*100);
+      state.payments.push({id:state.paySeq++,inn:s.inn,date:addDays(s.date,6+Math.floor(r()*9)),sum:amt,doc:'п/п №'+(state.paySeq+7000)});}
+    s.status.sent=true;s.status.exported=r()<.7;
+    state.journal.push({ts:s.date+'T10:'+('0'+Math.floor(r()*50+10)).slice(-2),no:s.no,inn:s.inn,action:'Отправлен клиенту на e-mail',doc:'Комплект'});
+    if(s.status.exported)state.journal.push({ts:s.date+'T11:20',no:s.no,inn:s.inn,action:'Выгружен в 1С',doc:'Комплект'});
+  });
+  state.journal.sort(function(a,b){return a.ts<b.ts?1:-1});
+  state.payments=state.payments.filter(function(p){return p.date<='2026-11-06'});
+  save();
+}
+function makeSet(trs,date,silent){
+  var no=state.seq++;
+  var s={id:'S'+no,no:String(no),date:date,inn:trs[0].inn,status:{sent:false,exported:false},lines:trs.map(function(t){return{tripId:t.id,tripNo:t.no,date:t.date,plate:t.plate,ttn:t.ttn,material:t.material,tons:t.tons,price:t.price,delivery:t.delivery}})};
+  trs.forEach(function(t){t.setId=s.id});
+  state.sets.push(s);
+  if(!silent)state.journal.unshift({ts:new Date().toISOString().slice(0,16),no:s.no,inn:s.inn,action:'Сформирован комплект: счёт, УПД, акт',doc:'Комплект'});
+  return s;
+}
+function load(){try{var s=JSON.parse(localStorage.getItem(KEY));if(s&&s.trips){state=s;return}}catch(e){}seed()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+function $(s,r){return(r||document).querySelector(s)}
+function $$(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
+function esc(s){return xe(s)}
+function toast(t){var e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(function(){e.classList.remove('on')},2400)}
+function setById(id){for(var i=0;i<state.sets.length;i++)if(state.sets[i].id===id)return state.sets[i]}
+function tripTotal(t){var c=lineCalc(t);return r2(c.matTot+c.delTot)}
+function todayIso(){return '2026-11-07'}
+
+/* ---------- Рейсы ---------- */
+function filteredTrips(){
+  return state.trips.filter(function(t){
+    if(fl.client&&t.inn!==fl.client)return false;
+    if(fl.st==='no'&&t.setId)return false;
+    if(fl.st==='yes'&&!t.setId)return false;
+    if(fl.month&&t.date.slice(0,7)!==fl.month)return false;
+    return true;
+  }).sort(function(a,b){return a.date<b.date?1:a.date>b.date?-1:b.id-a.id});
+}
+function clientOpts(sel,all){
+  var h=all?'<option value="">'+all+'</option>':'';
+  CLIENTS.forEach(function(c){h+='<option value="'+c.inn+'"'+(sel===c.inn?' selected':'')+'>'+esc(c.name)+'</option>'});
+  return h;
+}
+function renderTrips(){
+  var list=filteredTrips(),unb=state.trips.filter(function(t){return!t.setId}).length;
+  var h='<div class="card"><div class="row"><h2 style="margin:0">Закрытые рейсы</h2><span class="mut">Не оформлено: <b>'+unb+'</b> из '+state.trips.length+'</span></div>';
+  h+='<div class="fields" style="margin-top:12px"><div><label class="f">Клиент</label><select id="fC" style="width:100%">'+clientOpts(fl.client,'Все клиенты')+'</select></div>'+
+   '<div><label class="f">Документы</label><select id="fS" style="width:100%"><option value="">Все</option><option value="no"'+(fl.st==='no'?' selected':'')+'>Не оформлены</option><option value="yes"'+(fl.st==='yes'?' selected':'')+'>Оформлены</option></select></div>'+
+   '<div><label class="f">Месяц</label><select id="fM" style="width:100%"><option value="">Все</option><option value="2026-10"'+(fl.month==='2026-10'?' selected':'')+'>Октябрь 2026</option><option value="2026-11"'+(fl.month==='2026-11'?' selected':'')+'>Ноябрь 2026</option></select></div>'+
+   '<div style="align-self:end"><button class="btn sec sm" id="selAll">Выбрать неоформленные</button></div></div>';
+  h+='<div class="tblwrap"><table class="t"><tr><th></th><th>Дата</th><th>Рейс</th><th>Клиент</th><th>Материал</th><th class="n">Тонн</th><th class="n hm">Цена, ₽/т</th><th class="n hm">Доставка, ₽</th><th class="n">Сумма с НДС</th><th class="hm">ТТН</th><th>Документы</th></tr>';
+  list.forEach(function(t){
+    var c=cl(t.inn),s=t.setId?setById(t.setId):null;
+    h+='<tr class="'+(selTrips[t.id]?'sel':'')+'"><td>'+(t.setId?'':'<input type="checkbox" data-id="'+t.id+'"'+(selTrips[t.id]?' checked':'')+'>')+'</td><td>'+ruDate(t.date)+'</td><td>№'+t.no+'<div class="mut">'+esc(t.plate)+'</div></td><td>'+esc(c?c.name:t.inn)+'</td><td>'+esc(t.material)+'</td><td class="n">'+fmt3(t.tons)+'</td><td class="n hm">'+fm(t.price)+'</td><td class="n hm">'+fm(t.delivery)+'</td><td class="n"><b>'+fm(tripTotal(t))+'</b></td><td class="hm">'+esc(t.ttn)+'</td><td>'+(s?'<span class="st ok" >№'+s.no+'</span>':'<span class="st no">нет</span>')+'</td></tr>';
+  });
+  if(!list.length)h+='<tr><td colspan="11" class="mut">Нет рейсов по выбранным условиям</td></tr>';
+  h+='</table></div></div>';
+  var ids=Object.keys(selTrips).filter(function(k){return selTrips[k]}),sum=0,clients={};
+  ids.forEach(function(k){var t=state.trips.filter(function(x){return x.id==k})[0];if(t){sum+=tripTotal(t);clients[t.inn]=1}});
+  h+='<div class="bar"><div>Выбрано рейсов: <b>'+ids.length+'</b> · клиентов: <b>'+Object.keys(clients).length+'</b> · на сумму <b>'+fm(sum)+' ₽</b></div><span class="sp"></span><button class="btn" id="gen"'+(ids.length?'':' disabled')+'>Сформировать счёт, УПД и акт</button></div>';
+  $('#main').innerHTML=h;
+  $('#fC').onchange=function(){fl.client=this.value;renderTrips()};
+  $('#fS').onchange=function(){fl.st=this.value;renderTrips()};
+  $('#fM').onchange=function(){fl.month=this.value;renderTrips()};
+  $('#selAll').onclick=function(){filteredTrips().forEach(function(t){if(!t.setId)selTrips[t.id]=true});renderTrips()};
+  $$('input[data-id]').forEach(function(i){i.onchange=function(){selTrips[i.dataset.id]=i.checked;renderTrips()}});
+  $('#gen').onclick=generate;
+}
+function generate(){
+  var ids=Object.keys(selTrips).filter(function(k){return selTrips[k]}),by={},made=[];
+  ids.forEach(function(k){var t=state.trips.filter(function(x){return x.id==k})[0];if(t&&!t.setId)(by[t.inn]=by[t.inn]||[]).push(t)});
+  Object.keys(by).forEach(function(inn){by[inn].sort(function(a,b){return a.date<b.date?-1:1});made.push(makeSet(by[inn],todayIso()))});
+  selTrips={};save();
+  if(!made.length){toast('Выберите рейсы');return}
+  curSet=made[0].id;curDoc='invoice';setTab('docs');
+  toast('Сформировано комплектов: '+made.length);
+}
+
+/* ---------- Печатные формы ---------- */
+function partyStr(c){return esc(c.name)+', ИНН '+c.inn+(c.kpp?', КПП '+c.kpp:'')+', '+esc(c.addr)}
+function sellerStr(){return esc(SELLER.name)+', ИНН '+SELLER.inn+', КПП '+SELLER.kpp+', '+esc(SELLER.addr)}
+function th(a){return'<th>'+a.join('</th><th>')+'</th>'}
+function docInvoice(s){
+  var c=cl(s.inn)||{name:s.inn,inn:s.inn,addr:'',kpp:''},t=setTotals(s),n=0;
+  var h='<div class="sheet"><table class="bank"><tr><td colspan="2" rowspan="2">'+esc(SELLER.bank)+'<br><small>Банк получателя</small></td><td>БИК</td><td>'+SELLER.bik+'</td></tr><tr><td>Корр. счёт</td><td>'+SELLER.ks+'</td></tr>'+
+  '<tr><td>ИНН '+SELLER.inn+'</td><td>КПП '+SELLER.kpp+'</td><td rowspan="2">Расч. счёт</td><td rowspan="2">'+SELLER.rs+'</td></tr><tr><td colspan="2">'+esc(SELLER.name)+'<br><small>Получатель</small></td></tr></table>'+
+  '<h2>Счёт на оплату № '+s.no+' от '+ruDateLong(s.date)+'</h2>'+
+  '<table class="nb"><tr><td style="width:90px">Поставщик:</td><td><b>'+sellerStr()+'</b></td></tr><tr><td>Покупатель:</td><td><b>'+partyStr(c)+'</b></td></tr></table>'+
+  '<table><tr>'+th(['№','Наименование','Кол-во','Ед.','Цена без НДС','Сумма без НДС'])+'</tr>';
+  s.lines.forEach(function(l){var k=lineCalc(l);
+    h+='<tr><td>'+(++n)+'</td><td>'+esc(l.material)+' (рейс №'+l.tripNo+' от '+ruDate(l.date)+', а/м '+esc(l.plate)+')</td><td class="n">'+fmt3(l.tons)+'</td><td>т</td><td class="n">'+fm(l.price)+'</td><td class="n">'+fm(k.matNet)+'</td></tr>';
+    h+='<tr><td>'+(++n)+'</td><td>Доставка автотранспортом (рейс №'+l.tripNo+')</td><td class="n">1</td><td>рейс</td><td class="n">'+fm(l.delivery)+'</td><td class="n">'+fm(k.delNet)+'</td></tr>';
+  });
+  h+='</table><div class="tot">Итого без НДС: '+fm(t.net)+'<br>НДС 20%: '+fm(t.vat)+'<br>Всего к оплате: '+fm(t.total)+'</div>'+
+  '<div>Всего наименований '+n+', на сумму '+fm(t.total)+' руб.<br><b>'+sumWords(t.total)+'</b><br>В том числе НДС 20%: '+fm(t.vat)+' руб.</div>'+
+  '<div style="margin-top:8px">Оплатить до '+ruDate(addDays(s.date,5))+'. В назначении платежа укажите номер счёта.</div>'+
+  '<div class="sign"><div>Руководитель &nbsp; ______________ / '+esc(SELLER.head)+'</div><div>Главный бухгалтер &nbsp; ______________ / '+esc(SELLER.buh)+'</div></div><div class="stamp">Демо-образец. Реквизиты вымышленные.</div></div>';
+  return h;
+}
+function docUpd(s){
+  var c=cl(s.inn)||{name:s.inn,inn:s.inn,addr:'',kpp:''},t=setTotals(s),n=0,tonsSum=0;
+  var h='<div class="sheet"><div style="text-align:right;font-size:10px">Приложение № 1 к постановлению Правительства РФ от 26.12.2011 № 1137</div>'+
+  '<h2>Универсальный передаточный документ № '+s.no+' от '+ruDate(s.date)+'</h2><div>Статус: 1 (счёт-фактура и передаточный документ)</div>'+
+  '<table class="nb"><tr><td style="width:150px">Продавец:</td><td><b>'+esc(SELLER.name)+'</b></td></tr><tr><td>Адрес:</td><td>'+esc(SELLER.addr)+'</td></tr><tr><td>ИНН/КПП продавца:</td><td>'+SELLER.inn+' / '+SELLER.kpp+'</td></tr>'+
+  '<tr><td>Грузоотправитель:</td><td>он же</td></tr><tr><td>Покупатель:</td><td><b>'+esc(c.name)+'</b></td></tr><tr><td>Адрес:</td><td>'+esc(c.addr)+'</td></tr><tr><td>ИНН/КПП покупателя:</td><td>'+c.inn+' / '+(c.kpp||'—')+'</td></tr><tr><td>Валюта:</td><td>российский рубль, код 643</td></tr></table>'+
+  '<table><tr>'+th(['№','Наименование товара','Ед. (код)','Кол-во','Цена без НДС','Стоимость без НДС','Ставка','Сумма НДС','Стоимость с НДС'])+'</tr>';
+  s.lines.forEach(function(l){var k=lineCalc(l);tonsSum+=l.tons;
+    h+='<tr><td>'+(++n)+'</td><td>'+esc(l.material)+'<br><small>рейс №'+l.tripNo+' от '+ruDate(l.date)+', '+esc(l.ttn)+', а/м '+esc(l.plate)+'</small></td><td>т (168)</td><td class="n">'+fmt3(l.tons)+'</td><td class="n">'+fm(l.price)+'</td><td class="n">'+fm(k.matNet)+'</td><td>20%</td><td class="n">'+fm(k.matVat)+'</td><td class="n">'+fm(k.matTot)+'</td></tr>';
+  });
+  h+='<tr><td colspan="3"><b>Всего к оплате</b></td><td class="n"><b>'+fmt3(r2(tonsSum))+'</b></td><td></td><td class="n"><b>'+fm(t.matNet)+'</b></td><td>X</td><td class="n"><b>'+fm(t.matVat)+'</b></td><td class="n"><b>'+fm(t.matTot)+'</b></td></tr></table>'+
+  '<div><b>'+sumWords(t.matTot)+'</b> (в т. ч. НДС 20%: '+fm(t.matVat)+' руб.)</div>'+
+  '<div style="margin-top:8px">Основание: договор поставки, заявки заказчика. Груз получил, претензий по количеству и качеству нет.<br>Доставка оформлена отдельным актом № '+s.no+' на сумму '+fm(t.delTot)+' руб. с НДС. Всего по счёту № '+s.no+': '+fm(t.total)+' руб.</div>'+
+  '<div class="sign"><div>Руководитель организации &nbsp; ____________ / '+esc(SELLER.head)+'</div><div>Главный бухгалтер &nbsp; ____________ / '+esc(SELLER.buh)+'</div></div>'+
+  '<div class="sign"><div>Товар передал &nbsp; ____________</div><div>Товар получил &nbsp; ____________ / дата '+ruDate(s.date)+'</div></div><div class="stamp">Демо-образец. Реквизиты вымышленные.</div></div>';
+  return h;
+}
+function docAct(s){
+  var c=cl(s.inn)||{name:s.inn,inn:s.inn,addr:'',kpp:''},t=setTotals(s),n=0;
+  var h='<div class="sheet"><h2 style="text-align:center">Акт № '+s.no+' от '+ruDateLong(s.date)+'</h2><div style="text-align:center;margin-bottom:8px">об оказании услуг по доставке нерудных материалов</div>'+
+  '<table class="nb"><tr><td style="width:90px">Исполнитель:</td><td><b>'+sellerStr()+'</b></td></tr><tr><td>Заказчик:</td><td><b>'+partyStr(c)+'</b></td></tr></table>'+
+  '<table><tr>'+th(['№','Наименование услуги','Кол-во','Ед.','Цена без НДС','Сумма без НДС'])+'</tr>';
+  s.lines.forEach(function(l){var k=lineCalc(l);
+    h+='<tr><td>'+(++n)+'</td><td>Доставка автотранспортом: '+esc(l.material)+', '+fmt3(l.tons)+' т, рейс №'+l.tripNo+' от '+ruDate(l.date)+', а/м '+esc(l.plate)+'</td><td class="n">1</td><td>рейс</td><td class="n">'+fm(l.delivery)+'</td><td class="n">'+fm(k.delNet)+'</td></tr>';
+  });
+  h+='</table><div class="tot">Итого без НДС: '+fm(t.delNet)+'<br>НДС 20%: '+fm(t.delVat)+'<br>Всего: '+fm(t.delTot)+'</div>'+
+  '<div>Всего оказано услуг '+n+', на сумму '+fm(t.delTot)+' руб.<br><b>'+sumWords(t.delTot)+'</b><br>В том числе НДС 20%: '+fm(t.delVat)+' руб.</div>'+
+  '<div style="margin-top:8px">Вышеперечисленные услуги выполнены полностью и в срок. Заказчик претензий по объёму, качеству и срокам оказания услуг не имеет.</div>'+
+  '<div class="sign"><div>Исполнитель &nbsp; ______________ / '+esc(SELLER.head)+'</div><div>Заказчик &nbsp; ______________ / ______________</div></div><div class="stamp">Демо-образец. Реквизиты вымышленные.</div></div>';
+  return h;
+}
+var DOCS={invoice:['Счёт',docInvoice],upd:['УПД',docUpd],act:['Акт',docAct]};
+
+/* ---------- Документы ---------- */
+function renderDocs(){
+  var sets=state.sets.slice().sort(function(a,b){return b.date<a.date?-1:b.date>a.date?1:(+b.no)-(+a.no)});
+  if(!curSet&&sets.length)curSet=sets[0].id;
+  var h='<div class="split"><div class="card"><h3>Комплекты документов</h3>';
+  if(!sets.length)h+='<div class="mut">Пока ничего нет. Выберите рейсы на первой вкладке и нажмите «Сформировать».</div>';
+  sets.forEach(function(s){var c=cl(s.inn),t=setTotals(s);
+    h+='<div class="setitem'+(s.id===curSet?' on':'')+'" data-s="'+s.id+'"><div class="row"><b>№'+s.no+'</b><span class="mut">'+ruDate(s.date)+'</span><span class="sp"></span><b>'+fm(t.total)+' ₽</b></div><div>'+esc(c?c.name:s.inn)+'</div><div class="mut">Рейсов: '+s.lines.length+' · '+(s.status.sent?'<span class="st ok">отправлен</span> ':'<span class="st mid">не отправлен</span> ')+(s.status.exported?'<span class="st ok">в 1С</span>':'<span class="st no">не в 1С</span>')+'</div></div>'});
+  h+='</div><div>';
+  var s=curSet?setById(curSet):null;
+  if(s){
+    h+='<div class="card"><div class="dtabs">';
+    Object.keys(DOCS).forEach(function(k){h+='<button data-d="'+k+'" class="'+(k===curDoc?'on':'')+'">'+DOCS[k][0]+' № '+s.no+'</button>'});
+    h+='</div><div class="row" style="margin-bottom:10px"><button class="btn" id="pr1">Печать / PDF</button><button class="btn sec" id="prAll">Печать всего комплекта</button><button class="btn sec" id="mail">Отправить клиенту</button><span class="sp"></span><button class="btn dark" id="x1c">Выгрузить в 1С (XML)</button><button class="btn sec" id="c1c">CSV</button></div>'+
+    '<div class="mut" style="margin-bottom:8px">В «Печать / PDF» выберите принтер «Сохранить как PDF», чтобы получить файл.</div>'+
+    '<div class="sheetwrap">'+DOCS[curDoc][1](s)+'</div></div>';
+  }else h+='<div class="card mut">Выберите комплект слева</div>';
+  h+='</div></div>';
+  $('#main').innerHTML=h;
+  $$('.setitem').forEach(function(e){e.onclick=function(){curSet=e.dataset.s;renderDocs()}});
+  $$('.dtabs button').forEach(function(b){b.onclick=function(){curDoc=b.dataset.d;renderDocs()}});
+  if(s){
+    $('#pr1').onclick=function(){doPrint([DOCS[curDoc][1](s)],s,DOCS[curDoc][0])};
+    $('#prAll').onclick=function(){doPrint(Object.keys(DOCS).map(function(k){return DOCS[k][1](s)}),s,'Комплект')};
+    $('#mail').onclick=function(){var c=cl(s.inn);s.status.sent=true;log(s,'Отправлен клиенту на e-mail ('+(c?c.name:s.inn)+')','Комплект');save();renderDocs();toast('Комплект отправлен (демо — письмо не уходит)')};
+    $('#x1c').onclick=function(){exportSets([s],'xml')};
+    $('#c1c').onclick=function(){exportSets([s],'csv')};
+  }
+}
+function log(s,action,doc){state.journal.unshift({ts:new Date().toISOString().slice(0,16),no:s.no,inn:s.inn,action:action,doc:doc})}
+function doPrint(sheets,s,what){
+  $('#printRoot').innerHTML=sheets.join('');
+  document.body.classList.add('printing');
+  log(s,'Напечатан / сохранён в PDF',what);save();
+  var done=function(){document.body.classList.remove('printing');$('#printRoot').innerHTML='';window.removeEventListener('afterprint',done)};
+  window.addEventListener('afterprint',done);
+  setTimeout(function(){try{window.print()}catch(e){}if(!/Chrome|Safari/.test(navigator.userAgent))done()},50);
+}
+function download(name,text,mime){
+  var b=new Blob(['\ufeff'+text],{type:mime+';charset=utf-8'}),a=document.createElement('a');
+  a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();
+  setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500);
+}
+function exportSets(sets,fmtType){
+  if(!sets.length){toast('Нет документов для выгрузки');return}
+  var stamp=todayIso().replace(/-/g,'');
+  var name='egm_1c_'+(sets.length===1?sets[0].no:stamp+'_'+sets.length+'шт')+'.'+fmtType;
+  if(fmtType==='xml')download(name,buildXml(sets,cl),'application/xml');else download(name,buildCsv(sets,cl),'text/csv');
+  sets.forEach(function(s){s.status.exported=true;log(s,'Выгружен в 1С ('+fmtType.toUpperCase()+', файл '+name+')','Комплект')});
+  save();if(tab==='docs')renderDocs();else if(tab==='journal')renderJournal();
+  toast('Файл '+name+' сохранён');
+}
+
+/* ---------- Акт сверки ---------- */
+function reconData(inn,month){
+  var start=month+'-01',ms=state.sets.filter(function(s){return s.inn===inn}),ps=state.payments.filter(function(p){return p.inn===inn});
+  var open=0,rows=[];
+  ms.forEach(function(s){var t=setTotals(s).total;if(s.date<start)open+=t;else if(s.date.slice(0,7)===month)rows.push({date:s.date,text:'Реализация: счёт, УПД и акт № '+s.no,d:t,c:0})});
+  ps.forEach(function(p){if(p.date<start)open-=p.sum;else if(p.date.slice(0,7)===month)rows.push({date:p.date,text:'Оплата, '+p.doc,d:0,c:p.sum})});
+  rows.sort(function(a,b){return a.date<b.date?-1:a.date>b.date?1:0});
+  open=r2(open);var D=0,C=0;rows.forEach(function(r){D+=r.d;C+=r.c});D=r2(D);C=r2(C);
+  return{open:open,rows:rows,D:D,C:C,close:r2(open+D-C)};
+}
+function lastDay(m){var p=m.split('-');return new Date(Date.UTC(+p[0],+p[1],0)).toISOString().slice(0,10)}
+function reconSheet(inn,month){
+  var c=cl(inn),d=reconData(inn,month),p=month.split('-'),end=lastDay(month);
+  if(month==='2026-11')end=todayIso();
+  var h='<div class="sheet"><h2 style="text-align:center">Акт сверки взаимных расчётов</h2><div style="text-align:center">за период с 01.'+p[1]+'.'+p[0]+' по '+ruDate(end)+'</div>'+
+  '<p>Мы, нижеподписавшиеся, '+esc(SELLER.name)+' (ИНН '+SELLER.inn+') и '+esc(c.name)+' (ИНН '+c.inn+'), составили настоящий акт о том, что состояние взаимных расчётов по данным учёта следующее:</p>'+
+  '<table><tr>'+th(['Дата','Операция','Дебет, ₽ (отгружено)','Кредит, ₽ (оплачено)'])+'</tr><tr><td colspan="2"><b>Сальдо на начало периода</b></td><td class="n">'+(d.open>0?fm(d.open):'')+'</td><td class="n">'+(d.open<0?fm(-d.open):'')+'</td></tr>';
+  d.rows.forEach(function(r){h+='<tr><td>'+ruDate(r.date)+'</td><td>'+esc(r.text)+'</td><td class="n">'+(r.d?fm(r.d):'')+'</td><td class="n">'+(r.c?fm(r.c):'')+'</td></tr>'});
+  h+='<tr><td colspan="2"><b>Обороты за период</b></td><td class="n"><b>'+fm(d.D)+'</b></td><td class="n"><b>'+fm(d.C)+'</b></td></tr><tr><td colspan="2"><b>Сальдо на конец периода</b></td><td class="n"><b>'+(d.close>0?fm(d.close):'')+'</b></td><td class="n"><b>'+(d.close<0?fm(-d.close):'')+'</b></td></tr></table>'+
+  '<p>'+(d.close>0?'По данным '+esc(SELLER.name)+' задолженность '+esc(c.name)+' на '+ruDate(end)+' составляет <b>'+fm(d.close)+' руб.</b> ('+sumWords(d.close)+').':d.close<0?'По данным '+esc(SELLER.name)+' переплата '+esc(c.name)+' на '+ruDate(end)+' составляет <b>'+fm(-d.close)+' руб.</b> ('+sumWords(-d.close)+').':'Взаимных задолженностей нет.')+'</p>'+
+  '<div class="sign"><div>От '+esc(SELLER.name)+'<br><br>______________ / '+esc(SELLER.buh)+'</div><div>От '+esc(c.name)+'<br><br>______________ / ______________</div></div><div class="stamp">Демо-образец. Реквизиты вымышленные.</div></div>';
+  return h;
+}
+function renderRecon(){
+  if(!reconF.client)reconF.client=CLIENTS[0].inn;
+  var h='<div class="card"><h2>Акт сверки за месяц</h2><div class="fields"><div><label class="f">Клиент</label><select id="rC" style="width:100%">'+clientOpts(reconF.client)+'</select></div><div><label class="f">Месяц</label><select id="rM" style="width:100%"><option value="2026-10"'+(reconF.month==='2026-10'?' selected':'')+'>Октябрь 2026</option><option value="2026-11"'+(reconF.month==='2026-11'?' selected':'')+'>Ноябрь 2026</option></select></div></div>'+
+   '<div class="row" style="margin-bottom:10px"><button class="btn" id="rPr">Печать / PDF</button><button class="btn sec" id="rMail">Отправить клиенту</button></div><div class="sheetwrap">'+reconSheet(reconF.client,reconF.month)+'</div></div>';
+  $('#main').innerHTML=h;
+  $('#rC').onchange=function(){reconF.client=this.value;renderRecon()};
+  $('#rM').onchange=function(){reconF.month=this.value;renderRecon()};
+  $('#rPr').onclick=function(){doPrint([reconSheet(reconF.client,reconF.month)],{no:'—',inn:reconF.client},'Акт сверки '+reconF.month)};
+  $('#rMail').onclick=function(){state.journal.unshift({ts:new Date().toISOString().slice(0,16),no:'—',inn:reconF.client,action:'Акт сверки за '+reconF.month+' отправлен клиенту',doc:'Акт сверки'});save();toast('Акт сверки отправлен (демо)')};
+}
+
+/* ---------- Журнал ---------- */
+function renderJournal(){
+  var h='<div class="card"><div class="row"><h2 style="margin:0">Журнал документов</h2><span class="sp"></span><select id="jC">'+clientOpts(jf,'Все клиенты')+'</select><button class="btn dark sm" id="jX">Выгрузить в 1С всё невыгруженное (XML)</button></div>';
+  var pend=state.sets.filter(function(s){return!s.status.exported}).length;
+  h+='<div class="mut" style="margin:8px 0">Комплектов не выгружено в 1С: <b>'+pend+'</b></div><div class="tblwrap"><table class="t"><tr><th>Время</th><th>№</th><th>Клиент</th><th>Документ</th><th>Действие</th></tr>';
+  var rows=state.journal.filter(function(j){return!jf||j.inn===jf});
+  rows.forEach(function(j){var c=cl(j.inn);h+='<tr><td style="white-space:nowrap">'+ruDate(j.ts.slice(0,10))+' '+(j.ts.slice(11,16)||'')+'</td><td>'+esc(j.no)+'</td><td>'+esc(c?c.name:j.inn)+'</td><td>'+esc(j.doc)+'</td><td>'+esc(j.action)+'</td></tr>'});
+  if(!rows.length)h+='<tr><td colspan="5" class="mut">Записей нет</td></tr>';
+  h+='</table></div></div>';
+  $('#main').innerHTML=h;
+  $('#jC').onchange=function(){jf=this.value;renderJournal()};
+  $('#jX').onclick=function(){exportSets(state.sets.filter(function(s){return!s.status.exported}),'xml')};
+}
+
+/* ---------- Справочник ---------- */
+function renderDir(){
+  var h='<div class="split"><div class="card"><h2>Реквизиты по ИНН</h2><label class="f">Введите ИНН (10 или 12 цифр)</label><div class="row"><input type="text" id="innIn" inputmode="numeric" maxlength="12" placeholder="например, 7726345181" style="flex:1"><button class="btn" id="innGo">Найти</button></div><div id="innRes"></div>'+
+   '<div class="mut" style="margin-top:12px">Демо-справочник: '+CLIENTS.length+' клиентов. Попробуйте ИНН из списка справа.</div></div>'+
+   '<div class="card"><h3>Справочник клиентов</h3><div class="tblwrap"><table class="t"><tr><th>Клиент</th><th>ИНН</th><th class="hm">КПП</th><th class="hm">Адрес</th></tr>';
+  CLIENTS.forEach(function(c){h+='<tr class="clk" data-inn="'+c.inn+'"><td>'+esc(c.name)+'</td><td>'+c.inn+'</td><td class="hm">'+(c.kpp||'—')+'</td><td class="hm">'+esc(c.addr)+'</td></tr>'});
+  h+='</table></div></div></div>';
+  $('#main').innerHTML=h;
+  function find(){
+    var v=$('#innIn').value.replace(/\s/g,''),o=$('#innRes');
+    if(!/^\d{10}$|^\d{12}$/.test(v)){o.innerHTML='<div class="box" style="border-color:var(--bad)">ИНН должен состоять из 10 или 12 цифр</div>';return}
+    var warn=innValid(v)?'':'<div class="mut" style="color:var(--bad)">Контрольная цифра ИНН не сходится — проверьте номер</div>';
+    var c=cl(v);
+    if(!c){o.innerHTML='<div class="box">'+warn+'ИНН '+v+' в справочнике не найден. В боевой версии реквизиты подтянутся из базы ФНС и 1С.</div>';return}
+    o.innerHTML='<div class="box">'+warn+'<div class="kv"><span>Название</span><b>'+esc(c.name)+'</b><span>ИНН / КПП</span><span>'+c.inn+' / '+(c.kpp||'—')+'</span><span>Адрес</span><span>'+esc(c.addr)+'</span><span>Банк</span><span>'+esc(c.bank)+', БИК '+c.bik+'</span><span>Расчётный счёт</span><span>'+c.rs+'</span><span>Контакт</span><span>'+esc(c.contact)+'</span></div></div>';
+  }
+  $('#innGo').onclick=find;$('#innIn').onkeydown=function(e){if(e.key==='Enter')find()};
+  $$('tr[data-inn]').forEach(function(r){r.onclick=function(){$('#innIn').value=r.dataset.inn;find();window.scrollTo(0,0)}});
+}
+
+function setTab(t){tab=t;$$('#tabs button').forEach(function(b){b.classList.toggle('on',b.dataset.t===t)});render()}
+function render(){({trips:renderTrips,docs:renderDocs,recon:renderRecon,journal:renderJournal,dir:renderDir})[tab]()}
+$$('#tabs button').forEach(function(b){b.onclick=function(){setTab(b.dataset.t)}});
+$('#reset').onclick=function(){if(confirm('Сбросить демо-данные?')){localStorage.removeItem(KEY);selTrips={};curSet=null;seed();render()}};
+load();render();
+</script>
+</body>
+</html>

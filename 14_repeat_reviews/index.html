@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EGM · Повторные продажи и отзывы</title>
+<style>
+:root{--or:#F07A1A;--or2:#d46a10;--gr:#1F2329;--g2:#5b636d;--bd:#e3e6ea;--bg:#f5f6f8;--ok:#2e9e5b;--bad:#d64545}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--gr);font-size:15px;line-height:1.4}
+header{background:var(--gr);color:#fff;padding:12px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;position:sticky;top:0;z-index:10}
+header h1{font-size:18px;margin:0;font-weight:600}header h1 b{color:var(--or)}
+.tag{font-size:11px;background:var(--or);color:#fff;border-radius:10px;padding:2px 9px;text-transform:uppercase;letter-spacing:.5px}
+nav{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap}
+nav button{background:transparent;color:#d6d9de;border:0;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:14px}
+nav button.on{background:var(--or);color:#fff}
+main{max-width:1400px;margin:0 auto;padding:16px}
+.view{display:none}.view.on{display:block}
+.grid{display:grid;grid-template-columns:minmax(320px,440px) 1fr;gap:16px;align-items:start}
+.card{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:14px;margin-bottom:14px}
+.card h2{font-size:14px;margin:0 0 10px;text-transform:uppercase;letter-spacing:.4px;color:var(--g2)}
+label{display:block;font-size:12px;color:var(--g2);margin:8px 0 3px}
+input,select,textarea{width:100%;padding:8px 10px;border:1px solid #cfd4da;border-radius:6px;font:inherit;background:#fff;color:var(--gr)}
+input:focus,select:focus,textarea:focus{outline:2px solid #f6c9a3;border-color:var(--or)}
+.row{display:flex;gap:8px;align-items:flex-end}.row>*{flex:1}.row>.s{flex:0 0 auto}
+button.b{background:var(--or);color:#fff;border:0;border-radius:6px;padding:9px 14px;cursor:pointer;font:inherit;font-weight:600}
+button.b:hover{background:var(--or2)}
+button.b2{background:#fff;color:var(--gr);border:1px solid #cfd4da;border-radius:6px;padding:8px 12px;cursor:pointer;font:inherit}
+button.b2:hover{border-color:var(--or);color:var(--or2)}
+.hint{font-size:12px;color:var(--g2);margin-top:4px}
+.stat{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.stat div{background:#fff;border:1px solid var(--bd);border-left:4px solid var(--or);border-radius:8px;padding:10px}
+.stat b{display:block;font-size:22px}.stat span{font-size:12px;color:var(--g2)}
+.seg{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:14px}
+.seg button{text-align:left;background:#fff;border:1px solid var(--bd);border-radius:10px;padding:12px;cursor:pointer;font:inherit;color:var(--gr)}
+.seg button.on{border-color:var(--or);box-shadow:0 0 0 2px #f6c9a3}
+.seg b{display:block;font-size:24px;color:var(--or)}.seg small{color:var(--g2)}
+table.t{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--bd);border-radius:10px;overflow:hidden}
+table.t td:last-child,table.t td:nth-child(5){white-space:nowrap}
+table.t th,table.t td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--bd);font-size:14px}
+table.t th{background:#eef0f3;font-size:12px;text-transform:uppercase;color:var(--g2)}
+.w{overflow-x:auto}
+.ch{display:flex;gap:6px;flex-wrap:wrap}
+.ch label{display:flex;align-items:center;gap:5px;margin:0;border:1px solid #cfd4da;border-radius:16px;padding:5px 11px;font-size:13px;color:var(--gr);cursor:pointer;width:auto}
+.ch input{width:auto}
+.ch label.on{border-color:var(--or);background:#fff4ea}
+.msg{background:#fff7ef;border:1px solid #f6d3b2;border-radius:10px;padding:12px;white-space:pre-wrap;font-size:14px}
+.tg{background:#e7f3fc;border-color:#bcd9ef}.wa{background:#e9f8e5;border-color:#bfe3b6}.sm{background:#eee;border-color:#ccc;font-family:monospace;font-size:13px}
+.pill{display:inline-block;padding:2px 9px;border-radius:10px;font-size:12px;font-weight:600}
+.pill.a{background:#fff1de;color:#b55f0a}.pill.b{background:#e0f4e8;color:#1d7a43}.pill.c{background:#e8eefc;color:#2a55c0}.pill.d{background:#fbe5e5;color:#b13030}
+.stars{display:inline-flex;gap:4px}
+.stars button{background:#fff;border:1px solid #cfd4da;border-radius:6px;width:42px;height:42px;font-size:18px;cursor:pointer}
+.stars button:hover{border-color:var(--or);background:#fff4ea}
+.flow{display:flex;gap:8px;align-items:stretch;flex-wrap:wrap;margin:10px 0}
+.flow div{flex:1;min-width:140px;background:#fff;border:1px solid var(--bd);border-top:3px solid var(--or);border-radius:8px;padding:10px;font-size:13px}
+.flow div b{display:block;margin-bottom:3px}
+.phone{max-width:340px;margin:10px auto;background:#fff;border:2px solid var(--gr);border-radius:20px;padding:12px}
+.bar{height:10px;background:#eee;border-radius:5px;overflow:hidden;margin-top:4px}.bar i{display:block;height:100%;background:var(--or)}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--gr);color:#fff;padding:10px 18px;border-radius:8px;opacity:0;pointer-events:none;transition:.3s;z-index:50;max-width:90%}
+.toast.on{opacity:1}
+.alert{background:#fbe5e5;border:1px solid #efb3b3;border-radius:8px;padding:10px;margin-bottom:8px;font-size:14px}
+.alert button{margin-top:6px}
+@media(max-width:600px){.row{flex-wrap:wrap}.row>*{flex:1 1 100%}.row>.s{flex:1 1 100%}header h1{font-size:16px}.seg{grid-template-columns:1fr 1fr}.ch label{padding:8px 12px}}
+@media(max-width:900px){.grid{grid-template-columns:1fr}.stat{grid-template-columns:1fr 1fr}nav{margin-left:0;width:100%}nav button{flex:1;padding:8px 4px;font-size:13px}}
+</style>
+</head>
+<body>
+<header>
+<h1><b>EGM</b> · Повторные продажи и отзывы</h1><span class="tag">демо</span>
+<nav>
+<button data-v="seg" class="on">Клиенты</button>
+<button data-v="cam">Рассылки</button>
+<button data-v="rev">Отзывы</button>
+<button data-v="sta">Итоги</button>
+</nav>
+</header>
+<main>
+
+<section id="v-seg" class="view on">
+<div class="seg" id="segs"></div>
+<div class="row" style="margin-bottom:10px"><input id="cq" placeholder="Поиск по названию, материалу, району"><button class="b s" id="toCam">Сделать рассылку по выбранным →</button></div>
+<div class="w"><table class="t"><thead><tr><th>Клиент</th><th>Тип</th><th>Что брал</th><th>Последний заказ</th><th>Дней назад</th><th>Выручка за год</th></tr></thead><tbody id="cl"></tbody></table></div>
+</section>
+
+<section id="v-cam" class="view">
+<div class="grid">
+<div>
+<div class="card"><h2>Новая рассылка</h2>
+<label>Кому</label><select id="cSeg"></select>
+<div class="hint" id="reach"></div>
+<label>Шаблон</label><select id="cTpl"></select>
+<label>Текст (можно править). Подстановки: {имя}, {материал}, {компания}</label>
+<textarea id="cTxt" rows="7"></textarea>
+<label>Каналы</label>
+<div class="ch" id="cCh"></div>
+<div class="row"><div><label>Когда отправить</label><select id="cWhen"><option value="now">Сейчас</option><option value="sched">По расписанию</option></select></div><div id="dtW" style="display:none"><label>Дата и время</label><input type="datetime-local" id="cDt"></div></div>
+<div style="margin-top:12px"><button class="b" id="cGo">Запустить рассылку</button></div>
+</div>
+</div>
+<div>
+<div class="card"><h2>Предпросмотр</h2>
+<div class="row"><div><label>Показать для клиента</label><select id="pvCl"></select></div><div><label>Канал</label><select id="pvCh"></select></div></div>
+<div id="pv" class="msg" style="margin-top:10px"></div>
+<div class="hint" id="pvInfo"></div>
+</div>
+<div class="card"><h2>Рассылки</h2>
+<div class="w"><table class="t"><thead><tr><th>Название</th><th>Охват</th><th>Каналы</th><th>Когда</th><th>Статус</th><th>Заказов</th><th>Выручка</th></tr></thead><tbody id="cams"></tbody></table></div></div>
+</div>
+</div>
+</section>
+
+<section id="v-rev" class="view">
+<div class="card"><h2>Автоцепочка после выполненного заказа</h2>
+<div class="flow">
+<div><b>1. Сразу после рейса</b>Спасибо за заказ + ссылки на УПД и ТТН</div>
+<div><b>2. Через 2 часа</b>Просьба оценить работу от 1 до 5</div>
+<div><b>3. Оценка 4–5</b>Просим оставить отзыв на Яндекс Картах, 2ГИС или Авито</div>
+<div><b>4. Оценка 1–3</b>Сигнал руководителю, звонок клиенту в тот же день</div>
+</div>
+<div class="row"><div><label>Ссылка на Яндекс Карты</label><input id="lY" value="https://yandex.ru/maps/org/egm/1234567890/reviews"></div><div><label>Ссылка на 2ГИС</label><input id="l2" value="https://2gis.ru/moscow/firm/70000001234567/tab/reviews"></div><div><label>Ссылка на Авито</label><input id="lA" value="https://www.avito.ru/brands/egm/reviews"></div></div>
+</div>
+<div class="grid">
+<div>
+<div class="card"><h2>Выполненные заказы</h2>
+<div id="ords"></div>
+</div>
+</div>
+<div>
+<div id="alerts"></div>
+<div class="card"><h2>Переписка с клиентом</h2><div id="chat" class="hint">Нажмите «Запустить цепочку» у заказа слева.</div></div>
+<div class="card"><h2>Отзывы и оценки</h2><div class="w"><table class="t"><thead><tr><th>Клиент</th><th>Оценка</th><th>Куда направлен</th><th>Статус</th></tr></thead><tbody id="rvs"></tbody></table></div></div>
+</div>
+</div>
+</section>
+
+<section id="v-sta" class="view">
+<div class="stat" id="st1"></div>
+<div class="grid" style="grid-template-columns:1fr 1fr">
+<div class="card"><h2>Распределение оценок</h2><div id="dist"></div></div>
+<div class="card"><h2>По рассылкам</h2><div id="byCam"></div></div>
+</div>
+<button class="b2" id="reset">Сбросить демо-данные</button>
+</section>
+</main>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+var $=function(s){return document.querySelector(s)};
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function money(n){return Math.round(n).toLocaleString('ru-RU').replace(/\u00a0/g,' ')+' ₽'}
+function toast(t){var e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(function(){e.classList.remove('on')},2600)}
+function rnd(a){var x=Math.sin(a*9301+49297)*233280;return x-Math.floor(x)}
+var NOW=new Date();NOW.setHours(12,0,0,0);
+function dAgo(n){var d=new Date(NOW);d.setDate(d.getDate()-n);return d.toISOString().slice(0,10)}
+function ago(s){return Math.round((NOW-new Date(s+'T12:00:00'))/864e5)}
+function fd(s){var a=s.split('-');return a[2]+'.'+a[1]+'.'+a[0]}
+
+var KEY='egm14';
+var NAMES=[['ООО «СтройРесурс»','Андрей','щебень гранитный 20-40','прораб','Мытищи',3,2600],['ООО «ГенСтрой МО»','Ольга','ПГС','генподрядчик','Красногорск',48,3100],['ООО «Дорожник-Подмосковье»','Игорь','щебень гранитный 40-70','дорожник','Балашиха',12,5200],['АО «БетонЗавод Люберцы»','Марина','песок карьерный','бетонный завод','Люберцы',25,8400],['ООО «УК Комфорт-Одинцово»','Павел','вывоз снега','УК/ТСЖ','Одинцово',140,1200],['ТСЖ «Лесной квартал»','Нина','вывоз снега','УК/ТСЖ','Сергиев Посад',150,380],['ООО «ТЦ Рассвет»','Дмитрий','вывоз снега','ТЦ/склад','Москва',160,950],['ИП Кузнецов В. О.','Виктор','песок намывной','частник','Пушкино',75,160],['ООО «БлагоустройствоПлюс»','Елена','песок карьерный','благоустройство','Подольск',210,720],['ООО «Монолит-Сервис»','Сергей','щебень гранитный 5-20','прораб','Химки',38,1900],['ООО «РемДор»','Алексей','щебень гравийный 5-20','дорожник','Домодедово',65,2300],['ООО «ЛогистикПарк Север»','Анна','вывоз снега','ТЦ/склад','Лобня',170,1700],['ООО «КоттеджСтрой»','Роман','песок карьерный','прораб','Истра',225,430],['ООО «Фундамент-М»','Вадим','щебень гранитный 20-40','прораб','Щёлково',95,1250],['ТСЖ «Зелёный двор»','Галина','вывоз снега','УК/ТСЖ','Ногинск',155,280],['АО «ДСК Восток»','Константин','щебень гранитный 40-70','генподрядчик','Балашиха',8,9600],['ООО «Садовые технологии»','Юлия','грунт плодородный','благоустройство','Раменское',240,610],['ООО «Мосблок»','Тимур','песок карьерный','бетонный завод','Подольск',55,3900],['ООО «ТехноСклад»','Игорь','вывоз снега','ТЦ/склад','Домодедово',165,840],['ИП Васильев А. Н.','Антон','щебень известняковый 20-40','частник','Клин',100,95]];
+function mkClients(){return NAMES.map(function(n,i){var spring=(n[2].indexOf('песок')>=0||n[2].indexOf('грунт')>=0)&&n[5]>100;
+ return{id:i+1,name:n[0],person:n[1],mat:n[2],type:n[3],city:n[4],last:dAgo(n[5]),rev:n[6]*1000,spring:spring,snow:n[2].indexOf('снег')>=0,ret:null}})}
+function mkCams(){return[
+{id:1,name:'Бронируем как в прошлом сезоне (снег)',seg:'snow',ch:['tg','mail'],when:'20.10.2026 10:00',status:'Выполнена',reach:5,orders:3,rev:412000,sent:true},
+{id:2,name:'Новые цены на щебень',seg:'d60',ch:['wa','mail'],when:'28.10.2026 09:30',status:'Выполнена',reach:6,orders:2,rev:238000,sent:true}]}
+function mkOrders(){return[
+{id:1001,cl:1,what:'Щебень гранитный 20-40, 40 т',sum:104000,date:dAgo(0),state:'new'},
+{id:1002,cl:3,what:'Щебень гранитный 40-70, 60 т',sum:138000,date:dAgo(1),state:'new'},
+{id:1003,cl:4,what:'Песок карьерный, 80 т',sum:57600,date:dAgo(1),state:'new'},
+{id:1004,cl:16,what:'Щебень 40-70, 100 т + доставка',sum:260000,date:dAgo(2),state:'new'}]}
+function mkReviews(){return[
+{cl:10,rate:5,to:'Яндекс Карты',state:'Ссылка отправлена',date:dAgo(9)},
+{cl:2,rate:4,to:'2ГИС',state:'Ссылка отправлена',date:dAgo(14)},
+{cl:11,rate:2,to:'Руководитель',state:'Перезвонили',date:dAgo(20)},
+{cl:18,rate:5,to:'Авито',state:'Отзыв оставлен',date:dAgo(30)}]}
+var DB;try{DB=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+if(!DB)DB={cl:mkClients(),cams:mkCams(),ords:mkOrders(),rev:mkReviews(),seq:3,chat:[],alerts:[]};
+function save(){localStorage.setItem(KEY,JSON.stringify(DB))}
+function cli(id){return DB.cl.filter(function(c){return c.id===id})[0]}
+
+var SEGS=[
+{k:'all',n:'Все клиенты',f:function(){return true}},
+{k:'d30',n:'Не заказывали 30+ дней',f:function(c){return ago(c.last)>=30}},
+{k:'d60',n:'Не заказывали 60+ дней',f:function(c){return ago(c.last)>=60}},
+{k:'d90',n:'Не заказывали 90+ дней',f:function(c){return ago(c.last)>=90}},
+{k:'spring',n:'Брали песок/грунт весной',f:function(c){return c.spring}},
+{k:'snow',n:'УК, ТЦ и склады (снег)',f:function(c){return c.snow}},
+{k:'big',n:'Крупные (от 1 млн ₽ в год)',f:function(c){return c.rev>=1e6}}];
+var sel='d60';
+function segList(k){var s=SEGS.filter(function(x){return x.k===k})[0];return DB.cl.filter(s.f)}
+function renderSeg(){$('#segs').innerHTML=SEGS.map(function(s){return'<button data-k="'+s.k+'" class="'+(s.k===sel?'on':'')+'"><b>'+segList(s.k).length+'</b>'+s.n+'</button>'}).join('');
+ var q=$('#cq').value.toLowerCase();
+ $('#cl').innerHTML=segList(sel).filter(function(c){return!q||(c.name+c.mat+c.city+c.type).toLowerCase().indexOf(q)>=0}).map(function(c){var a=ago(c.last);return'<tr><td><b>'+esc(c.name)+'</b><br><small>'+esc(c.person)+', '+esc(c.city)+'</small></td><td>'+esc(c.type)+'</td><td>'+esc(c.mat)+'</td><td>'+fd(c.last)+'</td><td><span class="pill '+(a>=90?'d':a>=60?'a':a>=30?'c':'b')+'">'+a+'</span></td><td>'+money(c.rev)+'</td></tr>'}).join('')||'<tr><td colspan="6">Никого нет</td></tr>'}
+$('#segs').onclick=function(e){var b=e.target.closest('button');if(!b)return;sel=b.dataset.k;renderSeg()};
+$('#cq').oninput=renderSeg;
+$('#toCam').onclick=function(){$('#cSeg').value=sel;show('cam');upd()};
+
+// ---- campaigns
+var TPL=[
+{k:'season',n:'Сезонное предложение',t:'Здравствуйте, {имя}! Начинается сезон — предлагаем «{материал}» собственной техникой по Москве и области. Рейс 20 т, подача в день заявки. Посчитать для {компания}? Ответьте на это сообщение или позвоните: +7 (495) 000-00-00. ЕГМ'},
+{k:'price',n:'Новые цены',t:'{имя}, добрый день! Обновили цены (ваша позиция: {материал}): фиксируем цену до конца месяца для постоянных клиентов {компания}. Пришлём расчёт с доставкой за 10 минут — просто напишите адрес объекта. ЕГМ'},
+{k:'book',n:'Бронируем как в прошлом сезоне?',t:'{имя}, здравствуйте! В прошлом сезоне вы брали у нас: {материал}. Бронируем технику и объёмы на этот сезон на тех же условиях? Если да — ответьте «Да», подготовим договор и КП для {компания}. ЕГМ'},
+{k:'back',n:'Давно не виделись',t:'{имя}, давно не было заказов от {компания}. Если нужно «{материал}» или что-то другое — подскажем цену с доставкой сегодня. Для вас действует скидка 3% на первый рейс. ЕГМ'}];
+var CH={tg:'Telegram',wa:'WhatsApp',mail:'Почта',sms:'СМС'};
+var chSel={tg:true,wa:false,mail:false,sms:false};
+function fill(t,c){return t.replace(/\{имя\}/g,c.person).replace(/\{материал\}/g,c.mat).replace(/\{компания\}/g,c.name)}
+$('#cSeg').innerHTML=SEGS.map(function(s){return'<option value="'+s.k+'">'+s.n+'</option>'}).join('');$('#cSeg').value='d60';
+$('#cTpl').innerHTML=TPL.map(function(s){return'<option value="'+s.k+'">'+s.n+'</option>'}).join('');
+$('#cCh').innerHTML=Object.keys(CH).map(function(k){return'<label data-k="'+k+'"><input type="checkbox" '+(chSel[k]?'checked':'')+'>'+CH[k]+'</label>'}).join('');
+function chs(){return Object.keys(chSel).filter(function(k){return chSel[k]})}
+function setTpl(){$('#cTxt').value=TPL.filter(function(t){return t.k===$('#cTpl').value})[0].t;upd()}
+$('#cTpl').onchange=setTpl;
+$('#cCh').onchange=function(e){var l=e.target.closest('label');chSel[l.dataset.k]=e.target.checked;upd()};
+$('#cSeg').onchange=upd;$('#cTxt').oninput=upd;$('#pvCl').onchange=upd;$('#pvCh').onchange=upd;
+$('#cWhen').onchange=function(){$('#dtW').style.display=this.value==='sched'?'':'none';if(this.value==='sched'&&!$('#cDt').value){var d=new Date(NOW);d.setDate(d.getDate()+1);d.setHours(10,0);$('#cDt').value=d.toISOString().slice(0,11)+'10:00'}};
+function upd(){var L=segList($('#cSeg').value),c=chs();
+ $('#reach').innerHTML='Охват: <b>'+L.length+'</b> клиентов · сообщений: <b>'+(L.length*c.length)+'</b> ('+(c.map(function(k){return CH[k]}).join(', ')||'канал не выбран')+')';
+ var cur=$('#pvCl').value;$('#pvCl').innerHTML=L.map(function(x){return'<option value="'+x.id+'">'+esc(x.name)+'</option>'}).join('')||'<option value="">—</option>';if(cur&&L.some(function(x){return String(x.id)===cur}))$('#pvCl').value=cur;
+ var cc=$('#pvCh').value;$('#pvCh').innerHTML=c.map(function(k){return'<option value="'+k+'">'+CH[k]+'</option>'}).join('')||'<option value="">—</option>';if(cc&&c.indexOf(cc)>=0)$('#pvCh').value=cc;
+ var cl=cli(parseInt($('#pvCl').value));var ch=$('#pvCh').value,box=$('#pv');
+ if(!cl||!ch){box.textContent='Выберите клиента и канал';box.className='msg';$('#pvInfo').textContent='';return}
+ var txt=fill($('#cTxt').value,cl);if(ch==='sms')txt=txt.slice(0,160);
+ box.className='msg '+({tg:'tg',wa:'wa',sms:'sm',mail:''}[ch]);box.textContent=(ch==='mail'?'Тема: Предложение от ЕГМ для '+cl.name+'\n\n':'')+txt;
+ $('#pvInfo').textContent=ch==='sms'?'СМС: '+txt.length+' из 160 знаков (длинный текст обрезан)':'Знаков: '+txt.length}
+$('#cGo').onclick=function(){var L=segList($('#cSeg').value),c=chs();if(!L.length){toast('В сегменте нет клиентов');return}if(!c.length){toast('Выберите хотя бы один канал');return}if(!$('#cTxt').value.trim()){toast('Пустой текст');return}
+ var sched=$('#cWhen').value==='sched';if(sched&&!$('#cDt').value){toast('Укажите дату и время');return}
+ var s=SEGS.filter(function(x){return x.k===$('#cSeg').value})[0];
+ DB.cams.unshift({id:DB.seq++,name:TPL.filter(function(t){return t.k===$('#cTpl').value})[0].n+' — '+s.n,seg:s.k,ch:c,when:sched?$('#cDt').value.replace(/(\d+)-(\d+)-(\d+)T/,'$3.$2.$1 '):'сейчас',status:sched?'Запланирована':'Отправлена',reach:L.length,orders:0,rev:0,sent:!sched});
+ save();renderCams();toast((sched?'Запланировано: ':'Отправлено: ')+(L.length*c.length)+' сообщений')};
+function renderCams(){$('#cams').innerHTML=DB.cams.map(function(m){return'<tr><td>'+esc(m.name)+'</td><td>'+m.reach+'</td><td>'+m.ch.map(function(k){return CH[k]}).join(', ')+'</td><td>'+esc(m.when)+'</td><td><span class="pill '+(m.status==='Запланирована'?'c':m.status==='Отправлена'?'a':'b')+'">'+m.status+'</span>'+(m.status==='Запланирована'?' <button class="b2" data-run="'+m.id+'">Отправить сейчас</button>':'')+(m.sent&&m.status!=='Выполнена'?' <button class="b2" data-ans="'+m.id+'" title="Имитация ответа клиентов">+ заказ</button>':'')+'</td><td>'+m.orders+'</td><td>'+money(m.rev)+'</td></tr>'}).join('')}
+$('#cams').onclick=function(e){var r=e.target.dataset.run,a=e.target.dataset.ans;
+ if(r){var m=DB.cams.filter(function(x){return x.id==r})[0];m.status='Отправлена';m.sent=true;m.when='сейчас';save();renderCams();toast('Отправлено')}
+ if(a){var m2=DB.cams.filter(function(x){return x.id==a})[0];m2.orders++;m2.rev+=Math.round((40+rnd(m2.orders+m2.id)*80))*1000;save();renderCams();toast('Добавлен заказ от клиента')}};
+
+// ---- reviews
+var curChat=null;
+function renderOrds(){$('#ords').innerHTML=DB.ords.map(function(o){var c=cli(o.cl);var act=o.state==='new'?'<button class="b" data-go="'+o.id+'">Запустить цепочку</button>':(o.state==='wait'?'<div class="hint">Ждём оценку:</div><div class="stars">'+[1,2,3,4,5].map(function(n){return'<button data-o="'+o.id+'" data-r="'+n+'">'+n+'</button>'}).join('')+'</div>':'<span class="pill b">Оценка '+o.rate+'</span>');
+ return'<div style="border-bottom:1px solid var(--bd);padding:10px 0"><b>№'+o.id+' · '+esc(c.name)+'</b><br><small>'+esc(o.what)+' · '+money(o.sum)+' · '+fd(o.date)+'</small><div style="margin-top:6px">'+act+'</div></div>'}).join('')||'<div class="hint">Нет заказов</div>'}
+function chat(o,who,txt){DB.chat.push({o:o,who:who,t:txt})}
+function renderChat(){var m=DB.chat.filter(function(x){return x.o===curChat});$('#chat').innerHTML=m.length?m.map(function(x){return'<div class="msg '+(x.who==='me'?'tg':'wa')+'" style="margin-bottom:6px"><small>'+(x.who==='me'?'ЕГМ':'Клиент')+'</small><br>'+esc(x.t)+'</div>'}).join(''):'<div class="hint">Нажмите «Запустить цепочку» у заказа слева.</div>'}
+$('#ords').onclick=function(e){var g=e.target.dataset.go,r=e.target.dataset.r;
+ if(g){var o=DB.ords.filter(function(x){return x.id==g})[0],c=cli(o.cl);curChat=o.id;o.state='wait';
+  chat(o.id,'me','Здравствуйте, '+c.person+'! Спасибо за заказ №'+o.id+' ('+o.what+'). Документы: УПД и ТТН — egm-nerud.ru/docs/'+o.id);
+  chat(o.id,'me','Оцените, пожалуйста, нашу работу от 1 до 5: водитель, время подачи, качество материала.');save();renderOrds();renderChat();toast('Цепочка запущена')}
+ if(r){var o2=DB.ords.filter(function(x){return x.id==e.target.dataset.o})[0],c2=cli(o2.cl),n=parseInt(r);curChat=o2.id;o2.state='done';o2.rate=n;chat(o2.id,'cl','Оценка: '+n);
+  if(n>=4){var to=['Яндекс Карты','2ГИС','Авито'][o2.id%3],ln={'Яндекс Карты':$('#lY').value,'2ГИС':$('#l2').value,'Авито':$('#lA').value}[to];
+   chat(o2.id,'me','Спасибо за высокую оценку! Будем благодарны за отзыв на сервисе «'+to+'»: '+ln);DB.rev.unshift({cl:c2.id,rate:n,to:to,state:'Ссылка отправлена',date:NOW.toISOString().slice(0,10)});toast('Оценка '+n+': отправлена ссылка на '+to)}
+  else{chat(o2.id,'me','Сожалеем, что что-то пошло не так. Руководитель свяжется с вами сегодня и всё исправит.');DB.alerts.unshift({o:o2.id,cl:c2.id,rate:n,done:false});DB.rev.unshift({cl:c2.id,rate:n,to:'Руководитель',state:'Нужен звонок',date:NOW.toISOString().slice(0,10)});toast('Оценка '+n+': сигнал руководителю')}
+  save();renderOrds();renderChat();renderRev()}};
+function renderRev(){$('#alerts').innerHTML=DB.alerts.filter(function(a){return!a.done}).map(function(a){var c=cli(a.cl);return'<div class="alert"><b>⚠ Сигнал руководителю:</b> '+esc(c.name)+' поставил(а) оценку '+a.rate+' по заказу №'+a.o+'. Позвоните сегодня: '+esc(c.person)+'.<br><button class="b2" data-done="'+a.o+'">Перезвонили, вопрос решён</button></div>'}).join('');
+ $('#rvs').innerHTML=DB.rev.map(function(r){var c=cli(r.cl);return'<tr><td>'+esc(c.name)+'<br><small>'+fd(r.date)+'</small></td><td>'+'★'.repeat(r.rate)+'<span style="color:#ccc">'+'★'.repeat(5-r.rate)+'</span></td><td>'+esc(r.to)+'</td><td><span class="pill '+(r.rate>=4?'b':'d')+'">'+esc(r.state)+'</span></td></tr>'}).join('')}
+$('#alerts').onclick=function(e){var d=e.target.dataset.done;if(!d)return;DB.alerts.forEach(function(a){if(a.o==d)a.done=true});DB.rev.forEach(function(r){if(r.state==='Нужен звонок')r.state='Перезвонили'});save();renderRev();toast('Отмечено')};
+
+// ---- stats
+function renderSta(){var rv=DB.rev,avg=rv.length?rv.reduce(function(s,r){return s+r.rate},0)/rv.length:0;
+ var ord=DB.cams.reduce(function(s,m){return s+m.orders},0),rev=DB.cams.reduce(function(s,m){return s+m.rev},0);
+ $('#st1').innerHTML='<div><b>'+ord+'</b><span>клиентов вернулось после рассылок</span></div><div><b>'+money(rev)+'</b><span>выручка с рассылок</span></div><div><b>'+avg.toFixed(1).replace('.',',')+'</b><span>средняя оценка ('+rv.length+' оценок)</span></div><div><b>'+DB.alerts.filter(function(a){return!a.done}).length+'</b><span>сигналов ждут звонка</span></div>';
+ var mx=1,d=[0,0,0,0,0,0];rv.forEach(function(r){d[r.rate]++});for(var i=1;i<6;i++)mx=Math.max(mx,d[i]);
+ $('#dist').innerHTML=[5,4,3,2,1].map(function(n){return'<div style="margin:6px 0">'+n+' ★ — '+d[n]+'<div class="bar"><i style="width:'+(d[n]/mx*100)+'%"></i></div></div>'}).join('');
+ $('#byCam').innerHTML=DB.cams.map(function(m){return'<div style="margin:8px 0;border-bottom:1px solid var(--bd);padding-bottom:6px"><b>'+esc(m.name)+'</b><br><small>Охват '+m.reach+' · заказов '+m.orders+' · '+money(m.rev)+' · конверсия '+(m.reach?Math.round(m.orders/m.reach*100):0)+'%</small></div>'}).join('')}
+$('#reset').onclick=function(){if(confirm('Сбросить все данные демо?')){localStorage.removeItem(KEY);location.reload()}};
+
+// ---- nav
+function show(v){document.querySelectorAll('.view').forEach(function(e){e.classList.remove('on')});$('#v-'+v).classList.add('on');document.querySelectorAll('nav button').forEach(function(b){b.classList.toggle('on',b.dataset.v===v)});
+ if(v==='seg')renderSeg();if(v==='cam'){upd();renderCams()}if(v==='rev'){renderOrds();renderRev();renderChat()}if(v==='sta')renderSta();window.scrollTo(0,0)}
+document.querySelectorAll('nav button').forEach(function(b){b.onclick=function(){show(b.dataset.v)}});
+setTpl();renderSeg();renderCams();
+window.__app={show:show,DB:DB};
+})();
+</script>
+</body>
+</html>

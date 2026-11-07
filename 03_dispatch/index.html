@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EGM · Диспетчерская</title>
+<style>
+:root{--or:#F07A1A;--or2:#d96a0e;--gr:#1F2329;--gr2:#4a525c;--line:#e3e6ea;--bg:#f5f6f8;--ok:#1f9d55;--bad:#d64545;--blue:#3b7ddd}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--gr);font-size:14px;line-height:1.35}
+header{background:var(--gr);color:#fff;padding:11px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+header h1{margin:0;font-size:18px}header h1 b{color:var(--or)}
+.tag{font-size:11px;background:var(--or);color:#fff;border-radius:10px;padding:2px 8px;text-transform:uppercase;letter-spacing:.4px}
+.hr{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.hr button{background:transparent;border:1px solid #4a525c;color:#fff;padding:7px 12px;border-radius:8px;cursor:pointer;font:inherit;font-size:13px}
+.hr button.on{background:var(--or);border-color:var(--or)}
+.clock{font-variant-numeric:tabular-nums;opacity:.85}
+main{padding:14px 18px;max-width:1560px;margin:0 auto}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px}
+.stats div{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+.stats b{display:block;font-size:24px;color:var(--or2);font-variant-numeric:tabular-nums}.stats span{font-size:12px;color:var(--gr2)}
+.stats .al b{color:var(--bad)}
+.tabs{display:none}
+.layout{display:grid;grid-template-columns:1fr 430px;gap:14px;align-items:start}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:14px}
+.card h2{margin:0 0 10px;font-size:16px;display:flex;align-items:center;gap:8px}
+.card h2 .sp{margin-left:auto}
+.board{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.col{background:#eef0f3;border-radius:10px;padding:8px;min-height:240px}
+.col.over{outline:2px dashed var(--or);background:#fff3e8}
+.col h3{margin:2px 4px 8px;font-size:13px;display:flex;justify-content:space-between;align-items:center}
+.col h3 span{background:#fff;border-radius:9px;padding:0 8px;font-size:12px}
+.o{background:#fff;border:1px solid var(--line);border-radius:8px;padding:9px;margin-bottom:7px;font-size:13px;border-left:4px solid var(--or)}
+.o.s-assigned{border-left-color:#8a6ad6}.o.s-transit{border-left-color:var(--blue)}.o.s-done{border-left-color:var(--ok);opacity:.85}
+.o.drop{outline:2px dashed var(--or);background:#fff3e8}
+.o .h{display:flex;justify-content:space-between;gap:6px;font-weight:600}
+.o p{margin:3px 0}.o small{color:var(--gr2)}
+.o .b{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap}
+.btn{background:var(--or);color:#fff;border:0;border-radius:7px;padding:6px 11px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.btn:hover{background:var(--or2)}
+.btn.ghost{background:#fff;color:var(--gr);border:1px solid #cfd4da;font-weight:400}
+.btn.red{background:var(--bad)}
+.btn.sm{padding:4px 9px;font-size:12px}
+.deb{display:inline-block;background:#fdeaea;color:var(--bad);border-radius:6px;padding:1px 6px;font-size:12px;margin-top:3px}
+.deb.ok{background:#eaf6ee;color:var(--ok)}
+.deb.mid{background:#fff3dc;color:#a06a00}
+.tr{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-bottom:6px;background:#fff}
+.tr.free{cursor:grab;border-left:4px solid var(--ok)}
+.tr.load{border-left:4px solid #e0a100}.tr.go{border-left:4px solid var(--blue)}.tr.fix{border-left:4px solid var(--bad);background:#fbf4f4}
+.tr.dragging{opacity:.4}
+.tr .pl{font-weight:700;font-size:14px;white-space:nowrap}
+.tr .in{flex:1;min-width:0;font-size:12px;color:var(--gr2)}
+.tr .in b{color:var(--gr);font-weight:600;font-size:13px}
+.pill{border-radius:10px;padding:2px 8px;font-size:11px;color:#fff;white-space:nowrap}
+.p-free{background:var(--ok)}.p-load{background:#e0a100}.p-go{background:var(--blue)}.p-fix{background:var(--bad)}
+.mapbox{background:#fbfaf6;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.mapbox svg{display:block;width:100%;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:var(--gr2);margin-top:8px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+.fleetbox{max-height:250px;overflow-y:auto}
+.log{max-height:170px;overflow-y:auto;font-size:13px}
+.log div{padding:4px 0;border-bottom:1px dashed var(--line)}.log time{color:var(--gr2);font-variant-numeric:tabular-nums;margin-right:6px}
+.modal{position:fixed;inset:0;background:rgba(31,35,41,.55);display:none;align-items:center;justify-content:center;padding:12px;z-index:10}
+.modal.on{display:flex}
+.modal .box{background:#fff;border-radius:14px;padding:20px;width:100%;max-width:440px;max-height:94vh;overflow:auto}
+.modal h3{margin:0 0 8px}
+label{display:block;font-size:12px;color:var(--gr2);margin:10px 0 4px}
+select,input{width:100%;padding:9px 11px;border:1px solid #cfd4da;border-radius:8px;font:inherit;background:#fff}
+.row{display:flex;gap:8px}.row>*{flex:1}
+.alert{background:#fdeaea;border:1px solid #f2b8b8;border-radius:10px;padding:10px 12px;margin:8px 0;color:#8f2020}
+.pick{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.pick button{text-align:left;display:flex;justify-content:space-between;gap:8px;background:#fff;border:1px solid #cfd4da;border-radius:8px;padding:10px 12px;font:inherit;cursor:pointer}
+.pick button:hover{border-color:var(--or);background:#fff6ee}
+.toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--gr);color:#fff;padding:11px 16px;border-radius:10px;display:none;z-index:20;max-width:92vw}
+.empty{color:var(--gr2);font-size:13px;padding:6px 4px}
+@media(max-width:1180px){.layout{grid-template-columns:1fr}.board{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:820px){
+ header{padding:10px 12px}.hr{margin-left:0;width:100%}.hr .clock{margin-right:auto}
+ main{padding:10px}
+ .stats{grid-template-columns:repeat(2,1fr);gap:8px}.stats div:last-child{grid-column:span 2}
+ .stats b{font-size:20px}
+ .tabs{display:flex;background:#fff;border:1px solid var(--line);border-radius:10px;margin-bottom:10px;overflow:hidden}
+ .tabs button{flex:1;padding:11px 4px;border:0;background:#fff;font:inherit;cursor:pointer;border-bottom:3px solid transparent}
+ .tabs button.on{border-bottom-color:var(--or);font-weight:600}
+ .fleetbox{max-height:none}
+ .layout>div>.card{display:none}
+ .layout.t-board #cBoard,.layout.t-fleet #cFleet,.layout.t-map #cMap,.layout.t-map #cLog{display:block}
+ .board{grid-template-columns:1fr}.col{min-height:0}
+ .toast{bottom:auto;top:auto;bottom:70px}
+ .hint-dd{display:none}
+ .btn.sm{padding:8px 12px;font-size:13px}
+ .stats div{padding:8px 10px}
+}
+</style>
+</head>
+<body>
+<header>
+ <h1><b>EGM</b> · Диспетчерская</h1><span class="tag">демо</span>
+ <div class="hr">
+  <span class="clock" id="clock"></span>
+  <button id="bPause" onclick="togglePause()">⏸ Пауза</button>
+  <button id="bSpeed" onclick="toggleSpeed()">Скорость ×1</button>
+  <button onclick="openNew()">+ Новая заявка</button>
+  <button onclick="resetDemo()">Сбросить демо</button>
+ </div>
+</header>
+<main>
+ <div class="stats">
+  <div><b id="k1">0</b><span>рейсов выполнено</span></div>
+  <div><b id="k2">0</b><span>тонн отгружено</span></div>
+  <div><b id="k3">0</b><span>свободных машин</span></div>
+  <div><b id="k4">0</b><span>заявок в работе</span></div>
+  <div class="al"><b id="k5">0</b><span>клиентов с долгом выше лимита</span></div>
+ </div>
+ <div class="tabs"><button id="tbBoard" class="on" onclick="mtab('board')">Заявки</button><button id="tbFleet" onclick="mtab('fleet')">Машины</button><button id="tbMap" onclick="mtab('map')">Карта</button></div>
+ <div class="layout t-board" id="layout">
+  <div>
+   <div class="card" id="cBoard"><h2>Доска заявок <span class="sp hint-dd" style="font-weight:400;font-size:12px;color:var(--gr2)">перетащите свободную машину на новую заявку или нажмите «Назначить»</span></h2>
+    <div class="board" id="board"></div></div>
+  </div>
+  <div>
+   <div class="card" id="cFleet"><h2>Машины <span class="sp" id="fleetInfo" style="font-weight:400;font-size:12px;color:var(--gr2)"></span></h2><div id="fleet" class="fleetbox"></div></div>
+   <div class="card" id="cMap"><h2>Схема района</h2><div class="mapbox"><svg id="map" viewBox="0 0 600 600"></svg></div>
+    <div class="legend"><span><i style="background:var(--ok)"></i>свободна</span><span><i style="background:#e0a100"></i>грузится</span><span><i style="background:var(--blue)"></i>в пути</span><span><i style="background:var(--bad)"></i>ремонт</span><span><i style="background:var(--gr);border-radius:2px"></i>адрес доставки</span></div></div>
+   <div class="card" id="cLog"><h2>Журнал</h2><div class="log" id="log"></div></div>
+  </div>
+ </div>
+</main>
+
+<div class="modal" id="mAssign"><div class="box"><h3 id="aTitle"></h3><div id="aBody"></div></div></div>
+<div class="modal" id="mNew"><div class="box"><h3>Новая заявка</h3>
+ <label>Клиент</label><select id="nCl"></select>
+ <label>Материал</label><select id="nMat" onchange="fillNFr()"></select>
+ <div class="row"><div><label>Фракция / вид</label><select id="nFr"></select></div><div><label>Тонн в рейсе (до 20)</label><input id="nT" type="number" min="1" max="20" value="20"></div></div>
+ <label>Адрес доставки</label><select id="nAd"></select>
+ <div class="info" id="nSum" style="margin-top:10px;font-weight:600"></div>
+ <div class="row" style="margin-top:12px"><button class="btn ghost" onclick="closeM('mNew')">Отмена</button><button class="btn" onclick="addOrder()">Создать</button></div>
+</div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const fmt=n=>Math.round(n).toLocaleString('ru-RU')+' ₽';
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const C=300, SC=2.6; // центр схемы, пикс. на км
+const pol=(r,a)=>[C+r*SC*Math.sin(a*Math.PI/180),C-r*SC*Math.cos(a*Math.PI/180)];
+const QUARRY=pol(45,135);
+const PLACES={
+ 'Москва, ул. Верхние Поля, 22':[10,160],'Москва, Дмитровское ш., 100':[9,5],'Мытищи, Ярославское ш., 118':[22,20],'Балашиха, ул. Советская, 10':[28,85],
+ 'Химки, ул. Молодёжная, 4':[22,340],'Красногорск, Ильинское ш., 6':[25,300],'Одинцово, Можайское ш., 71':[33,265],'Люберцы, Октябрьский пр-т, 30':[20,130],
+ 'Видное, Белокаменное ш., 12':[27,175],'Подольск, ул. Кирова, 55':[40,190],'Домодедово, Каширское ш., 20':[42,160],'Раменское, ул. Чугунова, 15':[48,112],
+ 'Пушкино, Ярославское ш., 60':[44,22],'Ногинск, ул. 3-го Интернационала, 8':[58,80],'Истра, ул. Босова, 9':[55,300],'Клин, Волоколамское ш., 14':[88,335],'Коломна, ул. Октябрьской революции, 40':[112,140],'Серпухов, Борисовское ш., 3':[98,185]};
+const ZTRIP=km=>km<=15?6500:km<=45?9500:km<=75?13500:19500;
+const MATS={'Щебень гранитный':{'5-20':2600,'20-40':2450,'40-70':2300},'Щебень гравийный':{'5-20':2200,'20-40':2100},'Щебень известняковый':{'20-40':2000,'40-70':2000},'Песок мытый':{'обычный':950},'Песок карьерный':{'обычный':700},'ПГС':{'природная':800},'Грунт':{'планировочный':300}};
+const CLIENTS=[
+ {id:1,name:'ООО «МосДорСтрой»',inn:'7716482915',debt:0,limit:1500000},
+ {id:2,name:'ООО «СтройРесурс»',inn:'7727839014',debt:620000,limit:800000},
+ {id:3,name:'АО «Бетон-Центр»',inn:'5003128846',debt:940000,limit:600000},
+ {id:4,name:'ИП Захаров В. П.',inn:'502717385640',debt:35000,limit:150000},
+ {id:5,name:'ТСЖ «Лесной квартал»',inn:'5029190377',debt:0,limit:200000},
+ {id:6,name:'ООО «БлагоустройствоПлюс»',inn:'5047224863',debt:410000,limit:350000}];
+const TRUCKS0=[['Х123ХХ 750','Иван Рогов'],['А482МР 750','Дмитрий Орлов'],['К775ОА 197','Руслан Гасанов'],['Е390КН 777','Алексей Фомин'],['М056ТР 750','Виктор Лебедев'],['О811СТ 790','Николай Седых'],['В204НУ 750','Павел Зуев'],['Т637АР 177','Игорь Сафин']];
+const KEY='egm_dispatch_v1';
+let S=load(),speed=1,paused=false;
+const clientOf=id=>CLIENTS.find(c=>c.id===id);
+const osum=o=>o.tons*o.price+ZTRIP(PLACES[o.addr][0])
+function mkOrder(id,cl,mat,fr,tons,addr,st,truck){return{id,cl,mat,fr,tons,addr,price:MATS[mat][fr],st,truck:truck||null,t:new Date().toTimeString().slice(0,5),warned:false}}
+function seed(){
+ const T=TRUCKS0.map((t,i)=>({id:i+1,plate:t[0],driver:t[1],mode:'idle',p:0,oid:null,load:0,fixNote:''}));
+ T[6].mode='fix';T[6].fixNote='замена рессоры';
+ const O=[
+  mkOrder(512,1,'Щебень гранитный','20-40',20,'Мытищи, Ярославское ш., 118','new'),
+  mkOrder(513,3,'Щебень гранитный','5-20',20,'Балашиха, ул. Советская, 10','new'),
+  mkOrder(514,2,'Песок мытый','обычный',20,'Москва, ул. Верхние Поля, 22','new'),
+  mkOrder(515,5,'ПГС','природная',20,'Химки, ул. Молодёжная, 4','new'),
+  mkOrder(516,4,'Щебень гравийный','5-20',20,'Люберцы, Октябрьский пр-т, 30','assigned',2),
+  mkOrder(517,6,'Грунт','планировочный',20,'Подольск, ул. Кирова, 55','transit',3),
+  mkOrder(518,1,'Щебень гранитный','40-70',20,'Одинцово, Можайское ш., 71','transit',4),
+  mkOrder(509,2,'Песок карьерный','обычный',20,'Видное, Белокаменное ш., 12','done',1),
+  mkOrder(510,1,'Щебень гранитный','20-40',20,'Красногорск, Ильинское ш., 6','done',5),
+  mkOrder(511,5,'ПГС','природная',20,'Домодедово, Каширское ш., 20','done',8)];
+ T[1].mode='load';T[1].oid=516;T[1].load=4;
+ T[2].mode='go';T[2].oid=517;T[2].p=.45;T[3].mode='go';T[3].oid=518;T[3].p=.7;
+ T[0].mode='back';T[0].p=.4;
+ return{trucks:T,orders:O,nid:519,trips:3,tons:60,log:[{t:'07:12',m:'Смена началась, 7 машин на линии, 1 в ремонте'},{t:'08:40',m:'Рейс №509 выполнен, машина Х123ХХ 750'},{t:'09:55',m:'Рейс №510 выполнен, машина М056ТР 750'},{t:'10:30',m:'Рейс №511 выполнен, машина Т637АР 177'}],ack:{}}}
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.trucks&&s.orders)return s}catch(e){}return seed()}
+function save(){localStorage.setItem(KEY,JSON.stringify(S))}
+function now(){return new Date().toTimeString().slice(0,5)}
+function log(m){S.log.unshift({t:now(),m});S.log=S.log.slice(0,40)}
+function toast(m){const e=$('toast');e.textContent=m;e.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.display='none',3200)}
+
+/* логика */
+const trOf=id=>S.trucks.find(t=>t.id===id), orOf=id=>S.orders.find(o=>o.id===id);
+function isFree(t){return t.mode==='idle'||t.mode==='back'}
+function debtState(o){const c=clientOf(o.cl),after=c.debt+osum(o);
+ if(c.debt>c.limit)return{lvl:2,c,after,txt:`Долг ${fmt(c.debt)} уже выше лимита ${fmt(c.limit)}`};
+ if(after>c.limit)return{lvl:1,c,after,txt:`С этим рейсом долг станет ${fmt(after)} при лимите ${fmt(c.limit)}`};
+ return{lvl:0,c,after,txt:''}}
+function tryAssign(oid,tid){const o=orOf(oid),t=trOf(tid);if(!o||!t||o.st!=='new'||!isFree(t)){toast('Назначить не получилось: машина или заявка уже заняты');render();return}
+ const d=debtState(o);
+ if(d.lvl&&!o.warned){showDebt(o,t,d);return}
+ doAssign(o,t);}
+function doAssign(o,t,forced){o.st='assigned';o.truck=t.id;t.mode='load';t.p=0;t.oid=o.id;t.load=5;
+ log(`Заявка №${o.id}: назначена ${t.plate}, ${t.driver}`+(forced?' (по согласованию, клиент превысил лимит долга)':''));
+ closeM('mAssign');toast(`Машина ${t.plate} назначена на заявку №${o.id}`);save();render();}
+function showDebt(o,t,d){$('aTitle').textContent='Превышен лимит долга клиента';
+ $('aBody').innerHTML=`<div class="alert"><b>${esc(d.c.name)}</b> (ИНН ${d.c.inn})<br>${d.txt}.<br>Заявка №${o.id} на ${fmt(osum(o))}. Долг с ней: ${fmt(d.after)}, превышение лимита: ${fmt(d.after-d.c.limit)}.</div>
+ <p style="margin:6px 0">Отгрузка без оплаты возможна только по согласованию с руководителем.</p>
+ <div class="row"><button class="btn" onclick="closeM('mAssign')">Не назначать</button><button class="btn ghost" style="color:var(--bad);border-color:var(--bad)" onclick="forceAssign(${o.id},${t.id})">Назначить по согласованию</button></div>`;
+ openM('mAssign');}
+function forceAssign(oid,tid){const o=orOf(oid);o.warned=true;doAssign(o,trOf(tid),true)}
+function pickTruck(oid){const o=orOf(oid),fr=S.trucks.filter(isFree);$('aTitle').textContent='Назначить машину на заявку №'+o.id;
+ const d=debtState(o);
+ $('aBody').innerHTML=(d.lvl?`<div class="alert">${esc(d.c.name)}: ${d.txt}.</div>`:'')+(fr.length?`<div class="pick">${fr.map(t=>`<button onclick="tryAssign(${o.id},${t.id})"><span><b>${t.plate}</b> · ${esc(t.driver)}</span><span>${t.mode==='back'?'возвращается':'в карьере'}</span></button>`).join('')}</div>`:'<p>Свободных машин сейчас нет. Дождитесь возврата рейса.</p>')+`<div class="row" style="margin-top:12px"><button class="btn ghost" onclick="closeM('mAssign')">Отмена</button></div>`;
+ openM('mAssign');}
+function advanceOrder(oid){const o=orOf(oid);if(o.st==='assigned'){const t=trOf(o.truck);t.load=0;}}
+function cancelOrder(oid){const o=orOf(oid);if(!confirm('Снять заявку №'+oid+'?'))return;
+ if(o.truck){const t=trOf(o.truck);if(t){t.mode='idle';t.oid=null;t.p=0}}
+ S.orders=S.orders.filter(x=>x.id!==oid);log('Заявка №'+oid+' снята');save();render();}
+function unassign(oid){const o=orOf(oid),t=trOf(o.truck);if(o.st!=='assigned')return;t.mode='idle';t.oid=null;t.load=0;o.st='new';o.truck=null;log(`Заявка №${oid}: машина ${t.plate} снята, заявка вернулась в новые`);save();render();}
+function toggleFix(tid){const t=trOf(tid);if(t.mode==='fix'){t.mode='idle';t.p=0;log(t.plate+': вернулась из ремонта')}else if(isFree(t)){t.mode='fix';t.fixNote='ТО';log(t.plate+': отправлена в ремонт')}else{toast('Машина на рейсе. Ремонт можно отметить после возврата.');return}save();render();}
+
+const step=()=>{ // тик 1 с
+ if(paused)return;const k=speed;let ch=false;
+ S.trucks.forEach(t=>{
+  if(t.mode==='load'){t.load-=k;if(t.load<=0){t.mode='go';t.p=0;const o=orOf(t.oid);if(o){o.st='transit';log(`Заявка №${o.id}: ${t.plate} загружена и выехала`)}ch=true}}
+  else if(t.mode==='go'){const o=orOf(t.oid);const dest=pt(o.addr);const dist=Math.hypot(dest[0]-QUARRY[0],dest[1]-QUARRY[1])||1;t.p+=k*4/dist;
+   if(t.p>=1){t.p=1;o.st='done';S.trips++;S.tons+=o.tons;log(`Рейс №${o.id} выполнен, ${t.plate}, ${o.addr}`);t.mode='back';t.oid=null;ch=true}}
+  else if(t.mode==='back'){const o=null;t.p-=k*.04;if(t.p<=0){t.p=0;t.mode='idle'}}
+ });
+ save();ch?render():(drawMap(),drawStats());
+};
+const pt=a=>{const [r,ang]=PLACES[a];return pol(r,ang)};
+function tpos(t){if(t.mode==='go'||t.mode==='back'){let d;const o=t.oid?orOf(t.oid):null;
+  if(o)d=pt(o.addr);else d=t.lastDest||QUARRY;if(o)t.lastDest=d;
+  return[QUARRY[0]+(d[0]-QUARRY[0])*t.p,QUARRY[1]+(d[1]-QUARRY[1])*t.p]}
+ const i=t.id%8;return[QUARRY[0]-14+(i%4)*9,QUARRY[1]+10+Math.floor(i/4)*9]}
+
+/* отрисовка */
+const COL=[['new','Новые'],['assigned','Назначены'],['transit','В пути'],['done','Выполнены']];
+function render(){
+ $('board').innerHTML=COL.map(([k,n])=>{const a=S.orders.filter(o=>o.st===k);return`<div class="col" data-col="${k}"><h3>${n}<span>${a.length}</span></h3>${a.map(card).join('')||'<div class="empty">Пусто</div>'}</div>`}).join('');
+ document.querySelectorAll('.o[data-new="1"]').forEach(el=>{
+  el.addEventListener('dragover',e=>{e.preventDefault();el.classList.add('drop')});
+  el.addEventListener('dragleave',()=>el.classList.remove('drop'));
+  el.addEventListener('drop',e=>{e.preventDefault();el.classList.remove('drop');const tid=+e.dataTransfer.getData('text/plain');if(tid)tryAssign(+el.dataset.id,tid)});});
+ renderFleet();drawMap();drawStats();
+ $('log').innerHTML=S.log.map(l=>`<div><time>${l.t}</time>${esc(l.m)}</div>`).join('');}
+function card(o){const c=clientOf(o.cl),d=debtState(o),t=o.truck?trOf(o.truck):null;
+ let deb='';if(o.st!=='done'){deb=d.lvl===2?`<div class="deb">⚠ Долг ${fmt(c.debt)} · лимит ${fmt(c.limit)}</div>`:d.lvl===1?`<div class="deb mid">⚠ Превысит лимит ${fmt(c.limit)}</div>`:c.debt>0?`<div class="deb ok">Долг ${fmt(c.debt)} из ${fmt(c.limit)}</div>`:''}
+ let btn='';
+ if(o.st==='new')btn=`<button class="btn sm" onclick="pickTruck(${o.id})">Назначить</button><button class="btn ghost sm" onclick="cancelOrder(${o.id})">Снять</button>`;
+ if(o.st==='assigned')btn=`<button class="btn ghost sm" onclick="unassign(${o.id})">Снять машину</button>`;
+ const prog=o.st==='transit'&&t?` · <b>${Math.round(t.p*100)}%</b> пути`:'';
+ return`<div class="o s-${o.st}" data-id="${o.id}" ${o.st==='new'?'data-new="1"':''}><div class="h"><span>№${o.id}</span><span>${o.tons} т</span></div>
+ <p>${esc(o.mat)} ${esc(o.fr)}</p><p><small>${esc(c.name)}</small></p><p><small>${esc(o.addr)}</small></p>
+ <p><b>${fmt(osum(o))}</b> <small>${o.t}</small></p>${deb}
+ ${t?`<p><small>🚚 ${t.plate}, ${esc(t.driver)}${prog}</small></p>`:''}<div class="b">${btn}</div></div>`}
+const MODE={idle:['free','Свободна','p-free'],back:['free','Свободна','p-free'],load:['load','Грузится','p-load'],go:['go','В пути','p-go'],fix:['fix','Ремонт','p-fix']};
+function renderFleet(){
+ $('fleet').innerHTML=S.trucks.map(t=>{const m=MODE[t.mode],o=t.oid?orOf(t.oid):null;
+  let info=`<b>${esc(t.driver)}</b><br>`+(t.mode==='idle'?'на базе, ждёт заявку':t.mode==='back'?`возвращается в карьер`:t.mode==='fix'?esc(t.fixNote||'ремонт'):o?`заявка №${o.id}, ${esc(o.addr.split(',')[0])}`:'');
+  return`<div class="tr ${m[0]}" data-tid="${t.id}" ${isFree(t)?'draggable="true"':''}><span class="pl">${t.plate}</span><span class="in">${info}</span><span class="pill ${m[2]}">${m[1]}</span>${t.mode==='fix'||isFree(t)?`<button class="btn ghost sm" onclick="toggleFix(${t.id})" title="${t.mode==='fix'?'Вернуть в работу':'Отправить в ремонт'}">${t.mode==='fix'?'В строй':'🔧'}</button>`:''}</div>`}).join('');
+ document.querySelectorAll('.tr[draggable="true"]').forEach(el=>{
+  el.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/plain',el.dataset.tid);e.dataTransfer.effectAllowed='move';el.classList.add('dragging')});
+  el.addEventListener('dragend',()=>el.classList.remove('dragging'))});
+ const f=S.trucks.filter(isFree).length;$('fleetInfo').textContent=`свободно ${f} из ${S.trucks.length}`;}
+function drawStats(){
+ $('k1').textContent=S.trips;$('k2').textContent=S.tons;$('k3').textContent=S.trucks.filter(isFree).length;
+ $('k4').textContent=S.orders.filter(o=>o.st!=='done').length;$('k5').textContent=CLIENTS.filter(c=>c.debt>c.limit).length;}
+function drawMap(){
+ let s='<rect width="600" height="600" fill="#fbfaf6"/>';
+ [[115,'100 км'],[75,'60 км'],[45,'30 км']].forEach(([r,l])=>{s+=`<circle cx="${C}" cy="${C}" r="${r*SC}" fill="none" stroke="#aab0b7" stroke-width="1.5" stroke-dasharray="6 5"/><text x="${C+4}" y="${C-r*SC-4}" font-size="22" fill="#6b737c">+${l}</text>`});
+ s+=`<circle cx="${C}" cy="${C}" r="${15*SC}" fill="#fff1e3" stroke="#F07A1A" stroke-width="2.5"/><text x="${C}" y="${C+4}" font-size="23" text-anchor="middle" fill="#d96a0e" font-weight="700">МКАД</text>`;
+ s+=`<text x="${C}" y="${C+22}" font-size="19" text-anchor="middle" fill="#6b737c">Москва</text>`;
+ s+=`<g><rect x="${QUARRY[0]-9}" y="${QUARRY[1]-9}" width="18" height="18" rx="3" fill="#1F2329"/><text x="${QUARRY[0]}" y="${QUARRY[1]+5}" font-size="19" text-anchor="middle" fill="#fff" font-weight="700">К</text><text x="${QUARRY[0]+13}" y="${QUARRY[1]-8}" font-size="22" fill="#1F2329" font-weight="700">Карьер</text></g>`;
+ S.orders.filter(o=>o.st!=='done'&&o.st!=='new'||o.st==='new').forEach(o=>{const p=pt(o.addr);
+  if(o.truck&&(o.st==='transit'||o.st==='assigned'))s+=`<line x1="${QUARRY[0]}" y1="${QUARRY[1]}" x2="${p[0]}" y2="${p[1]}" stroke="#3b7ddd" stroke-opacity=".35" stroke-width="1.5" stroke-dasharray="3 4"/>`;
+  s+=`<rect x="${p[0]-5}" y="${p[1]-5}" width="10" height="10" fill="${o.st==='new'?'#F07A1A':'#1F2329'}" transform="rotate(45 ${p[0]} ${p[1]})"/><text x="${p[0]+9}" y="${p[1]+4}" font-size="20" font-weight="600" fill="#1F2329" paint-order="stroke" stroke="#fbfaf6" stroke-width="3">№${o.id}</text>`});
+ const colr={idle:'#1f9d55',back:'#1f9d55',load:'#e0a100',go:'#3b7ddd',fix:'#d64545'};
+ S.trucks.forEach(t=>{const [x,y]=tpos(t);s+=`<g><circle cx="${x}" cy="${y}" r="8" fill="${colr[t.mode]}" stroke="#fff" stroke-width="2"/><title>${t.plate}</title></g>`});
+ $('map').innerHTML=s;}
+
+/* прочее */
+function openM(i){$(i).classList.add('on')}function closeM(i){$(i).classList.remove('on')}
+function openNew(){$('nCl').innerHTML=CLIENTS.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');
+ $('nMat').innerHTML=Object.keys(MATS).map(m=>`<option>${m}</option>`).join('');fillNFr();
+ $('nAd').innerHTML=Object.keys(PLACES).map(a=>`<option>${esc(a)}</option>`).join('');
+ ['nCl','nMat','nFr','nAd','nT'].forEach(i=>$(i).oninput=nSum);$('nT').value=20;nSum();openM('mNew');}
+function fillNFr(){$('nFr').innerHTML=Object.keys(MATS[$('nMat').value]).map(f=>`<option>${f}</option>`).join('');if($('nSum'))nSum()}
+function nSum(){const t=Math.max(1,Math.min(20,+$('nT').value||1));const p=MATS[$('nMat').value][$('nFr').value];const a=$('nAd').value;if(!a)return;
+ $('nSum').textContent='Сумма рейса: '+fmt(t*p+ZTRIP(PLACES[a][0]))+' ('+t+' т × '+p+' ₽ + доставка '+fmt(ZTRIP(PLACES[a][0]))+')';}
+function addOrder(){const t=+$('nT').value;if(!(t>=1&&t<=20)){toast('Тонн в рейсе — от 1 до 20');return}
+ const o=mkOrder(S.nid++,+$('nCl').value,$('nMat').value,$('nFr').value,t,$('nAd').value,'new');S.orders.unshift(o);log(`Новая заявка №${o.id}: ${clientOf(o.cl).name}`);
+ closeM('mNew');save();render();toast('Заявка №'+o.id+' создана');}
+function togglePause(){paused=!paused;$('bPause').textContent=paused?'▶ Продолжить':'⏸ Пауза';$('bPause').classList.toggle('on',paused)}
+function toggleSpeed(){speed=speed===1?4:1;$('bSpeed').textContent='Скорость ×'+speed;$('bSpeed').classList.toggle('on',speed>1)}
+function resetDemo(){if(!confirm('Вернуть демо-данные? Текущие заявки пропадут.'))return;localStorage.removeItem(KEY);S=seed();save();render();toast('Демо-данные восстановлены')}
+function mtab(t){$('layout').className='layout t-'+t;[['Board','board'],['Fleet','fleet'],['Map','map']].forEach(([a,b])=>$('tb'+a).classList.toggle('on',t===b))}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal.on').forEach(m=>m.classList.remove('on'))});
+document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('on')}));
+setInterval(()=>{$('clock').textContent=new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit',second:'2-digit'})},1000);
+$('clock').textContent=new Date().toLocaleTimeString('ru-RU');
+setInterval(step,1000);
+render();
+</script>
+</body>
+</html>

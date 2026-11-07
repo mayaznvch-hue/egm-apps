@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EGM · Заказ в мессенджере</title>
+<style>
+:root{--or:#F07A1A;--or2:#d96a0e;--gr:#1F2329;--gr2:#4a525c;--line:#e3e6ea;--bg:#f5f6f8;--ok:#1f9d55;--bad:#d64545}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font-family:system-ui,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--gr);font-size:15px;line-height:1.4;display:flex;flex-direction:column}
+header{background:var(--gr);color:#fff;padding:12px 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex:0 0 auto}
+header h1{margin:0;font-size:18px}header h1 b{color:var(--or)}
+.tag{font-size:11px;background:var(--or);color:#fff;border-radius:10px;padding:2px 8px;text-transform:uppercase;letter-spacing:.4px}
+.sw{margin-left:auto;display:flex;border:1px solid #4a525c;border-radius:8px;overflow:hidden}
+.sw button{background:transparent;color:#fff;border:0;padding:7px 14px;cursor:pointer;font:inherit}
+.sw button.on{background:var(--or)}
+.tabs{display:none}
+.layout{flex:1;display:grid;grid-template-columns:420px 1fr;gap:20px;padding:18px;max-width:1400px;width:100%;margin:0 auto;min-height:0}
+/* телефон */
+.phone-wrap{display:flex;justify-content:center;min-height:0}
+.phone{width:380px;max-width:100%;height:min(720px,100%);background:#111;border-radius:34px;padding:10px;box-shadow:0 10px 30px rgba(0,0,0,.25);display:flex}
+.screen{flex:1;border-radius:26px;overflow:hidden;display:flex;flex-direction:column;background:var(--cbg);min-height:0;--cbg:#dfe9f1;--hd:#527da3;--hdt:#fff;--me:#eeffde;--bot:#fff;--btn:rgba(40,70,100,.14);--btnt:#2a4a66;--btnh:rgba(40,70,100,.26)}
+.screen.max{--cbg:#f0eef8;--hd:#fff;--hdt:#1F2329;--me:#7a5cff;--bot:#fff;--btn:#fff;--btnt:#5b3fe0;--btnh:#ece8ff}
+.chead{background:var(--hd);color:var(--hdt);padding:10px 14px;display:flex;align-items:center;gap:10px;flex:0 0 auto}
+.screen.max .chead{border-bottom:1px solid #e6e3f2}
+.ava{width:38px;height:38px;border-radius:50%;background:var(--or);color:#fff;display:grid;place-items:center;font-weight:700;font-size:14px}
+.screen.max .ava{border-radius:12px}
+.chead b{display:block;font-size:15px}.chead small{opacity:.8;font-size:12px}
+.chead .rs{margin-left:auto;background:none;border:0;color:inherit;opacity:.8;cursor:pointer;font-size:18px}
+.msgs{flex:1;overflow-y:auto;padding:12px 10px;display:flex;flex-direction:column;gap:6px;min-height:0}
+.m{max-width:84%;padding:8px 11px;border-radius:14px;font-size:14px;white-space:pre-wrap;word-wrap:break-word;box-shadow:0 1px 1px rgba(0,0,0,.08)}
+.m.bot{background:var(--bot);align-self:flex-start;border-bottom-left-radius:4px}
+.m.me{background:var(--me);align-self:flex-end;border-bottom-right-radius:4px}
+.screen.max .m.me{color:#fff}
+.m .t{display:block;text-align:right;font-size:10px;opacity:.55;margin-top:2px}
+.m.note{border-left:4px solid var(--or)}
+.m.mgrm{border-left:4px solid #1f9d55}
+.m svg{display:block;max-width:100%;border-radius:8px;margin-top:6px}
+.kb{display:flex;flex-direction:column;gap:5px;padding:6px 10px 8px;flex:0 0 auto;max-height:46%;overflow-y:auto}
+.kb .r{display:flex;gap:5px}
+.kb button{flex:1;background:var(--btn);color:var(--btnt);border:0;border-radius:9px;padding:10px 6px;font:inherit;font-size:14px;cursor:pointer}
+.screen.max .kb button{border:1px solid #d9d3f5}
+.kb button:hover{background:var(--btnh)}
+.inp{display:flex;gap:6px;padding:8px 10px;background:#fff;flex:0 0 auto;border-top:1px solid #e3e6ea}
+.inp input{flex:1;border:1px solid #d3d8de;border-radius:18px;padding:9px 14px;font:inherit;font-size:14px;min-width:0}
+.inp button{border:0;border-radius:50%;width:38px;height:38px;background:var(--hd);color:var(--hdt);cursor:pointer;font-size:16px;flex:0 0 auto}
+.screen.max .inp button{background:#7a5cff;color:#fff}
+.typing{align-self:flex-start;background:var(--bot);padding:8px 12px;border-radius:14px;font-size:20px;line-height:8px;letter-spacing:2px;color:#999}
+/* менеджер */
+.mgr{display:flex;flex-direction:column;gap:14px;min-width:0;min-height:0;overflow-y:auto}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px}
+.card h2{margin:0 0 4px;font-size:17px;display:flex;align-items:center;gap:8px}
+.card .sub{color:var(--gr2);font-size:13px;margin-bottom:10px}
+.cnt{background:var(--or);color:#fff;border-radius:10px;padding:0 8px;font-size:12px;font-weight:400}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.stats div{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.stats b{display:block;font-size:22px;color:var(--or2)}.stats span{font-size:12px;color:var(--gr2)}
+.ord{border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:8px}
+.ord.fresh{animation:fl 1.6s}
+@keyframes fl{0%{background:#fff0e0}100%{background:#fff}}
+.ord .h{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
+.ord p{margin:4px 0;font-size:14px}.ord small{color:var(--gr2)}
+.st{display:inline-block;border-radius:10px;padding:2px 9px;font-size:12px;color:#fff}
+.s0{background:var(--or)}.s1{background:#8a6ad6}.s2{background:#3b7ddd}.s3{background:var(--ok)}.sx{background:#8a929b}
+.bar{display:flex;gap:3px;margin:8px 0}.bar i{flex:1;height:5px;border-radius:3px;background:#e3e6ea}.bar i.on{background:var(--or)}
+.act{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.btn{background:var(--or);color:#fff;border:0;border-radius:8px;padding:7px 12px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.btn.ghost{background:#fff;color:var(--gr);border:1px solid #cfd4da;font-weight:400}
+.thread{max-height:260px;min-height:70px;overflow-y:auto;background:var(--bg);border-radius:8px;padding:8px;margin-bottom:8px;font-size:14px}
+.thread div{margin-bottom:5px}.thread b{color:var(--or2)}
+.row{display:flex;gap:6px}.row input{flex:1;padding:9px 11px;border:1px solid #cfd4da;border-radius:8px;font:inherit;min-width:0}
+.empty{color:var(--gr2);font-size:14px;padding:8px 0}
+@media(max-width:900px){
+ body{height:100vh;height:100dvh}
+ header{padding:10px 12px}.sw{margin-left:0}
+ .tabs{display:flex;background:#fff;border-bottom:1px solid var(--line)}
+ .tabs button{flex:1;padding:12px;border:0;background:#fff;font:inherit;cursor:pointer;border-bottom:3px solid transparent}
+ .tabs button.on{border-bottom-color:var(--or);font-weight:600}
+ .layout{display:flex;flex-direction:column;padding:0;min-height:0;overflow:hidden}
+ .phone-wrap,.mgr{display:none;flex:1;min-height:0}
+ .layout.v-chat .phone-wrap{display:flex}.layout.v-mgr .mgr{display:flex;padding:10px}
+ .phone{width:100%;height:100%;border-radius:0;padding:0;box-shadow:none;background:none}
+ .screen{border-radius:0}
+ .stats{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+<header>
+ <h1><b>EGM</b> · Заказ в Telegram и MAX</h1><span class="tag">демо</span>
+ <div class="sw"><button id="bTg" class="on" onclick="setMsg('tg')">Telegram</button><button id="bMax" onclick="setMsg('max')">MAX</button></div>
+</header>
+<div class="tabs"><button id="tChat" class="on" onclick="mob('chat')">Чат клиента</button><button id="tMgr" onclick="mob('mgr')">Менеджер <span class="cnt" id="mCnt">0</span></button></div>
+<div class="layout v-chat" id="layout">
+ <div class="phone-wrap"><div class="phone"><div class="screen" id="screen">
+  <div class="chead"><div class="ava">EGM</div><div><b>EGM · нерудные материалы</b><small id="botSub">бот · отвечает сразу</small></div><button class="rs" title="Начать чат заново" onclick="resetChat()">↻</button></div>
+  <div class="msgs" id="msgs"></div>
+  <div class="kb" id="kb"></div>
+  <form class="inp" onsubmit="return userText(event)"><input id="ti" placeholder="Сообщение" autocomplete="off"><button type="submit">➤</button></form>
+ </div></div></div>
+
+ <div class="mgr">
+  <div class="stats">
+   <div><b id="k1">0</b><span>заказов из бота</span></div><div><b id="k2">0</b><span>ждут обработки</span></div>
+   <div><b id="k3">0</b><span>тонн сегодня</span></div><div><b id="k4">0</b><span>на сумму, ₽</span></div>
+  </div>
+  <div class="card"><h2>Входящие заказы из бота <span class="cnt" id="oCnt">0</span></h2>
+   <div class="sub">Статус можно менять вручную — клиент получит сообщение в чат. Иначе статусы идут по таймеру.</div>
+   <div id="olist"></div></div>
+  <div class="card"><h2>Сообщения клиентов <span class="cnt" id="qCnt">0</span></h2>
+   <div class="sub">Всё, что клиент написал через «Связаться с менеджером».</div>
+   <div class="thread" id="thread"></div>
+   <form class="row" onsubmit="return mgrReply(event)"><input id="mi" placeholder="Ответ клиенту"><button class="btn">Отправить</button></form></div>
+ </div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const fmt=n=>Math.round(n).toLocaleString('ru-RU')+' ₽';
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const DENS={crush:1.4,sand:1.5,pgs:1.65,soil:1.6};
+const MATS={
+ 'Щебень гранитный':{d:'crush',fr:{'5-20':2600,'20-40':2450,'40-70':2300}},
+ 'Щебень гравийный':{d:'crush',fr:{'5-20':2200,'20-40':2100,'40-70':2000}},
+ 'Щебень известняковый':{d:'crush',fr:{'5-20':2050,'20-40':2000,'40-70':2000}},
+ 'Песок':{d:'sand',fr:{'карьерный':700,'мытый':950}},
+ 'ПГС':{d:'pgs',fr:{'природная':800,'обогащённая':900}},
+ 'Грунт':{d:'soil',fr:{'плодородный':550,'планировочный':300}}
+};
+const ZONES=[{n:'Москва, в МКАД',trip:6500,min:35},{n:'до 30 км от МКАД',trip:9500,min:60},{n:'30–60 км',trip:13500,min:90},{n:'60–100 км',trip:19500,min:120}];
+const TOWNS={'москва':0,'зеленоград':1,'балашиха':1,'мытищи':1,'химки':1,'люберцы':1,'красногорск':1,'королёв':1,'одинцово':1,'видное':1,'подольск':2,'домодедово':2,'раменское':2,'пушкино':2,'щёлково':2,'истра':2,'сергиев посад':2,'ногинск':2,'клин':3,'коломна':3,'серпухов':3,'дмитров':3,'можайск':3};
+const TRUCKS=[['Х123ХХ 750','Иван'],['А482МР 750','Дмитрий'],['К775ОА 197','Руслан'],['Е390КН 777','Алексей'],['М056ТР 750','Виктор']];
+const CLIENT={name:'Алексей Громов',phone:'+7 (985) 330-41-27',company:'ООО «Нова-Строй»'};
+const ADDRS=['Балашиха, ул. Советская, 10','Мытищи, Ярославское ш., 118','Подольск, ул. Кирова, 55'];
+const STAGE=['Принят','Машина назначена','В пути','Выгружено'];
+const KEY='egm_bot_v1';
+let S=load();
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.orders)return s}catch(e){}return seed()}
+function save(){localStorage.setItem(KEY,JSON.stringify(S))}
+function seed(){const n=Date.now();
+ return{msgr:'tg',orders:[
+  {id:2041,ts:n-86400e3*3,mat:'Щебень гранитный',fr:'20-40',tons:40,trips:2,zone:1,addr:'Балашиха, ул. Советская, 10',date:'3 дня назад',sum:40*2450+2*9500,stage:3,auto:false,truck:TRUCKS[1],src:'seed'},
+  {id:2037,ts:n-86400e3*9,mat:'Песок',fr:'мытый',tons:20,trips:1,zone:0,addr:'Москва, ул. Верхние Поля, 22',date:'9 дней назад',sum:20*950+6500,stage:3,auto:false,truck:TRUCKS[0],src:'seed'}],
+  chat:[],q:[],nid:2042,flow:null}}
+
+let flow={step:'menu'};
+let typingTimer=null;
+const time=()=>new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
+function addMsg(who,text,opt={}){S.chat.push({who,text,t:time(),note:opt.note,mgr:opt.mgr,svg:opt.svg});if(S.chat.length>150)S.chat.shift();save();drawChat();}
+function botSay(text,kb,opt){ // с «печатает…»
+ $('kb').innerHTML='';showTyping(true);
+ setTimeout(()=>{showTyping(false);addMsg('bot',text,opt);if(kb!==undefined)setKb(kb);},450);}
+function showTyping(on){const m=$('msgs');let t=$('typ');if(on&&!t){t=document.createElement('div');t.id='typ';t.className='typing';t.textContent='•••';m.appendChild(t);m.scrollTop=m.scrollHeight}else if(!on&&t)t.remove();}
+function drawChat(){const m=$('msgs');m.innerHTML=S.chat.map(c=>`<div class="m ${c.who}${c.note?' note':''}${c.mgr?' mgrm':''}">${esc(c.text)}${c.svg?waybill(c.svg):''}<span class="t">${c.t}</span></div>`).join('');m.scrollTop=m.scrollHeight;}
+function waybill(o){return `<svg viewBox="0 0 260 150" width="260" xmlns="http://www.w3.org/2000/svg"><rect width="260" height="150" fill="#fdfcf6" stroke="#cfd4da"/><text x="12" y="22" font-size="13" font-weight="700" fill="#1F2329">ТРАНСПОРТНАЯ НАКЛАДНАЯ</text><text x="12" y="40" font-size="10" fill="#4a525c">№ ${o.id} · ${new Date().toLocaleDateString('ru-RU')}</text><line x1="12" y1="48" x2="248" y2="48" stroke="#ccc"/><text x="12" y="64" font-size="10" fill="#1F2329">Груз: ${esc(o.mat)} ${esc(o.fr)}</text><text x="12" y="80" font-size="10" fill="#1F2329">Масса нетто: ${o.tons} т</text><text x="12" y="96" font-size="10" fill="#1F2329">Авто: ${esc(o.truck[0])}</text><text x="12" y="112" font-size="10" fill="#1F2329">Водитель: ${esc(o.truck[1])}</text><ellipse cx="205" cy="105" rx="34" ry="22" fill="none" stroke="#2b5fb8" stroke-width="2" transform="rotate(-12 205 105)"/><text x="180" y="103" font-size="9" fill="#2b5fb8" transform="rotate(-12 205 105)">ПРИНЯЛ</text><text x="178" y="114" font-size="9" fill="#2b5fb8" transform="rotate(-12 205 105)">${new Date().toLocaleDateString('ru-RU')}</text><path d="M20 135 q10 -16 20 0 t20 0 t20 -4" fill="none" stroke="#1F2329"/><text x="12" y="146" font-size="8" fill="#8a929b">подпись получателя</text></svg>`;}
+function setKb(rows){$('kb').innerHTML=rows.map(r=>`<div class="r">${r.map(b=>`<button data-a="${esc(b[1])}">${esc(b[0])}</button>`).join('')}</div>`).join('');
+ $('kb').querySelectorAll('button').forEach(b=>b.onclick=()=>press(b.textContent,b.dataset.a));}
+function press(label,act){addMsg('me',label);handle(act,label);}
+function userText(e){e.preventDefault();const v=$('ti').value.trim();if(!v)return false;$('ti').value='';addMsg('me',v);
+ const st=flow.step;
+ if(st==='qty_custom'){const n=parseFloat(v.replace(',','.'));if(!(n>0&&n<=1000)){botSay('Напишите число тонн, например 30.');return false}flow.tons=n;askAddr();}
+ else if(st==='addr_custom'){if(v.length<5){botSay('Напишите адрес подробнее: город, улица, дом.');return false}setAddr(v);}
+ else if(st==='manager'){S.q.push({from:'client',text:v,t:time()});save();drawMgr();botSay('Передал менеджеру. Ответит в этом чате в течение 10 минут.',[[['В главное меню','menu']]]);}
+ else{botSay('Я пока понимаю только кнопки. Выберите действие ниже.',menuKb());}
+ return false;}
+function menuKb(){return[[['🧱 Заказать материал','order']],[['🔁 Повторить прошлый заказ','repeat']],[['🚚 Где моя машина','where'],['📄 Мои документы','docs']],[['💬 Связаться с менеджером','mgr']]]}
+function toMenu(txt){flow={step:'menu'};botSay(txt||'Что делаем?',menuKb());}
+function handle(a,label){
+ if(a==='menu'){toMenu();return}
+ if(a==='order'){flow={step:'mat'};botSay('Какой материал нужен?',[...pairs(Object.keys(MATS).map(k=>[k,'m:'+k]),2),[['← Меню','menu']]]);return}
+ if(a.startsWith('m:')){const m=a.slice(2);flow.mat=m;flow.step='fr';botSay(m+'. Выберите вид или фракцию:',[...pairs(Object.entries(MATS[m].fr).map(([f,p])=>[f+' · '+p+' ₽/т','f:'+f]),1),[['← Назад','order']]]);return}
+ if(a.startsWith('f:')){flow.fr=a.slice(2);flow.step='qty';botSay('Сколько нужно? Один самосвал — 20 т (около 14 м³ щебня).',[[['20 т','q:20'],['40 т','q:40'],['60 т','q:60']],[['Другой объём','q:x'],['← Назад','m:'+flow.mat]]]);return}
+ if(a.startsWith('q:')){if(a==='q:x'){flow.step='qty_custom';botSay('Напишите объём в тоннах числом, например 30.',[[['← Назад','f:'+flow.fr]]]);return}flow.tons=+a.slice(2);askAddr();return}
+ if(a==='addr_new'){flow.step='addr_custom';botSay('Напишите адрес доставки: город, улица, дом.',[[['← Назад','addr_back']]]);return}
+ if(a==='addr_back'){askAddr();return}
+ if(a.startsWith('a:')){setAddr(ADDRS[+a.slice(2)]);return}
+ if(a.startsWith('d:')){flow.date=a.slice(2);summary();return}
+ if(a==='confirm'){confirmOrder();return}
+ if(a==='repeat'){const l=lastOrder();if(!l){botSay('Прошлых заказов пока нет.',menuKb());return}
+  flow={step:'repeat',mat:l.mat,fr:l.fr,tons:l.tons,addr:l.addr,zone:l.zone,date:'Завтра'};
+  botSay(`Прошлый заказ №${l.id}: ${l.mat} ${l.fr}, ${l.tons} т, ${l.addr}.\nНа какой день повторить?`,[[['Сегодня','d:Сегодня'],['Завтра','d:Завтра']],[['← Меню','menu']]]);return}
+ if(a==='where'){where();return}
+ if(a==='docs'){docs();return}
+ if(a.startsWith('doc:')){const id=a.slice(4);botSay('📎 УПД_'+id+'.pdf (84 КБ)\nДокумент отправлен. Копия ушла на почту, которая указана в 1С.',[[['Мои документы','docs'],['В меню','menu']]],{note:true});return}
+ if(a==='mgr'){flow={step:'manager'};botSay('Напишите вопрос одним сообщением — менеджер ответит здесь же.',[[['← Меню','menu']]]);return}
+ if(a==='cancel'){flow={step:'menu'};toMenu('Заказ отменён. Что дальше?');return}
+}
+function pairs(a,n){const r=[];for(let i=0;i<a.length;i+=n)r.push(a.slice(i,i+n));return r}
+function askAddr(){flow.step='addr';botSay('Куда везём?',[...ADDRS.map((a,i)=>[[a,'a:'+i]]),[['Другой адрес','addr_new']]]);}
+function setAddr(v){flow.addr=v;const low=v.toLowerCase();let z=null;for(const t in TOWNS)if(low.includes(t)){z=TOWNS[t];break}
+ if(z===null){z=1;flow.guess=true}else flow.guess=false;flow.zone=z;flow.step='date';
+ botSay('Адрес: '+v+(flow.guess?'\n(Зону уточнит менеджер, пока считаю как до 30 км.)':'')+'\nКогда подать машину?',[[['Сегодня','d:Сегодня'],['Завтра','d:Завтра'],['Послезавтра','d:Послезавтра']]]);}
+function price(f){const m=MATS[f.mat],p=m.fr[f.fr],z=ZONES[f.zone],tons=f.tons,trips=Math.ceil(tons/20-1e-9);return{p,z,trips,mat:p*tons,del:trips*z.trip,sum:p*tons+trips*z.trip,m3:tons/DENS[m.d]}}
+function summary(){flow.step='confirm';const r=price(flow);
+ botSay(`Проверьте заказ:\n• ${flow.mat}, ${flow.fr}\n• ${flow.tons} т (≈ ${r.m3.toFixed(0)} м³), машин: ${r.trips}\n• Адрес: ${flow.addr}\n• Подача: ${flow.date.toLowerCase()}\n\nМатериал: ${fmt(r.mat)}\nДоставка (${r.trips} × ${fmt(r.z.trip)}): ${fmt(r.del)}\nИтого: ${fmt(r.sum)}`,[[['✅ Подтвердить заказ','confirm']],[['Отмена','cancel']]]);}
+function confirmOrder(){if(flow.step!=='confirm'&&flow.step!=='repeat'){return}
+ const r=price(flow);const id=S.nid++;
+ const o={id,ts:Date.now(),mat:flow.mat,fr:flow.fr,tons:flow.tons,trips:r.trips,zone:flow.zone,addr:flow.addr,date:flow.date,sum:r.sum,stage:0,auto:true,truck:null,nextAt:Date.now()+5000,src:'bot'};
+ S.orders.unshift(o);save();flow={step:'menu'};drawMgr();
+ botSay(`Заказ №${id} принят ✅\nМенеджер получил его и сейчас назначит машину. Сообщения о статусе придут сюда.`,menuKb());
+ notifyStage(o,0,true);}
+function lastOrder(){return S.orders.find(o=>o.src==='seed')||S.orders.find(o=>o.stage===3)||S.orders[0]}
+function active(){return S.orders.filter(o=>o.stage<3&&o.stage!=='x')}
+function where(){const a=active();
+ if(!a.length){const l=S.orders[0];botSay(l?`Сейчас активных заказов нет. Последний, №${l.id}, выгружен.`:'Заказов пока нет.',menuKb());return}
+ flow={step:'menu'};const o=a[0];botSay(statusText(o),[[['🔄 Обновить','where']],[['В меню','menu']]]);}
+function statusText(o){const eta=o.etaMin?Math.max(5,o.etaMin):null;
+ if(o.stage===0)return`Заказ №${o.id}: принят, подбираем машину.`;
+ if(o.stage===1)return`Заказ №${o.id}: назначена машина ${o.truck[0]}, водитель ${o.truck[1]}. Скоро выезд.`;
+ if(o.stage===2)return`Заказ №${o.id}: ${o.truck[0]} в пути, до вас ~${eta} мин.\nВодитель ${o.truck[1]}.`;
+ return`Заказ №${o.id}: выгружено.`}
+function docs(){flow={step:'menu'};const d=S.orders.filter(o=>o.stage===3).slice(0,4);
+ if(!d.length){botSay('Документы появятся после первой выгрузки.',menuKb());return}
+ botSay('Документы по выгруженным заказам. Нажмите, чтобы получить файл:',[...d.map(o=>[['УПД № '+o.id+' · '+fmt(o.sum),'doc:'+o.id]]),[['В меню','menu']]]);}
+function notifyStage(o,st,quiet){
+ const lbl=$('kb');let txt,opt={note:true};
+ if(st===0)return;
+ if(st===1){txt=`🚚 По заказу №${o.id} назначена машина ${o.truck[0]}.\nВодитель: ${o.truck[1]}.`}
+ if(st===2){txt=`📍 Машина ${o.truck[0]} выехала и в пути, ~${o.etaMin} мин до адреса:\n${o.addr}`}
+ if(st===3){txt=`✅ Заказ №${o.id} выгружен. Спасибо!\nФото накладной ниже. УПД будет в разделе «Мои документы».`;opt.svg=o}
+ setTimeout(()=>{addMsg('bot',txt,opt);},300);}
+function advance(id,manual){const o=S.orders.find(x=>x.id===id);if(!o||o.stage>=3)return;
+ o.stage++;
+ if(o.stage===1){o.truck=TRUCKS[Math.floor(Math.random()*TRUCKS.length)];}
+ if(o.stage===2){o.etaMin=Math.round(ZONES[o.zone].min*0.7/5)*5||40;if(o.zone<=1)o.etaMin=40;}
+ o.nextAt=Date.now()+6000;if(manual)o.nextAt=o.stage<3?Date.now()+7000:0;
+ save();notifyStage(o,o.stage);drawMgr();}
+setInterval(()=>{let ch=false;S.orders.forEach(o=>{if(o.auto&&o.stage<3&&o.nextAt&&Date.now()>=o.nextAt){advance(o.id);ch=true}});},1000);
+/* менеджер */
+const SC=['s0','s1','s2','s3'];
+function drawMgr(){
+ const bot=S.orders.filter(o=>o.src==='bot');
+ $('olist').innerHTML=S.orders.length?S.orders.map(o=>`<div class="ord${o.fresh?' fresh':''}"><div class="h"><b>№${o.id} · ${esc(o.mat)} ${esc(o.fr)}, ${o.tons} т</b><span class="st ${SC[o.stage]}">${STAGE[o.stage]}</span></div>
+ <p>${esc(CLIENT.company)}, ${CLIENT.name}, <span style="white-space:nowrap">${CLIENT.phone}</span></p><p>${esc(o.addr)} · ${esc(o.date)} · ${o.src==='bot'?'<b>из бота</b>':'прошлый заказ'}</p>
+ <p><b>${fmt(o.sum)}</b> <small>· машин: ${o.trips}${o.truck?' · '+o.truck[0]+', '+o.truck[1]:''}</small></p>
+ <div class="bar">${[0,1,2,3].map(i=>`<i class="${i<=o.stage?'on':''}"></i>`).join('')}</div>
+ ${o.stage<3?`<div class="act"><button class="btn" onclick="advance(${o.id},true)">${['Назначить машину','Машина выехала','Отметить выгрузку'][o.stage]}</button><button class="btn ghost" onclick="toggleAuto(${o.id})">${o.auto?'Остановить таймер':'Включить таймер'}</button></div>`:''}</div>`).join(''):'<div class="empty">Заказов нет</div>';
+ const today=bot,ac=S.orders.filter(o=>o.stage<3).length;
+ $('k1').textContent=bot.length;$('k2').textContent=S.orders.filter(o=>o.stage===0).length;
+ $('k3').textContent=today.reduce((s,o)=>s+o.tons,0);$('k4').textContent=today.reduce((s,o)=>s+o.sum,0).toLocaleString('ru-RU');
+ $('oCnt').textContent=S.orders.length;$('mCnt').textContent=ac+S.q.filter(x=>x.from==='client'&&!x.read).length;
+ $('thread').innerHTML=S.q.length?S.q.map(m=>`<div><b>${m.from==='client'?CLIENT.name:'Менеджер'}</b> <small>${m.t}</small><br>${esc(m.text)}</div>`).join(''):'<div class="empty">Сообщений нет</div>';
+ $('qCnt').textContent=S.q.filter(x=>x.from==='client').length;$('thread').scrollTop=1e6;}
+function toggleAuto(id){const o=S.orders.find(x=>x.id===id);o.auto=!o.auto;if(o.auto)o.nextAt=Date.now()+4000;save();drawMgr();}
+function mgrReply(e){e.preventDefault();const v=$('mi').value.trim();if(!v)return false;$('mi').value='';S.q.push({from:'mgr',text:v,t:time()});save();drawMgr();addMsg('bot','💬 Менеджер EGM:\n'+v,{note:true});return false}
+function setMsg(m){S.msgr=m;save();applyMsg()}
+function applyMsg(){const m=S.msgr==='max';$('screen').classList.toggle('max',m);$('bTg').classList.toggle('on',!m);$('bMax').classList.toggle('on',m);$('botSub').textContent=m?'канал в MAX · на связи':'бот · отвечает сразу';}
+function mob(v){$('layout').className='layout v-'+v;$('tChat').classList.toggle('on',v==='chat');$('tMgr').classList.toggle('on',v==='mgr');if(v==='chat')drawChat();}
+function resetChat(){if(!confirm('Очистить чат и демо-заказы бота?'))return;localStorage.removeItem(KEY);S=seed();flow={step:'menu'};applyMsg();drawChat();drawMgr();start();}
+function start(){addMsg('bot','Здравствуйте, '+CLIENT.name.split(' ')[0]+'! Это бот EGM — щебень, песок, ПГС с доставкой по Москве и области. Посчитаю цену и оформлю заказ за минуту.');setKb(menuKb());}
+applyMsg();drawMgr();
+if(!S.chat.length)start();else{drawChat();setKb(menuKb());}
+</script>
+</body>
+</html>

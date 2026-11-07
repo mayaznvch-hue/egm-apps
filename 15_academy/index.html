@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EGM · База знаний и обучение</title>
+<style>
+:root{--or:#F07A1A;--or2:#d46a10;--gr:#1F2329;--g2:#5b636d;--bd:#e3e6ea;--bg:#f5f6f8;--ok:#2e9e5b;--bad:#d64545}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--gr);font-size:15px;line-height:1.45}
+header{background:var(--gr);color:#fff;padding:12px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;position:sticky;top:0;z-index:10}
+header h1{font-size:18px;margin:0;font-weight:600}header h1 b{color:var(--or)}
+.tag{font-size:11px;background:var(--or);color:#fff;border-radius:10px;padding:2px 9px;text-transform:uppercase;letter-spacing:.5px}
+nav{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap}
+nav button{background:transparent;color:#cfd3d8;border:0;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:14px}
+nav button.on{background:var(--or);color:#fff}
+main{max-width:1400px;margin:0 auto;padding:16px}
+.view{display:none}.view.on{display:block}
+.card{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:14px;margin-bottom:14px}
+.card h2{font-size:16px;margin:0 0 8px}
+.card h3{font-size:14px;margin:12px 0 4px;color:var(--or2)}
+input,select{width:100%;padding:9px 11px;border:1px solid #cfd4da;border-radius:6px;font:inherit;background:#fff;color:var(--gr)}
+input:focus{outline:2px solid #f6c9a3;border-color:var(--or)}
+button.b{background:var(--or);color:#fff;border:0;border-radius:6px;padding:9px 14px;cursor:pointer;font:inherit;font-weight:600}
+button.b:hover{background:var(--or2)}
+button.b2{background:#fff;color:var(--gr);border:1px solid #cfd4da;border-radius:6px;padding:8px 12px;cursor:pointer;font:inherit}
+button.b2:hover{border-color:var(--or);color:var(--or2)}
+.hint{font-size:13px;color:var(--g2)}
+.two{display:grid;grid-template-columns:260px 1fr;gap:16px;align-items:start}
+.side{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:8px;position:sticky;top:70px}
+.side button{display:block;width:100%;text-align:left;background:none;border:0;padding:8px 10px;border-radius:6px;cursor:pointer;font:inherit;color:var(--gr)}
+.side button.on{background:#fff1e3;color:var(--or2);font-weight:600}
+table.t{width:100%;border-collapse:collapse;font-size:14px}
+table.t th,table.t td{padding:7px 9px;text-align:left;border-bottom:1px solid var(--bd);vertical-align:top}
+table.t th{background:#eef0f3;font-size:12px;text-transform:uppercase;color:var(--g2)}
+.w{overflow-x:auto}
+.chip{display:inline-block;background:#fff1e3;color:var(--or2);border-radius:10px;padding:1px 9px;font-size:12px;margin:1px 2px 1px 0}
+.stat{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.stat div{background:#fff;border:1px solid var(--bd);border-left:4px solid var(--or);border-radius:8px;padding:10px}
+.stat b{display:block;font-size:22px}.stat span{font-size:12px;color:var(--g2)}
+.bar{height:10px;background:#e8eaed;border-radius:5px;overflow:hidden}.bar i{display:block;height:100%;background:var(--or);transition:width .3s}
+.tests{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.tc{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:14px}
+.tc h3{margin:0 0 4px;font-size:15px}
+.q{font-weight:600;margin:6px 0 10px;font-size:16px}
+.opt{display:block;width:100%;text-align:left;margin:6px 0;background:#fff;border:1px solid #cfd4da;border-radius:8px;padding:10px 12px;cursor:pointer;font:inherit;color:var(--gr)}
+.opt:hover{border-color:var(--or)}
+.opt.ok{background:#e0f4e8;border-color:var(--ok)}.opt.no{background:#fbe5e5;border-color:var(--bad)}
+.opt:disabled{cursor:default}
+.expl{background:#f1f3f6;border-radius:8px;padding:9px 11px;margin:8px 0;font-size:14px}
+.chatbox{position:relative;height:min(60vh,520px);overflow-y:auto;background:#fff;border:1px solid var(--bd);border-radius:10px;padding:12px}
+.m{max-width:85%;padding:9px 12px;border-radius:12px;margin:6px 0;font-size:14.5px;white-space:pre-wrap}
+.m.u{background:var(--or);color:#fff;margin-left:auto;border-bottom-right-radius:3px}
+.m.a{background:#eef0f3;border-bottom-left-radius:3px}
+.m a{color:var(--or2);cursor:pointer;text-decoration:underline}
+.sug{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.res{padding:10px 0;border-bottom:1px solid var(--bd);cursor:pointer}
+.res b{color:var(--or2)}
+mark{background:#ffe2c2;padding:0 1px}
+ul.l{margin:4px 0 4px 18px;padding:0}ul.l li{margin:3px 0}
+.say{background:#fff7ef;border-left:4px solid var(--or);padding:8px 12px;border-radius:0 8px 8px 0;margin:6px 0;font-size:14px}
+.ck label{display:flex;gap:8px;align-items:flex-start;margin:6px 0;cursor:pointer}.ck input{width:auto;margin-top:3px}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--gr);color:#fff;padding:10px 18px;border-radius:8px;opacity:0;pointer-events:none;transition:.3s;z-index:50}
+.toast.on{opacity:1}
+.calc{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end}.calc>div{flex:1;min-width:120px}.calc label{font-size:12px;color:var(--g2)}
+@media(max-width:600px){header h1{font-size:16px}nav button{font-size:12.5px;padding:8px 1px}.m{max-width:95%}}
+@media(max-width:900px){.two{grid-template-columns:1fr}.side{position:static;display:flex;overflow-x:auto;gap:2px}.side button{white-space:nowrap;width:auto}.stat{grid-template-columns:1fr 1fr}nav{margin-left:0;width:100%}nav button{flex:1;padding:8px 2px;font-size:13px}}
+</style>
+</head>
+<body>
+<header>
+<h1><b>EGM</b> · База знаний и обучение</h1><span class="tag">демо</span>
+<nav>
+<button data-v="home" class="on">Главная</button>
+<button data-v="mat">Материалы</button>
+<button data-v="dic">Словарь</button>
+<button data-v="reg">Регламенты</button>
+<button data-v="tst">Тесты</button>
+<button data-v="bot">Спроси</button>
+</nav>
+</header>
+<main>
+
+<section id="v-home" class="view on">
+<div class="card"><input id="gq" placeholder="Поиск по всей базе: например «ТТН», «фракция 20-40», «дорого»" autocomplete="off"><div id="gres"></div></div>
+<div id="homeBody">
+<div class="stat" id="hs"></div>
+<div class="card"><h2>Учебный план новичка</h2><div id="plan"></div></div>
+<div class="card"><h2>Калькулятор: сколько машин нужно</h2>
+<div class="calc"><div><label>Материал</label><select id="kM"></select></div><div><label>Объём, м³</label><input id="kV" type="number" value="30" min="1"></div><div><label>Нужно тонн</label><input id="kT" readonly></div><div><label>Рейсов по 20 т</label><input id="kR" readonly></div></div>
+<div class="hint" style="margin-top:6px">Расчёт по средней насыпной плотности. Точный вес определяется на весах при погрузке.</div></div>
+</div>
+</section>
+
+<section id="v-mat" class="view"><div class="two"><div class="side" id="matSide"></div><div id="matBody"></div></div></section>
+
+<section id="v-dic" class="view"><div class="card"><input id="dq" placeholder="Найти термин"></div><div class="card"><div id="dicBody"></div></div></section>
+
+<section id="v-reg" class="view"><div class="two"><div class="side" id="regSide"></div><div id="regBody"></div></div></section>
+
+<section id="v-tst" class="view">
+<div id="tList"><div class="stat" id="ts"></div><div class="tests" id="tCards"></div><p><button class="b2" id="tReset">Сбросить результаты</button></p></div>
+<div id="tRun" style="display:none"></div>
+</section>
+
+<section id="v-bot" class="view">
+<div class="card"><h2>Помощник «Спроси»</h2><div class="hint">Отвечает по базе знаний, без выхода в сеть. Задайте вопрос своими словами.</div>
+<div class="sug" id="sug"></div>
+<div class="chatbox" id="chat"></div>
+<div style="display:flex;gap:8px;margin-top:10px"><input id="bq" placeholder="Например: чем отличается щебень 5-20 от 20-40?"><button class="b" id="bGo" style="flex:0 0 auto">Спросить</button></div></div>
+</section>
+</main>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+var $=function(s){return document.querySelector(s)};
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function toast(t){var e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(function(){e.classList.remove('on')},2200)}
+
+// ====== ДАННЫЕ ======
+var MAT=[
+{id:'crush',t:'Щебень: виды и фракции',h:'<p>Щебень — дроблёная горная порода. Главные характеристики: фракция (размер зёрен), марка по прочности, морозостойкость, содержание зёрен пластинчатой (лещадной) формы.</p><h3>Фракции</h3><div class="w"><table class="t"><tr><th>Фракция, мм</th><th>Где применяют</th></tr><tr><td>0–5 (отсев)</td><td>подсыпка дорожек, площадок, основание под плитку</td></tr><tr><td>5–20</td><td>бетон, ЖБИ, стяжки, асфальт, мощение</td></tr><tr><td>20–40</td><td>фундаменты, дорожное основание, бетон для крупных конструкций</td></tr><tr><td>40–70</td><td>основание дорог, подушки под фундаменты, дренаж, железнодорожная отсыпка</td></tr></table></div><h3>Виды</h3><ul class="l"><li><b>Гранитный</b> — самый прочный, марка обычно М1200–М1400, морозостойкость до F300 и выше. Цена выше.</li><li><b>Гравийный</b> — окатанный, из гравия, марка ниже (около М800–М1000). Хорош для бетона и отсыпки, дешевле гранита.</li><li><b>Известняковый</b> — мягче, марка около М400–М800. Для дорожек, отсыпки, подушек под лёгкие постройки; в бетон ответственных конструкций не берут.</li><li><b>Вторичный</b> — дроблёный бетон и кирпич, фракция часто 0–70. Самый дешёвый: временные дороги, засыпка, основание.</li></ul>'},
+{id:'mark',t:'Марка по прочности и морозостойкость',h:'<p><b>Марка по прочности</b> (М) показывает, какую нагрузку выдерживает щебень при дроблении: чем число больше, тем прочнее. Например, М1200 — это очень прочный щебень.</p><p><b>Морозостойкость</b> (F) — сколько циклов замораживания и оттаивания материал выдерживает без разрушения. Для Подмосковья для дорог и фундаментов берут не ниже F100–F150, лучше F300 (гранит).</p><div class="w"><table class="t"><tr><th>Задача</th><th>Что брать</th></tr><tr><td>Бетон высоких классов, ответственные конструкции</td><td>гранитный 5-20 или 20-40, М1200 и выше</td></tr><tr><td>Дорожное основание</td><td>гранитный или гравийный 40-70 и 20-40</td></tr><tr><td>Дорожки, подсыпка во дворе</td><td>известняковый или вторичный</td></tr></table></div><p class="hint">Точные марки по партии указаны в паспорте качества, его можно запросить у менеджера.</p>'},
+{id:'use',t:'Для чего что подходит',h:'<div class="w"><table class="t"><tr><th>Задача</th><th>Материал</th><th>Совет</th></tr><tr><td>Фундамент</td><td>щебень 20-40 или 5-20, песок, ПГС</td><td>Щебёночная подушка 10–20 см, затем песок, обязательно уплотнить.</td></tr><tr><td>Дорога, площадка</td><td>щебень 40-70 снизу, 20-40 сверху, ОПГС</td><td>Слои по фракциям, каждый слой уплотняют катком.</td></tr><tr><td>Дренаж</td><td>щебень 20-40 или 40-70 (гранит или гравий), песок</td><td>Не используйте известняк и вторичный щебень — размокают и забиваются.</td></tr><tr><td>Бетон</td><td>гранитный или гравийный 5-20, песок</td><td>Песок для бетона — чистый, крупный или средний.</td></tr><tr><td>Отсыпка, подъём участка</td><td>ПГС, карьерный песок, грунт</td><td>Самый дешёвый вариант — ПГС или вторичный щебень.</td></tr><tr><td>Газон, клумбы</td><td>грунт плодородный</td><td>Не путать с растительным грунтом из стройки.</td></tr></table></div>'},
+{id:'sand',t:'Песок: карьерный и намывной',h:'<p><b>Карьерный</b> — добывают из карьера экскаватором. Содержит глину и примеси, жёлтого цвета. Подходит для засыпки, подушки, отсыпки, кладочных растворов низкой ответственности.</p><p><b>Намывной</b> — добывают со дна водоёма гидромеханизацией, он чище и однороднее. Берут для бетона, штукатурки, стяжки.</p><h3>Модуль крупности (Мк)</h3><div class="w"><table class="t"><tr><th>Песок</th><th>Мк</th></tr><tr><td>мелкий</td><td>до 2,0</td></tr><tr><td>средний</td><td>2,0–2,5</td></tr><tr><td>крупный</td><td>2,5 и выше</td></tr></table></div><p>Чем крупнее песок, тем меньше цемента нужно в бетоне. Для кладки и штукатурки чаще берут мелкий и средний.</p>'},
+{id:'pgs',t:'ПГС и ОПГС',h:'<p><b>ПГС</b> — песчано-гравийная смесь, природная. Соотношение песка и гравия в разных партиях разное (песка больше или меньше).</p><p><b>ОПГС</b> — обогащённая ПГС: в смесь добавлена нужная фракция гравия или щебня, поэтому состав стабильнее и прочнее.</p><ul class="l"><li>ПГС — отсыпка, засыпка траншей, временные дороги, выравнивание.</li><li>ОПГС — основание под дороги, площадки, подушки под фундамент, где нужна нагрузка.</li></ul>'},
+{id:'dens',t:'Насыпная плотность (ориентиры)',h:'<p>Нужна, чтобы перевести кубы в тонны. Цифры <b>средние</b>, зависят от влажности и партии.</p><div class="w"><table class="t"><tr><th>Материал</th><th>т/м³ (около)</th><th>м³ в 20 т</th></tr><tr><td>Щебень гранитный</td><td>1,4</td><td>≈14</td></tr><tr><td>Щебень гравийный</td><td>1,4</td><td>≈14</td></tr><tr><td>Щебень известняковый</td><td>1,3</td><td>≈15</td></tr><tr><td>Песок</td><td>1,5</td><td>≈13</td></tr><tr><td>ПГС</td><td>1,7</td><td>≈12</td></tr><tr><td>Грунт</td><td>1,5</td><td>≈13</td></tr></table></div><p>Самосвал на 20 т — это примерно 13–15 м³ нерудного материала. Окончательный вес — по весам при погрузке.</p>'}];
+var DENS={'Щебень гранитный':1.4,'Щебень гравийный':1.4,'Щебень известняковый':1.3,'Песок':1.5,'ПГС':1.7,'Грунт':1.5};
+
+var DIC=[
+['Рейс','Одна поездка самосвала от погрузки до выгрузки. Базовая единица доставки: рейс = 20 т.'],
+['Ходка','То же, что рейс; чаще говорят водители и спецтехника: «сделали три ходки».'],
+['ТТН','Товарно-транспортная накладная. Документ на груз: что, сколько, кому и кем везём. Оформляется на каждый рейс.'],
+['ЭТрН','Электронная транспортная накладная. То же, что бумажная ТТН, но подписывается электронно через оператора.'],
+['УПД','Универсальный передаточный документ. Заменяет накладную и счёт-фактуру. Подтверждает отгрузку для бухгалтерии клиента.'],
+['Акт сверки','Документ, где обе стороны сверяют взаиморасчёты за период: отгрузки и оплаты. Подписывается, если цифры совпали.'],
+['Дебиторка','Дебиторская задолженность: деньги, которые клиент нам должен за уже отгруженный материал.'],
+['НМЦК','Начальная (максимальная) цена контракта в госзакупках. Заказчик указывает её в закупке, мы можем предложить цену не выше.'],
+['Фракция','Размер зёрен щебня в мм, например 20-40.'],
+['Насыпная плотность','Вес одного кубометра материала в рыхлом состоянии. Нужна для перевода м³ в тонны.'],
+['Самосвал','Грузовик с опрокидывающимся кузовом. Наши — на 20 т.'],
+['Простой','Время, когда машина стоит на объекте без разгрузки. Сверх оговорённого времени оплачивается.'],
+['Подача','Приезд машины на адрес клиента. «Подача в день заявки» — машина приезжает в тот же день.'],
+['Зона доставки','Пояс вокруг МКАД по расстоянию (до 20 км, 20–50 км и т. д.). От зоны зависит цена рейса.'],
+['КП','Коммерческое предложение: письмо с ценами, условиями и сроком действия.'],
+['Предоплата','Оплата до отгрузки. Для новых клиентов — обычно 100% или 50%.'],
+['Отсрочка','Оплата через несколько дней после поставки. Даётся проверенным клиентам.'],
+['Паспорт качества','Документ с результатами испытаний партии: марка, фракция, морозостойкость.'],
+['Лещадность','Доля плоских и игольчатых зёрен в щебне. Чем меньше, тем лучше.'],
+['Отсев','Мелкая фракция 0–5 мм, остаётся при дроблении щебня.']];
+
+var REG=[
+{id:'ord',t:'Как принять заявку',h:'<ol class="l"><li>Поприветствуйте и назовите компанию: «ЕГМ, добрый день, меня зовут ...».</li><li>Уточните, что нужно: материал, фракция, объём в тоннах или рейсах.</li><li>Узнайте адрес разгрузки и подъезд (въезд для самосвала, высота ворот, шлагбаум).</li><li>Уточните дату и время подачи и контакт на объекте (телефон прораба).</li><li>Назовите цену материала и цену доставки по зоне отдельно, затем итог.</li><li>Узнайте реквизиты и способ оплаты. Новому клиенту — предоплата.</li><li>Повторите заказ вслух, внесите в 1С, отправьте подтверждение в мессенджер.</li><li>Передайте диспетчеру: адрес, время, водитель, телефон на объекте.</li></ol>'},
+{id:'ask',t:'Что спросить у клиента',h:'<div class="ck" id="ckAsk"></div><p class="hint">Отмечайте пункты по ходу звонка — это тренировка. Отметки не сохраняются.</p>'},
+{id:'obj',t:'Работа с возражениями',h:'<h3>«Дорого»</h3><div class="say">«Понимаю. Давайте сравним полностью: цена с доставкой, рейс 20 т по весам, с документами. Какая цифра у вас сейчас? Посмотрю, что можно сделать — например, другую фракцию или объём на несколько рейсов.»</div><h3>«У других дешевле»</h3><div class="say">«Часто цена без доставки или с недовозом. У нас вес по весам и ТТН в каждом рейсе. Пришлите предложение — сравню по пунктам.»</div><h3>«Нужно подумать»</h3><div class="say">«Конечно. Цена действует 7 дней. Когда вам перезвонить? Если решите сегодня — поставим машину на завтра.»</div><h3>«Машина нужна сегодня»</h3><div class="say">«Смотрю график. Если подтвердите до 12:00, поедем сегодня. Если позже — на утро, с первым рейсом.»</div><h3>«Нужна отсрочка»</h3><div class="say">«Для новых клиентов работаем по предоплате. После первых поставок рассмотрим отсрочку — передам руководителю.»</div><h3>«Привезли меньше»</h3><div class="say">«Приношу извинения. Давайте посмотрим ТТН и вес по весам. Если недовоз подтвердится — довезём или вернём разницу.»</div>'},
+{id:'dis',t:'Диспетчер: подача машины',h:'<ol class="l"><li>Проверьте заявку: адрес, фракция, объём, время, телефон на объекте.</li><li>Подберите самосвал по зоне и графику, учтите габариты подъезда.</li><li>Выдайте водителю ТТН, адрес и телефон клиента.</li><li>За час до прибытия позвоните клиенту.</li><li>После разгрузки получите подпись в ТТН, отметьте рейс выполненным.</li><li>Если задержка больше 30 минут — предупредите клиента сами.</li></ol>'},
+{id:'doc',t:'Документы после рейса',h:'<ul class="l"><li>ТТН — на каждый рейс, подпись клиента на объекте.</li><li>УПД — бухгалтерии, обычно в течение 5 дней.</li><li>Акт сверки — раз в квартал или по запросу.</li><li>Паспорт качества — по просьбе клиента.</li><li>Если оплата задержана — напомнить в день срока, на 3-й день позвонить, на 7-й — передать руководителю.</li></ul>'},
+{id:'snow',t:'Вывоз снега: что уточнить',h:'<ul class="l"><li>Объект и площадь уборки.</li><li>Разовый вывоз или договор на сезон.</li><li>Нужна ли погрузка нашей техникой.</li><li>Время подачи: ночью или днём; доступ на территорию.</li><li>Кто подписывает путевые листы и акты.</li></ul>'}];
+var ASK=['Материал и фракция (или для чего нужен — подскажем)','Объём: тонны, кубы или рейсы','Адрес объекта и подъезд для самосвала','Дата и время подачи','Телефон человека на объекте','Реквизиты и форма оплаты (юрлицо или наличные)','Нужны ли документы: ТТН, УПД, паспорт качества','Нужна ли разгрузка техникой или только доставка'];
+
+var TESTS=[
+{id:'t1',t:'Материалы для новичка',d:'Фракции, марки, применение',q:[
+['Какая фракция щебня обычно берётся в бетон?',['5-20','40-70','0-5'],0,'В бетон идёт мелкий щебень 5-20 (и иногда 20-40 для крупных конструкций).'],
+['Какой щебень самый прочный?',['Известняковый','Гранитный','Вторичный'],1,'Гранитный: марка М1200–М1400.'],
+['Что показывает «F» у щебня?',['Прочность','Морозостойкость','Фракцию'],1,'F — число циклов замораживания и оттаивания.'],
+['Какой песок чище, из водоёма?',['Карьерный','Намывной','Отсев'],1,'Намывной добывают со дна водоёма, он чище и однороднее.'],
+['Что берём в дренаж?',['Гранитный или гравийный 20-40','Вторичный щебень','Известняковый 0-5'],0,'Известняк и вторичный размокают и забиваются.'],
+['Сколько кубов примерно в самосвале 20 т щебня?',['Около 5','Около 14','Около 30'],1,'При плотности около 1,4 т/м³ получается около 14 м³.'],
+['Чем ОПГС отличается от ПГС?',['Это один и тот же материал','В ОПГС добавлена нужная фракция гравия или щебня','ОПГС — только песок'],1,'ОПГС обогащённая: состав стабильнее.']]},
+{id:'t2',t:'Документы и термины',d:'ТТН, УПД, ЭТрН и другое',q:[
+['Что такое рейс?',['Одна поездка самосвала с грузом','Один день работы','Один заказ на месяц'],0,'Рейс = одна поездка, у нас 20 т.'],
+['Какой документ оформляется на каждый рейс?',['Акт сверки','ТТН','НМЦК'],1,'ТТН — накладная на груз, на каждый рейс.'],
+['Что заменяет УПД?',['Накладную и счёт-фактуру','Договор','Паспорт качества'],0,'УПД объединяет накладную и счёт-фактуру.'],
+['Что такое дебиторка?',['Деньги, которые мы должны','Деньги, которые должен нам клиент','Прибыль за месяц'],1,'Это долг клиента перед нами за отгрузки.'],
+['ЭТрН — это…',['Электронная транспортная накладная','Электронный счёт','Единый тариф'],0,'То же, что ТТН, но в электронном виде.'],
+['НМЦК используется…',['В госзакупках','В розничных продажах','В расчёте зарплаты'],0,'Начальная (максимальная) цена контракта — в закупках.'],
+['Для чего акт сверки?',['Для проверки взаиморасчётов за период','Для проверки качества щебня','Для оформления водителя'],0,'Стороны сверяют отгрузки и оплаты.']]},
+{id:'t3',t:'Работа с клиентом',d:'Заявка, вопросы, возражения',q:[
+['Что спросить первым при заявке?',['Какой материал и сколько нужно','Сколько у клиента сотрудников','Есть ли у него сайт'],0,'Сначала материал и объём, затем адрес и время.'],
+['Клиент говорит «дорого». Лучший ответ?',['Сразу снизить цену','Сравнить полную цену с доставкой и документами, уточнить его цифру','Не отвечать'],1,'Сначала понимаем, с чем сравнивают.'],
+['Почему важно знать подъезд?',['Не пройдёт самосвал — сорвём рейс','Для скидки','Для рекламы'],0,'Ворота, шлагбаумы и высота — частая причина срыва.'],
+['Что делает диспетчер за час до прибытия?',['Ничего','Звонит клиенту','Меняет водителя'],1,'Предупреждает о приезде.'],
+['Новому клиенту мы предлагаем…',['Отсрочку 30 дней','Предоплату','Бесплатную доставку'],1,'Отсрочку даём проверенным клиентам.'],
+['Если привезли меньше, чем заказано?',['Спорить','Сверить ТТН и вес по весам, при недовозе довезти','Промолчать'],1,'Спокойно проверяем документы и исправляем.']]}];
+
+// ====== СОСТОЯНИЕ ======
+var KEY='egm15';var P;try{P=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+P=P||{res:{},read:{},chat:[]};
+function save(){localStorage.setItem(KEY,JSON.stringify(P))}
+
+// ====== ИНДЕКС ПОИСКА ======
+function strip(h){return h.replace(/<[^>]+>/g,' ').replace(/&nbsp;/g,' ').replace(/\s+/g,' ').trim()}
+var IDX=[];
+var KW={crush:'щебень щебенка фракция фракции 5-20 20-40 40-70 отличается разница гранит гравий известняк вторичный лещадность',mark:'марка прочность морозостойкость f100 f300 м1200 цикл мороз',use:'фундамент дорога дренаж бетон отсыпка подушка газон что взять подходит',sand:'песок карьерный намывной модуль крупности мелкий крупный бетон штукатурка',pgs:'пгс опгс гравий смесь отсыпка',dens:'куб кубы кубов кубометр плотность тонна тонн самосвал вес сколько перевести м3 м³'};
+MAT.forEach(function(m){IDX.push({sec:'mat',id:m.id,t:m.t,x:strip(m.h),kw:KW[m.id]||'',k:'Материалы'})});
+DIC.forEach(function(d){IDX.push({sec:'dic',id:d[0],t:d[0],x:d[1],k:'Словарь'})});
+var RK={ask:'спросить вопросы заявка клиент уточнить анкета',ord:'заявка принять звонок заказ приём',obj:'возражение возражения дорого дешевле подумать отсрочка скидка торг цена недовоз',dis:'диспетчер подача машина водитель',doc:'документы ттн упд акт долг оплата',snow:'снег вывоз сезон договор'};
+REG.forEach(function(r){IDX.push({sec:'reg',id:r.id,t:r.t,x:strip(r.h)+(r.id==='ask'?' '+ASK.join('. '):''),kw:RK[r.id]||'',k:'Регламенты'})});
+function norm(s){return s.toLowerCase().replace(/ё/g,'е')}
+var STOP='а в и на по с к о у что как это клиент говорит сколько для не или ли ну мне мы вы он она бы же то ты да нет какой какая какие чем есть нужно можно если при от из за'.split(' ');
+function toks(q){return norm(q).replace(/[^a-zа-я0-9\-]+/g,' ').split(' ').filter(function(w){return w&&STOP.indexOf(w)<0}).map(function(w){return w.length>5?w.slice(0,w.length>7?6:5):w})}
+var INT=[[/дорого|дорогов|дешевл|дешев|скидк|подумать|отсрочк/i,'obj'],[/куб|кубов|тонн|вес|сколько.*(влез|помест|в самосвал)/i,'dens'],[/ттн|накладн|упд|этрн/i,'ттн'],[/заяв/i,'ord']];
+function score(q){var T=toks(q);if(!T.length)return[];var N=IDX.length;var BO={};INT.forEach(function(r){if(r[0].test(q))BO[r[1]]=12});
+ var W=T.map(function(w){var df=IDX.filter(function(e){return norm(e.t+' '+e.x+' '+(e.kw||'')).indexOf(w)>=0}).length;return df?Math.log(1+N/df):0});
+ return IDX.map(function(e){var tt=norm(e.t),tx=norm(e.x+' '+(e.kw||'')),s=0;T.forEach(function(w,j){if(!W[j])return;if(tt.indexOf(w)>=0)s+=4*W[j];var i=-1,c=0;while((i=tx.indexOf(w,i+1))>=0&&c<3){c++}s+=c*W[j]});return{e:e,s:s+(BO[e.id]||0)}}).filter(function(r){return r.s>0}).sort(function(a,b){return b.s-a.s})}
+function snip(e,q){var T=toks(q),x=e.x,lx=norm(x),p=-1;for(var i=0;i<T.length&&p<0;i++)p=lx.indexOf(T[i]);if(p<0)p=0;var a=Math.max(0,p-40),s=x.slice(a,a+170);return(a?'…':'')+s+(a+170<x.length?'…':'')}
+function hl(s,q){var out=esc(s);toks(q).forEach(function(w){out=out.replace(new RegExp('('+w.replace(/[-]/g,'\\-')+'[а-яa-z0-9]*)','gi'),'<mark>$1</mark>')});return out}
+
+// ====== НАВИГАЦИЯ ======
+function show(v){document.querySelectorAll('.view').forEach(function(e){e.classList.remove('on')});$('#v-'+v).classList.add('on');document.querySelectorAll('nav button').forEach(function(b){b.classList.toggle('on',b.dataset.v===v)});
+ if(v==='home')renderHome();if(v==='tst'){showList()}window.scrollTo(0,0)}
+document.querySelectorAll('nav button').forEach(function(b){b.onclick=function(){show(b.dataset.v)}});
+function go(sec,id){show(sec);if(sec==='mat')openMat(id);if(sec==='reg')openReg(id);if(sec==='dic'){$('#dq').value=id;renderDic()}}
+
+// ====== ГЛАВНАЯ ======
+function totalQ(){return TESTS.reduce(function(s,t){return s+t.q.length},0)}
+function renderHome(){var done=Object.keys(P.res).length,pts=0,mx=0;TESTS.forEach(function(t){mx+=t.q.length;if(P.res[t.id])pts+=P.res[t.id].best});
+ var rd=Object.keys(P.read).length,all=MAT.length+REG.length;
+ var pr=Math.round(((rd/all)*50+(mx?pts/mx:0)*50));
+ $('#hs').innerHTML='<div><b>'+pr+'%</b><span>общий прогресс</span></div><div><b>'+rd+' из '+all+'</b><span>прочитано статей</span></div><div><b>'+done+' из '+TESTS.length+'</b><span>тестов пройдено</span></div><div><b>'+pts+' из '+mx+'</b><span>баллов за тесты</span></div>';
+ var h='<div class="bar" style="margin-bottom:10px"><i style="width:'+pr+'%"></i></div>';
+ h+=MAT.concat(REG).map(function(a){var sec=MAT.indexOf(a)>=0?'mat':'reg';return'<div style="padding:5px 0"><label style="cursor:pointer"><input type="checkbox" disabled '+(P.read[a.id]?'checked':'')+' style="width:auto"> <a href="#" data-go="'+sec+'|'+a.id+'" style="color:inherit">'+esc(a.t)+'</a></label></div>'}).join('');
+ h+=TESTS.map(function(t){var r=P.res[t.id];return'<div style="padding:5px 0"><label><input type="checkbox" disabled '+(r?'checked':'')+' style="width:auto"> Тест «'+esc(t.t)+'»'+(r?' — лучший результат '+r.best+'/'+t.q.length:'')+'</label></div>'}).join('');
+ $('#plan').innerHTML=h}
+$('#plan').onclick=function(e){var a=e.target.closest('a');if(!a)return;e.preventDefault();var p=a.dataset.go.split('|');go(p[0],p[1])};
+$('#kM').innerHTML=Object.keys(DENS).map(function(k){return'<option>'+k+'</option>'}).join('');
+function calc(){var d=DENS[$('#kM').value],v=parseFloat($('#kV').value)||0,t=v*d;$('#kT').value=t.toFixed(1).replace('.',',');$('#kR').value=(t/20).toFixed(1).replace('.',',')+' (с запасом: '+Math.ceil(t/20)+')'}
+$('#kM').onchange=calc;$('#kV').oninput=calc;calc();
+$('#gq').oninput=function(){var q=this.value.trim(),r=q?score(q).slice(0,12):[];$('#homeBody').style.display=q?'none':'';
+ $('#gres').innerHTML=q?(r.length?r.map(function(x){return'<div class="res" data-s="'+x.e.sec+'" data-i="'+esc(x.e.id)+'"><span class="chip">'+x.e.k+'</span><b>'+hl(x.e.t,q)+'</b><div class="hint">'+hl(snip(x.e,q),q)+'</div></div>'}).join(''):'<p class="hint">Ничего не найдено. Попробуйте другие слова.</p>'):''};
+$('#gres').onclick=function(e){var r=e.target.closest('.res');if(!r)return;$('#gq').value='';$('#gres').innerHTML='';$('#homeBody').style.display='';go(r.dataset.s,r.dataset.i)};
+
+// ====== МАТЕРИАЛЫ / РЕГЛАМЕНТЫ ======
+function side(id,arr,fn,cur){$(id).innerHTML=arr.map(function(a){return'<button data-i="'+a.id+'" class="'+(a.id===cur?'on':'')+'">'+(P.read[a.id]?'✓ ':'')+esc(a.t)+'</button>'}).join('')}
+var curMat='crush',curReg='ord';
+function openMat(id){curMat=id||curMat;var m=MAT.filter(function(x){return x.id===curMat})[0];P.read[m.id]=1;save();side('#matSide',MAT,0,curMat);$('#matBody').innerHTML='<div class="card"><h2>'+esc(m.t)+'</h2>'+m.h+'</div>'}
+function openReg(id){curReg=id||curReg;var m=REG.filter(function(x){return x.id===curReg})[0];P.read[m.id]=1;save();side('#regSide',REG,0,curReg);$('#regBody').innerHTML='<div class="card"><h2>'+esc(m.t)+'</h2>'+m.h+'</div>';
+ var c=$('#ckAsk');if(c)c.innerHTML=ASK.map(function(a){return'<label><input type="checkbox"> '+esc(a)+'</label>'}).join('')}
+$('#matSide').onclick=function(e){var b=e.target.closest('button');if(b)openMat(b.dataset.i)};
+$('#regSide').onclick=function(e){var b=e.target.closest('button');if(b)openReg(b.dataset.i)};
+openMat();openReg();
+
+// ====== СЛОВАРЬ ======
+function renderDic(){var q=$('#dq').value,L=DIC.slice().sort(function(a,b){return a[0].localeCompare(b[0],'ru')});if(q){var n=norm(q);L=L.filter(function(d){return norm(d[0]+' '+d[1]).indexOf(n)>=0})}
+ $('#dicBody').innerHTML=L.map(function(d){return'<div style="padding:9px 0;border-bottom:1px solid var(--bd)"><b style="color:var(--or2)">'+hl(d[0],q)+'</b><div>'+hl(d[1],q)+'</div></div>'}).join('')||'<p class="hint">Такого термина нет.</p>'}
+$('#dq').oninput=renderDic;renderDic();
+
+// ====== ТЕСТЫ ======
+var run=null;
+function showList(){$('#tList').style.display='';$('#tRun').style.display='none';renderTests()}
+function renderTests(){var pts=0,mx=0,n=0;TESTS.forEach(function(t){mx+=t.q.length;if(P.res[t.id]){pts+=P.res[t.id].best;n++}});
+ $('#ts').innerHTML='<div><b>'+n+' из '+TESTS.length+'</b><span>тестов пройдено</span></div><div><b>'+pts+' из '+mx+'</b><span>баллов</span></div><div><b>'+(mx?Math.round(pts/mx*100):0)+'%</b><span>прогресс</span></div><div><b>'+(n===TESTS.length&&pts/mx>=.8?'Допущен':'Учится')+'</b><span>статус новичка (допуск — от 80%)</span></div>';
+ $('#tCards').innerHTML=TESTS.map(function(t){var r=P.res[t.id];return'<div class="tc"><h3>'+esc(t.t)+'</h3><div class="hint">'+esc(t.d)+' · '+t.q.length+' вопросов</div><div class="bar" style="margin:10px 0"><i style="width:'+(r?r.best/t.q.length*100:0)+'%"></i></div><div class="hint" style="margin-bottom:8px">'+(r?'Лучший результат: '+r.best+' из '+t.q.length+' · попыток '+r.tries:'Ещё не проходили')+'</div><button class="b" data-t="'+t.id+'">'+(r?'Пройти снова':'Начать')+'</button></div>'}).join('')}
+$('#tCards').onclick=function(e){var t=e.target.dataset.t;if(t)start(t)};
+$('#tReset').onclick=function(){if(confirm('Сбросить все результаты?')){P.res={};save();renderTests()}};
+function start(id){run={t:TESTS.filter(function(x){return x.id===id})[0],i:0,s:0,ans:false};$('#tList').style.display='none';$('#tRun').style.display='';step()}
+function step(){var t=run.t,q=t.q[run.i];run.ans=false;
+ $('#tRun').innerHTML='<div class="card"><div style="display:flex;justify-content:space-between"><b>'+esc(t.t)+'</b><span class="hint">Вопрос '+(run.i+1)+' из '+t.q.length+' · баллов: '+run.s+'</span></div><div class="bar" style="margin:8px 0"><i style="width:'+(run.i/t.q.length*100)+'%"></i></div><div class="q">'+esc(q[0])+'</div>'+q[1].map(function(o,k){return'<button class="opt" data-k="'+k+'">'+esc(o)+'</button>'}).join('')+'<div id="ex"></div><div style="margin-top:10px"><button class="b2" id="tQuit">Выйти</button> <button class="b" id="tNext" style="display:none">'+(run.i+1<t.q.length?'Дальше':'Завершить')+'</button></div></div>'}
+$('#tRun').onclick=function(e){var o=e.target.closest('.opt');
+ if(o&&!run.ans){run.ans=true;var q=run.t.q[run.i],k=+o.dataset.k;if(k===q[2])run.s++;document.querySelectorAll('.opt').forEach(function(b,i){b.disabled=true;if(i===q[2])b.classList.add('ok');else if(i===k)b.classList.add('no')});$('#ex').innerHTML='<div class="expl"><b>'+(k===q[2]?'Верно. ':'Неверно. ')+'</b>'+esc(q[3])+'</div>';$('#tNext').style.display=''}
+ if(e.target.id==='tNext'){run.i++;if(run.i<run.t.q.length)step();else finish()}
+ if(e.target.id==='tQuit'){showList()}
+ if(e.target.id==='tBack'){showList()}
+ if(e.target.id==='tAgain'){start(run.t.id)}};
+function finish(){var t=run.t,r=P.res[t.id]||{best:0,tries:0};r.tries++;r.best=Math.max(r.best,run.s);P.res[t.id]=r;save();var pc=Math.round(run.s/t.q.length*100);
+ $('#tRun').innerHTML='<div class="card" style="text-align:center"><h2>'+esc(t.t)+': готово</h2><div style="font-size:42px;font-weight:700;color:var(--or)">'+run.s+' / '+t.q.length+'</div><p>'+pc+'% — '+(pc>=80?'отлично, тема усвоена':pc>=50?'неплохо, перечитайте материалы и попробуйте ещё':'нужно повторить материалы')+'</p><button class="b" id="tAgain">Пройти ещё раз</button> <button class="b2" id="tBack">К списку тестов</button></div>'}
+
+// ====== БОТ ======
+var SUG=['Чем отличается щебень 5-20 от 20-40?','Что такое ТТН?','Клиент говорит дорого','Что спросить при заявке?','Какой песок для бетона?','Сколько кубов в самосвале?'];
+$('#sug').innerHTML=SUG.map(function(s){return'<button class="b2">'+esc(s)+'</button>'}).join('');
+$('#sug').onclick=function(e){if(e.target.tagName==='BUTTON'){$('#bq').value=e.target.textContent;ask()}};
+function addMsg(w,h){P.chat.push({w:w,h:h});if(P.chat.length>60)P.chat.shift();save();drawChat()}
+function drawChat(){var c=$('#chat');c.innerHTML=P.chat.map(function(m){return'<div class="m '+m.w+'">'+m.h+'</div>'}).join('');var l=c.lastElementChild;c.scrollTop=(l&&l.classList.contains('a')&&l.offsetHeight>c.clientHeight*0.6)?l.offsetTop-c.offsetTop-8:c.scrollHeight}
+function ask(){var q=$('#bq').value.trim();if(!q)return;$('#bq').value='';addMsg('u',esc(q));
+ var r=score(q).slice(0,3);
+ if(!r.length||r[0].s<1.5){addMsg('a','В базе нет ответа на этот вопрос. Попробуйте другие слова (например: «фракция», «ТТН», «дорого», «заявка») или спросите руководителя.');return}
+ var top=r[0].e,h='<b>'+esc(top.t)+'</b> ('+top.k.toLowerCase()+')\n'+esc(top.k==='Словарь'?top.x:snip2(top,q))+'\n\n<a data-s="'+top.sec+'" data-i="'+esc(top.id)+'">Открыть полностью</a>';
+ if(r.length>1)h+='\n\nЕщё по теме: '+r.slice(1).map(function(x){return'<a data-s="'+x.e.sec+'" data-i="'+esc(x.e.id)+'">'+esc(x.e.t)+'</a>'}).join(' · ');
+ addMsg('a',h)}
+function snip2(e,q){var T=toks(q),x=e.x,lx=norm(x),p=-1;for(var i=0;i<T.length&&p<0;i++)p=lx.indexOf(T[i]);if(p<0)p=0;var a=Math.max(0,p-60);return(a?'…':'')+x.slice(a,a+380)+(a+380<x.length?'…':'')}
+$('#bGo').onclick=ask;$('#bq').onkeydown=function(e){if(e.key==='Enter')ask()};
+$('#chat').onclick=function(e){var a=e.target.closest('a');if(a)go(a.dataset.s,a.dataset.i)};
+if(!P.chat.length)P.chat.push({w:'a',h:'Здравствуйте! Я помогаю по базе знаний ЕГМ: материалы, термины, регламенты. Задайте вопрос.'});
+drawChat();renderHome();
+window.__app={IDX:IDX,score:score,show:show};
+})();
+</script>
+</body>
+</html>

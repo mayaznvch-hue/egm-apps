@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EGM · Радар тендеров и строек</title>
+<style>
+*{box-sizing:border-box}
+:root{--o:#F07A1A;--g:#1F2329;--bg:#F5F6F8;--line:#E3E6EA;--mut:#6B7380;--ok:#1E9E5A;--bad:#D64545}
+body{margin:0;font-family:system-ui,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--g);font-size:15px}
+header{background:var(--g);color:#fff;padding:12px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;position:sticky;top:0;z-index:5}
+header h1{font-size:17px;margin:0;font-weight:600}
+header h1 b{color:var(--o)}
+.tag{background:var(--o);color:#fff;font-size:11px;padding:2px 8px;border-radius:10px;text-transform:uppercase;letter-spacing:.5px}
+.sp{flex:1}
+.btn{border:1px solid var(--line);background:#fff;color:var(--g);padding:8px 12px;border-radius:8px;cursor:pointer;font-size:14px;font-family:inherit}
+.btn:hover{border-color:var(--o)}
+.btn.p{background:var(--o);border-color:var(--o);color:#fff;font-weight:600}
+.btn.sm{padding:5px 9px;font-size:13px}
+header .btn{background:transparent;color:#fff;border-color:#4a5058}
+nav{display:flex;gap:4px;padding:8px 12px;background:#fff;border-bottom:1px solid var(--line);overflow-x:auto;position:sticky;top:52px;z-index:4}
+nav button{border:0;background:none;padding:9px 14px;border-radius:8px;cursor:pointer;font-size:14px;white-space:nowrap;color:var(--mut);font-family:inherit}
+nav button.on{background:#FFF1E4;color:var(--o);font-weight:600}
+main{max-width:1300px;margin:0 auto;padding:14px}
+.grid2{display:grid;grid-template-columns:380px 1fr;gap:16px;align-items:start}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+.filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:12px}
+label{font-size:12px;color:var(--mut);display:block;margin-bottom:3px}
+input,select,textarea{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font:inherit;background:#fff}
+input:focus,select:focus,textarea:focus{outline:2px solid #F9C79B;border-color:var(--o)}
+.tg{background:#E6EEF5;border-radius:12px;padding:10px}
+.tg .hd{font-size:12px;color:var(--mut);margin-bottom:6px;display:flex;justify-content:space-between}
+.msg{background:#fff;border-radius:4px 14px 14px 14px;padding:10px 12px;font-size:14px;line-height:1.45;white-space:pre-wrap}
+.msg b{font-weight:600}
+.item h3{margin:0 0 4px;font-size:15px;line-height:1.3}
+.item .meta{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:4px 14px;font-size:13px;color:var(--mut);margin:6px 0}
+.item .meta span b{color:var(--g);font-weight:600}
+.price{font-size:17px;font-weight:700;color:var(--g)}
+.row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.chip{display:inline-block;font-size:12px;padding:2px 8px;border-radius:10px;background:#EEF0F3;color:var(--mut)}
+.chip.hot{background:#FFE9D6;color:#B85600}
+.chip.new{background:#E0F4E9;color:var(--ok)}
+.chip.urgent{background:#FCE4E4;color:var(--bad)}
+.st{display:flex;gap:4px}
+.st button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:5px 9px;font-size:13px;cursor:pointer;font-family:inherit}
+.st button.on.i{background:#FFF1E4;border-color:var(--o);color:#B85600}
+.st button.on.s{background:#E0F4E9;border-color:var(--ok);color:var(--ok)}
+.st button.on.r{background:#EEE;border-color:#999;color:#666}
+.item.rej{opacity:.5}
+mark{background:#FFE08A;padding:0 1px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px}
+.stat b{font-size:22px;display:block}
+.stat span{font-size:12px;color:var(--mut)}
+.kw{display:inline-flex;gap:4px;align-items:center;background:#FFF1E4;color:#B85600;padding:4px 6px 4px 10px;border-radius:14px;margin:3px;font-size:13px}
+.kw button{border:0;background:none;cursor:pointer;color:#B85600;font-size:15px}
+.empty{text-align:center;color:var(--mut);padding:30px}
+.modal{position:fixed;inset:0;background:rgba(31,35,41,.55);display:none;align-items:center;justify-content:center;z-index:20;padding:12px}
+.modal.on{display:flex}
+.modal .box{background:#fff;border-radius:14px;max-width:560px;width:100%;max-height:85vh;overflow:auto;padding:18px}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--g);color:#fff;padding:10px 16px;border-radius:10px;z-index:30;opacity:0;transition:.25s;pointer-events:none;max-width:90vw}
+.toast.on{opacity:1}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td,th{padding:7px 6px;border-bottom:1px solid var(--line);text-align:left}
+@media(max-width:900px){.grid2{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}nav{top:92px}}
+@media(max-width:560px){header{padding:10px 12px}main{padding:10px}nav{top:88px}}
+</style>
+</head>
+<body>
+<header>
+  <h1><b>EGM</b> · Радар тендеров и строек</h1><span class="tag">демо</span><span class="sp"></span>
+  <button class="btn sm" id="crmBtn">В CRM: <span id="crmCnt">0</span></button>
+  <button class="btn sm" id="resetBtn">Сбросить демо</button>
+</header>
+<nav id="nav">
+  <button data-t="digest" class="on">Утренняя подборка</button>
+  <button data-t="tenders">Закупки</button>
+  <button data-t="sites">Новые стройки</button>
+  <button data-t="settings">Настройки</button>
+</nav>
+<main id="main"></main>
+
+<div class="modal" id="modal"><div class="box" id="modalBox"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const LS='egm_tenders_v1';
+const TODAY=new Date('2026-11-07');
+const quarries={'Щурово':'Карьер «Щуровский» (Коломна)','Воскресенск':'Карьер «Лопатинский» (Воскресенск)','Ступино':'Карьер «Ступинский» (Ступино)'};
+const D=n=>{const d=new Date(TODAY);d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)};
+const tenders=[
+{id:'T1',title:'Поставка щебня гранитного фр. 20-40 для ремонта дорог',plat:'zakupki.gov.ru',cust:'ГБУ «Автомобильные дороги» по ЮВАО',inn:'7721548302',sum:4860000,due:D(3),reg:'Москва',dist:'ЮВАО',isNew:1,kind:'Щебень'},
+{id:'T2',title:'Вывоз и утилизация снега с территории управы района Выхино-Жулебино',plat:'zakupki.gov.ru',cust:'Управа района Выхино-Жулебино',inn:'7720412590',sum:2350000,due:D(5),reg:'Москва',dist:'ЮВАО',isNew:1,kind:'Снег'},
+{id:'T3',title:'Поставка песка строительного (карьерного) 1200 т',plat:'ЕИС · 44-ФЗ',cust:'МУП «Благоустройство» г.о. Домодедово',inn:'5009031177',sum:1020000,due:D(6),reg:'МО',dist:'Домодедово',isNew:1,kind:'Песок'},
+{id:'T4',title:'Услуги по вывозу грунта со стройплощадки ЖК «Новое Измайлово», 8 000 м³',plat:'B2B-Center',cust:'ООО «СЗ Измайлово-Девелопмент»',inn:'5047203318',sum:6400000,due:D(8),reg:'МО',dist:'Балашиха',isNew:0,kind:'Грунт'},
+{id:'T5',title:'Поставка ПГС для устройства оснований тротуаров',plat:'zakupki.gov.ru',cust:'ГКУ «Дирекция благоустройства» г. Подольск',inn:'5036098245',sum:1780000,due:D(2),reg:'МО',dist:'Подольск',isNew:0,kind:'ПГС'},
+{id:'T6',title:'Поставка щебня известнякового фр. 5-20, 3000 т',plat:'Сбербанк-АСТ',cust:'АО «Бетон-Мастер»',inn:'5042116740',sum:7350000,due:D(10),reg:'МО',dist:'Раменское',isNew:1,kind:'Щебень'},
+{id:'T7',title:'Механизированная уборка и вывоз снега, ТЦ «Мега-Парк» и прилегающая территория',plat:'Fabrikant',cust:'ООО «УК Мега-Парк»',inn:'5029187764',sum:3100000,due:D(4),reg:'МО',dist:'Мытищи',isNew:1,kind:'Снег'},
+{id:'T8',title:'Аренда самосвалов 20 т с экипажем (сезон 2026-27)',plat:'B2B-Center',cust:'АО «Дорстрой-МО»',inn:'5040077812',sum:5200000,due:D(12),reg:'МО',dist:'Красногорск',isNew:0,kind:'Аренда'},
+{id:'T9',title:'Поставка щебня вторичного (бетонный бой) фр. 0-40 для временных дорог',plat:'zakupki.gov.ru',cust:'ГУП «Мосавтодор» филиал Юг',inn:'5031064290',sum:2940000,due:D(7),reg:'МО',dist:'Серпухов',isNew:0,kind:'Щебень'},
+{id:'T10',title:'Вывоз снега с придомовых территорий (14 МКД)',plat:'ЕИС · 44-ФЗ',cust:'МУП «ЖЭК-3» г. Люберцы',inn:'5027112059',sum:1450000,due:D(9),reg:'МО',dist:'Люберцы',isNew:1,kind:'Снег'},
+{id:'T11',title:'Поставка песка и щебня для благоустройства парка «Дубрава»',plat:'zakupki.gov.ru',cust:'Администрация г.о. Химки',inn:'5047011230',sum:890000,due:D(1),reg:'МО',dist:'Химки',isNew:0,kind:'Песок'},
+{id:'T12',title:'Разработка и вывоз грунта котлована, склад класса А',plat:'Roseltorg',cust:'ООО «Логистик-Парк Холдинг»',inn:'5050189031',sum:12800000,due:D(14),reg:'МО',dist:'Ногинск',isNew:1,kind:'Грунт'},
+{id:'T13',title:'Поставка щебня гранитного фр. 40-70 для ж/д подсыпки',plat:'Сбербанк-АСТ',cust:'ООО «ТрансСтрой-Юг»',inn:'5024133672',sum:9100000,due:D(11),reg:'МО',dist:'Коломна',isNew:0,kind:'Щебень'},
+{id:'T14',title:'Услуги погрузчика для работ по снегоуборке, 4 объекта',plat:'B2B-Center',cust:'ООО «Склад-Сервис»',inn:'5012098815',sum:420000,due:D(6),reg:'МО',dist:'Ступино',isNew:1,kind:'Аренда'},
+{id:'T15',title:'Поставка песка карьерного для бетонного узла',plat:'Fabrikant',cust:'ООО «БетонПром»',inn:'5038201117',sum:3350000,due:D(5),reg:'МО',dist:'Воскресенск',isNew:1,kind:'Песок'},
+{id:'T16',title:'Вывоз строительного грунта и мусора с объекта реконструкции школы №14',plat:'zakupki.gov.ru',cust:'ГБОУ «Школа №14»',inn:'7709865410',sum:760000,due:D(4),reg:'Москва',dist:'ЗАО',isNew:0,kind:'Грунт'}
+];
+const sites=[
+{id:'S1',name:'ЖК «Лесной квартал», 3 очередь',dev:'ГК «Этажи-МО»',inn:'5029174402',addr:'г. Воскресенск, ул. Хрипунова, вл. 12',permit:'50-RU50-0412-2026',date:D(-2),area:'48 000 м²',q:'Воскресенск',km:9,dist:'Воскресенск',need:'грунт, песок, щебень 20-40'},
+{id:'S2',name:'Склад класса А «Логопарк Коломна»',dev:'ООО «Логопарк Девелопмент»',inn:'5022130987',addr:'г.о. Коломна, д. Щурово, уч. 4',permit:'50-RU50-0377-2026',date:D(-4),area:'62 000 м²',q:'Щурово',km:4,dist:'Коломна',need:'щебень, ПГС, вывоз грунта'},
+{id:'S3',name:'Реконструкция Каширского шоссе, участок 14–21 км',dev:'ГУП «Мосавтодор»',inn:'5031064290',addr:'Ленинский г.о., Каширское шоссе',permit:'50-RU50-0398-2026',date:D(-1),area:'7 км',q:'Щурово',km:38,dist:'Ленинский',need:'щебень 20-40, 40-70, песок'},
+{id:'S4',name:'ЖК «Ступино-Парк», корпуса 5–9',dev:'ООО «СЗ Ступино-Парк»',inn:'5045098123',addr:'г. Ступино, ул. Тургенева, 21',permit:'50-RU50-0420-2026',date:D(-1),area:'34 000 м²',q:'Ступино',km:6,dist:'Ступино',need:'песок, ПГС, щебень'},
+{id:'S5',name:'Производственный комплекс «АгроПак»',dev:'АО «АгроПак»',inn:'5042088311',addr:'г.о. Егорьевск, пром. зона «Северная»',permit:'50-RU50-0365-2026',date:D(-7),area:'21 000 м²',q:'Воскресенск',km:31,dist:'Егорьевск',need:'щебень, песок'},
+{id:'S6',name:'Мкр. «Новые Горки», 2 этап',dev:'ГК «Горки-Инвест»',inn:'5012204455',addr:'г.о. Балашиха, мкр. Новое Измайлово',permit:'50-RU50-0431-2026',date:D(0),area:'80 000 м²',q:'Воскресенск',km:74,dist:'Балашиха',need:'грунт, ПГС'},
+{id:'S7',name:'Дорога-обход г. Зарайск',dev:'ГКУ МО «Управление дорожного строительства»',inn:'5029129086',addr:'г.о. Зарайск, обход, 0–6 км',permit:'50-RU50-0409-2026',date:D(-3),area:'6 км',q:'Щурово',km:27,dist:'Зарайск',need:'щебень 20-40, 40-70, песок'},
+{id:'S8',name:'Школа на 1100 мест, мкр. Западный',dev:'ГКУ МО «Дирекция строительства»',inn:'5040155020',addr:'г. Ступино, мкр. Западный',permit:'50-RU50-0417-2026',date:D(-5),area:'9 800 м²',q:'Ступино',km:11,dist:'Ступино',need:'песок, ПГС, вывоз грунта'}
+];
+const defaultKw=['щебень','песок','пгс','вывоз грунта','вывоз снега','снег','самосвал'];
+let S;
+function load(){try{S=JSON.parse(localStorage.getItem(LS))}catch(e){}
+ if(!S)S={tab:'digest',st:{},kw:defaultKw.slice(),crm:[],f:{q:'',min:'',max:'',dist:'',km:'',st:'',kind:'',sort:'due'}}}
+function save(){localStorage.setItem(LS,JSON.stringify(S))}
+const $=s=>document.querySelector(s);
+const rub=n=>n.toLocaleString('ru-RU')+' ₽';
+const days=d=>Math.round((new Date(d)-TODAY)/864e5);
+const dfmt=d=>{const [y,m,dd]=d.split('-');return dd+'.'+m+'.'+y};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),2200)}
+function hl(text){let h=esc(text);S.kw.filter(k=>k.trim()).forEach(k=>{const r=new RegExp('('+k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi');h=h.replace(r,'<mark>$1</mark>')});return h}
+function kwMatch(o){const t=(o.title||o.name+' '+o.need).toLowerCase();return S.kw.some(k=>k.trim()&&t.includes(k.toLowerCase()))}
+function dueChip(d){const n=days(d);return n<=2?`<span class="chip urgent">подача: ${dfmt(d)} (ещё ${n} дн.)</span>`:`<span class="chip">подача до ${dfmt(d)} (${n} дн.)</span>`}
+function setSt(id,v){S.st[id]=S.st[id]===v?'':v;save();render();if(S.st[id])toast({i:'Отмечено: интересно',s:'Отмечено: подаём',r:'Отказ — скрыто из подборки'}[S.st[id]])}
+function stBtns(id){const v=S.st[id]||'';return `<div class="st"><button class="i ${v=='i'?'on':''}" onclick="setSt('${id}','i')">★ Интересно</button><button class="s ${v=='s'?'on':''}" onclick="setSt('${id}','s')">✔ Подаём</button><button class="r ${v=='r'?'on':''}" onclick="setSt('${id}','r')">✖ Отказ</button></div>`}
+function crmBtn(id){const has=S.crm.some(c=>c.id===id);return `<button class="btn sm ${has?'':'p'}" onclick="toCrm('${id}')">${has?'✓ в очереди обзвона':'📞 В CRM на обзвон'}</button>`}
+function toCrm(id){if(S.crm.some(c=>c.id===id)){toast('Уже в очереди обзвона');return}
+ const t=tenders.find(x=>x.id===id),s=sites.find(x=>x.id===id);
+ const o=t?{id,name:t.cust,inn:t.inn,topic:t.title,sum:t.sum,type:'закупка'}:{id,name:s.dev,inn:s.inn,topic:s.name+' — '+s.addr,sum:0,type:'стройка'};
+ o.added=new Date().toLocaleString('ru-RU');o.status='новый';S.crm.push(o);save();render();toast('Добавлено в CRM: '+o.name)}
+function tenderCard(t){const v=S.st[t.id];return `<div class="card item ${v=='r'?'rej':''}"><div class="row"><span class="chip">${esc(t.kind)}</span>${t.isNew?'<span class="chip new">новое</span>':''}${kwMatch(t)?'<span class="chip hot">по вашим словам</span>':''}<span class="sp"></span>${dueChip(t.due)}</div>
+<h3>${hl(t.title)}</h3><div class="price">${rub(t.sum)} <span style="font-size:12px;font-weight:400;color:var(--mut)">НМЦК</span></div>
+<div class="meta"><span>Заказчик: <b>${esc(t.cust)}</b></span><span>ИНН: <b>${t.inn}</b></span><span>Площадка: <b>${esc(t.plat)}</b></span><span>Регион: <b>${esc(t.reg)}, ${esc(t.dist)}</b></span></div>
+<div class="row" style="justify-content:space-between"><div class="row">${stBtns(t.id)}${crmBtn(t.id)}</div><a href="#" onclick="event.preventDefault();toast('Демо: ссылка на закупку откроется на площадке')" style="color:var(--o);font-size:13px">Открыть на площадке ↗</a></div></div>`}
+function siteCard(s){const v=S.st[s.id];return `<div class="card item ${v=='r'?'rej':''}"><div class="row"><span class="chip">${esc(s.q)}</span><span class="chip ${s.km<=15?'hot':''}">до карьера ${s.km} км</span>${days(s.date)>=-2?'<span class="chip new">новое</span>':''}</div>
+<h3>${esc(s.name)}</h3>
+<div class="meta"><span>Застройщик: <b>${esc(s.dev)}</b></span><span>ИНН: <b>${s.inn}</b></span><span>Адрес: <b>${esc(s.addr)}</b></span><span>Разрешение: <b>№ ${s.permit}</b> от ${dfmt(s.date)}</span><span>Площадь/протяжённость: <b>${s.area}</b></span><span>Ближайший карьер: <b>${esc(quarries[s.q])}</b></span><span>Что понадобится: <b>${esc(s.need)}</b></span></div>
+<div class="row">${stBtns(s.id)}${crmBtn(s.id)}</div></div>`}
+
+function filtT(){const f=S.f;let r=tenders.filter(t=>{
+ if(S.st[t.id]=='r'&&f.st!='r')return false;
+ if(f.q&&!(t.title+' '+t.cust).toLowerCase().includes(f.q.toLowerCase()))return false;
+ if(f.min&&t.sum<+f.min*1000)return false;if(f.max&&t.sum>+f.max*1000)return false;
+ if(f.dist&&t.reg!==f.dist)return false;if(f.kind&&t.kind!==f.kind)return false;
+ if(f.st&&(S.st[t.id]||'')!==(f.st=='n'?'':f.st))return false;return true});
+ r.sort((a,b)=>f.sort=='sum'?b.sum-a.sum:new Date(a.due)-new Date(b.due));return r}
+function filtS(){const f=S.f;return sites.filter(s=>{
+ if(S.st[s.id]=='r'&&f.st!='r')return false;
+ if(f.q&&!(s.name+' '+s.dev+' '+s.addr).toLowerCase().includes(f.q.toLowerCase()))return false;
+ if(f.km&&s.km>+f.km)return false;if(f.dist&&f.dist=='Москва')return false;
+ if(f.st&&(S.st[s.id]||'')!==(f.st=='n'?'':f.st))return false;return true}).sort((a,b)=>a.km-b.km)}
+
+function digestText(){const T=tenders.filter(t=>kwMatch(t)&&t.isNew&&S.st[t.id]!='r').sort((a,b)=>b.sum-a.sum).slice(0,5);
+ const St=sites.filter(s=>kwMatch(s)&&s.km<=40&&days(s.date)>=-3&&S.st[s.id]!='r').sort((a,b)=>a.km-b.km).slice(0,3);
+ const tot=T.reduce((a,t)=>a+t.sum,0);
+ let m=`<b>☀ Доброе утро! Радар EGM на ${dfmt(D(0))}</b>\nНашёл ${T.length} новых закупок на ${rub(tot)} и ${St.length} стройки рядом с карьерами.\n\n<b>Закупки:</b>\n`;
+ T.forEach((t,i)=>{m+=`${i+1}. ${esc(t.title)}\n   ${rub(t.sum)} · ${esc(t.dist)} · подача до ${dfmt(t.due)}\n`});
+ m+=`\n<b>Стройки у карьеров:</b>\n`;St.forEach((s,i)=>{m+=`${i+1}. ${esc(s.name)}\n   ${esc(s.dev)} · ${s.km} км до карьера (${esc(s.q)})\n`});
+ m+=`\nСлова поиска: ${S.kw.map(esc).join(', ')}`;return {m,T,St}}
+function viewDigest(){const d=digestText();const open=tenders.filter(t=>S.st[t.id]=='s'||S.st[t.id]=='i').length+sites.filter(t=>S.st[t.id]=='s'||S.st[t.id]=='i').length;
+ const urgent=tenders.filter(t=>days(t.due)<=2&&S.st[t.id]!='r').length;
+ return `<div class="stats"><div class="stat"><b>${tenders.filter(t=>t.isNew).length}</b><span>новых закупок</span></div><div class="stat"><b>${sites.length}</b><span>строек у карьеров</span></div><div class="stat"><b>${urgent}</b><span>срок подачи ≤ 2 дней</span></div><div class="stat"><b>${open}</b><span>в работе (интересно / подаём)</span></div></div>
+<div class="grid2"><div><div class="tg"><div class="hd"><span>Радар EGM · бот</span><span>08:00</span></div><div class="msg">${d.m.replace(/\n/g,'<br>')}</div>
+<div class="row" style="margin-top:8px"><button class="btn sm" onclick="go('tenders')">Все закупки →</button><button class="btn sm" onclick="go('sites')">Стройки →</button></div></div>
+<div class="row" style="margin-top:10px"><button class="btn sm" onclick="copyDigest()">Скопировать текст</button><button class="btn sm" onclick="go('settings')">Изменить слова</button></div></div>
+<div><h3 style="margin:0 0 10px">Первыми — самые срочные</h3>${tenders.filter(t=>S.st[t.id]!='r').sort((a,b)=>new Date(a.due)-new Date(b.due)).slice(0,3).map(tenderCard).join('')}</div></div>`}
+function copyDigest(){const d=digestText();const txt=d.m.replace(/<\/?b>/g,'').replace(/&amp;/g,'&').replace(/&quot;/g,'"').replace(/&lt;/g,'<').replace(/&gt;/g,'>');
+ (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>toast('Текст подборки скопирован'),()=>toast('Не удалось скопировать — выделите текст вручную'))}
+function filterBar(kind){const f=S.f;const isT=kind=='t';
+ return `<div class="card"><div class="filters">
+<div><label>Ключевое слово</label><input id="fq" value="${esc(f.q)}" placeholder="щебень, снег, ИНН…"></div>
+${isT?`<div><label>Сумма от, тыс. ₽</label><input id="fmin" type="number" value="${f.min}"></div><div><label>Сумма до, тыс. ₽</label><input id="fmax" type="number" value="${f.max}"></div>
+<div><label>Регион</label><select id="fdist"><option value="">Москва и МО</option><option ${f.dist=='Москва'?'selected':''}>Москва</option><option value="МО" ${f.dist=='МО'?'selected':''}>Московская область</option></select></div>
+<div><label>Что закупают</label><select id="fkind"><option value="">Всё</option>${['Щебень','Песок','ПГС','Грунт','Снег','Аренда'].map(k=>`<option ${f.kind==k?'selected':''}>${k}</option>`).join('')}</select></div>
+<div><label>Сортировка</label><select id="fsort"><option value="due">по сроку подачи</option><option value="sum" ${f.sort=='sum'?'selected':''}>по сумме</option></select></div>`
+ :`<div><label>До карьера не дальше, км</label><select id="fkm"><option value="">любое</option>${[10,20,40,80].map(k=>`<option ${f.km==k?'selected':''}>${k}</option>`).join('')}</select></div>`}
+<div><label>Статус</label><select id="fst"><option value="">Все (без отказов)</option><option value="n" ${f.st=='n'?'selected':''}>без отметки</option><option value="i" ${f.st=='i'?'selected':''}>интересно</option><option value="s" ${f.st=='s'?'selected':''}>подаём</option><option value="r" ${f.st=='r'?'selected':''}>отказ</option></select></div>
+</div><button class="btn sm" onclick="resetF()">Сбросить фильтры</button></div>`}
+function bindF(){['q','min','max','dist','kind','sort','km','st'].forEach(k=>{const e=$('#f'+k);if(e)e.oninput=e.onchange=()=>{S.f[k]=e.value;save();const pos=e.selectionStart;renderList();}})}
+function resetF(){S.f={q:'',min:'',max:'',dist:'',km:'',st:'',kind:'',sort:'due'};save();render()}
+function renderList(){const el=$('#list');if(!el)return;if(S.tab=='tenders'){const r=filtT();el.innerHTML=`<div style="margin:0 0 10px;color:var(--mut)">Найдено: ${r.length} · на сумму ${rub(r.reduce((a,t)=>a+t.sum,0))}</div>`+(r.map(tenderCard).join('')||'<div class="empty">Ничего не найдено — ослабьте фильтры</div>')}
+ else{const r=filtS();el.innerHTML=`<div style="margin:0 0 10px;color:var(--mut)">Найдено: ${r.length}</div>`+(r.map(siteCard).join('')||'<div class="empty">Нет строек в заданном радиусе</div>')}}
+function viewSettings(){return `<div class="grid2"><div class="card"><h3 style="margin-top:0">Ключевые слова</h3><p style="color:var(--mut);font-size:13px">По этим словам радар отбирает закупки и стройки в утреннюю подборку и подсвечивает их в ленте.</p>
+<div id="kws">${S.kw.map((k,i)=>`<span class="kw">${esc(k)}<button onclick="delKw(${i})">×</button></span>`).join('')||'<span class="empty">Слов нет</span>'}</div>
+<div class="row" style="margin-top:10px"><input id="newkw" placeholder="Новое слово, например «известняк»" style="flex:1" onkeydown="if(event.key=='Enter')addKw()"><button class="btn p" onclick="addKw()">Добавить</button></div>
+<div class="row" style="margin-top:10px"><button class="btn sm" onclick="S.kw=defaultKw.slice();save();render();toast('Возвращены слова по умолчанию')">По умолчанию</button></div></div>
+<div class="card"><h3 style="margin-top:0">Как приходит подборка</h3><p style="font-size:14px;line-height:1.5">Каждое утро в 08:00 в Telegram придёт сообщение: новые закупки по вашим словам и стройки не дальше 40 км от карьеров. Настройки сохраняются в этом браузере.</p>
+<label>Время отправки</label><select onchange="toast('Сохранено: '+this.value)"><option>08:00</option><option>07:00</option><option>09:00</option></select></div></div>`}
+function addKw(){const e=$('#newkw');const v=e.value.trim().toLowerCase();if(!v)return;if(S.kw.includes(v)){toast('Такое слово уже есть');return}S.kw.push(v);save();render();toast('Слово добавлено')}
+function delKw(i){S.kw.splice(i,1);save();render()}
+function go(t){S.tab=t;save();render();window.scrollTo(0,0)}
+function render(){document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.t==S.tab));$('#crmCnt').textContent=S.crm.length;
+ const m=$('#main');
+ if(S.tab=='digest')m.innerHTML=viewDigest();
+ else if(S.tab=='tenders'){m.innerHTML=filterBar('t')+'<div id="list"></div>';bindF();renderList()}
+ else if(S.tab=='sites'){m.innerHTML=filterBar('s')+'<div id="list"></div>';bindF();renderList()}
+ else m.innerHTML=viewSettings()}
+function openCrm(){const b=$('#modalBox');
+ b.innerHTML=`<div class="row"><h3 style="margin:0">Очередь обзвона (CRM)</h3><span class="sp"></span><button class="btn sm" onclick="closeM()">Закрыть</button></div>`+
+ (S.crm.length?`<table style="margin-top:10px"><tr><th>Кого набрать</th><th>Статус</th><th></th></tr>${S.crm.map((c,i)=>`<tr><td><b>${esc(c.name)}</b><br><span style="font-size:12px;color:var(--mut)">ИНН ${c.inn} · ${c.type}<br>${esc(c.topic)}</span></td><td><select onchange="S.crm[${i}].status=this.value;save()">${['новый','дозвонились','КП отправлено','отказ'].map(s=>`<option ${c.status==s?'selected':''}>${s}</option>`).join('')}</select></td><td><button class="btn sm" onclick="S.crm.splice(${i},1);save();render();openCrm()">✖</button></td></tr>`).join('')}</table>`:'<div class="empty">Очередь пуста. Нажмите «В CRM на обзвон» у закупки или стройки.</div>');
+ $('#modal').classList.add('on')}
+function closeM(){$('#modal').classList.remove('on')}
+$('#modal').onclick=e=>{if(e.target.id=='modal')closeM()};
+$('#crmBtn').onclick=openCrm;
+$('#resetBtn').onclick=()=>{if(confirm('Сбросить все отметки, слова и очередь обзвона?')){localStorage.removeItem(LS);load();render();toast('Демо сброшено')}};
+document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>go(b.dataset.t));
+load();render();
+</script>
+</body>
+</html>

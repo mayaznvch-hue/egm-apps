@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EGM · Личный кабинет</title>
+<style>
+*{box-sizing:border-box}
+:root{--o:#F07A1A;--g:#1F2329;--bg:#F2F3F5;--line:#E3E6EA;--mut:#6B7380;--ok:#1E9E5A;--bad:#D64545;--blue:#2F7FD1}
+html,body{margin:0}
+body{font-family:system-ui,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--g);font-size:15px;min-height:100vh}
+header{background:var(--g);color:#fff;padding:10px 14px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:10}
+header h1{font-size:17px;margin:0;font-weight:600}header h1 b{color:var(--o)}
+.tag{background:var(--o);color:#fff;font-size:11px;padding:2px 8px;border-radius:10px;text-transform:uppercase;letter-spacing:.5px}
+.sp{flex:1}
+.btn{border:1px solid var(--line);background:#fff;color:var(--g);padding:10px 14px;border-radius:10px;cursor:pointer;font:inherit;font-size:14px}
+.btn:hover{border-color:var(--o)}.btn.p{background:var(--o);border-color:var(--o);color:#fff;font-weight:600}
+.btn.sm{padding:6px 11px;font-size:13px}.btn.full{width:100%}.btn:disabled{opacity:.4;cursor:default}
+header .btn{background:transparent;color:#fff;border-color:#4a5058;padding:5px 10px;font-size:13px}
+.shell{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:210px 1fr;gap:16px;padding:14px}
+.side{position:sticky;top:64px;align-self:start;display:flex;flex-direction:column;gap:3px}
+.side button{border:0;background:none;text-align:left;padding:11px 12px;border-radius:10px;cursor:pointer;font:inherit;color:var(--mut);display:flex;gap:10px;align-items:center}
+.side button.on{background:#fff;color:var(--o);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.side .who{background:#fff;border-radius:12px;padding:12px;margin-bottom:8px;font-size:13px}
+.main{min-width:0}
+.tabs{display:none}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.card h3{margin:0 0 8px;font-size:16px}
+h2{font-size:19px;margin:2px 2px 10px}
+label{font-size:12px;color:var(--mut);display:block;margin:10px 0 3px}
+input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;font:inherit;background:#fff}
+input:focus,select:focus,textarea:focus{outline:2px solid #F9C79B;border-color:var(--o)}
+.chip{display:inline-block;font-size:12px;padding:2px 9px;border-radius:10px;background:#EEF0F3;color:var(--mut);white-space:nowrap}
+.chip.o{background:#FFE9D6;color:#B85600}.chip.g{background:#E0F4E9;color:var(--ok)}.chip.r{background:#FCE4E4;color:var(--bad)}.chip.b{background:#E3EEFA;color:var(--blue)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.mut{color:var(--mut);font-size:13px}
+.big{font-size:26px;font-weight:700}
+.kv{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px dashed var(--line);font-size:14px}
+.kv:last-child{border:0}.kv b{text-align:right}
+.tl{display:flex;gap:3px;margin:10px 0 4px}.tl i{flex:1;height:6px;border-radius:3px;background:#E3E6EA}.tl i.done{background:var(--ok)}.tl i.on{background:var(--o)}
+.map{height:130px;border-radius:10px;background:linear-gradient(#EDF1EC,#E4EADF);position:relative;overflow:hidden;margin:10px 0;border:1px solid var(--line)}
+.map svg{position:absolute;inset:0;width:100%;height:100%}
+.truck{position:absolute;top:50%;transform:translate(-50%,-50%);font-size:22px;transition:left .4s}
+.hello{background:linear-gradient(135deg,#1F2329,#343b44);color:#fff;border-radius:14px;padding:16px;margin-bottom:12px}
+.hello .big{color:#fff}
+.hello .mut{color:#b9bfc7}
+.tbl{width:100%;border-collapse:collapse;font-size:14px}.tbl td:last-child,.tbl th:last-child{white-space:nowrap;text-align:right}.tbl th,.tbl td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}.tbl th{font-size:12px;color:var(--mut)}
+.tw{overflow-x:auto}
+.doc{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.doc:last-child{border:0}.doc .ic{width:38px;height:38px;border-radius:9px;background:#FFF1E4;display:flex;align-items:center;justify-content:center;font-size:18px;flex:none}
+.doc .t{flex:1;min-width:0}
+.pills{display:flex;gap:6px;overflow-x:auto;margin-bottom:10px;padding-bottom:2px}
+.pills button{border:1px solid var(--line);background:#fff;border-radius:16px;padding:6px 13px;cursor:pointer;font:inherit;font-size:13px;white-space:nowrap}
+.pills button.on{background:var(--g);color:#fff;border-color:var(--g)}
+.modal{position:fixed;inset:0;background:rgba(31,35,41,.6);display:none;align-items:flex-end;justify-content:center;z-index:30}
+.modal.on{display:flex}.modal .box{background:#fff;border-radius:18px 18px 0 0;max-width:620px;width:100%;max-height:92vh;overflow:auto;padding:16px}
+@media(min-width:700px){.modal{align-items:center;padding:12px}.modal .box{border-radius:16px}}
+.toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%);background:var(--g);color:#fff;padding:10px 16px;border-radius:10px;z-index:40;opacity:0;transition:.25s;pointer-events:none;max-width:90vw;text-align:center}
+.toast.on{opacity:1}
+.login{max-width:380px;margin:40px auto;padding:0 14px}
+.login .card{padding:22px}
+.code{display:flex;gap:8px;justify-content:center;margin:12px 0}
+.code input{width:52px;height:58px;text-align:center;font-size:26px;padding:0}
+.alert{padding:10px 12px;border-radius:10px;font-size:14px;margin:8px 0}.alert.w{background:#FFF4E5;border:1px solid #F5CB92}.alert.e{background:#FCE9E9;border:1px solid #F1B5B5}.alert.s{background:#E7F6EE;border:1px solid #A9DCC1}
+.empty{text-align:center;color:var(--mut);padding:24px}
+.price-old{text-decoration:line-through;color:var(--mut);font-size:13px}
+.qty{display:flex;align-items:center;gap:8px}.qty button{width:36px;height:36px;border-radius:10px;border:1px solid var(--line);background:#fff;font-size:20px;cursor:pointer}
+.qty input{width:70px;text-align:center}
+.perm{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.perm label{display:flex;gap:5px;align-items:center;margin:0;font-size:13px;color:var(--g);background:#F5F6F8;padding:4px 9px;border-radius:12px}.perm input{width:auto}
+.paper{font-size:13px;line-height:1.5}.paper h4{text-align:center;margin:4px 0 8px;font-size:15px}
+@media(max-width:760px){
+ .shell{grid-template-columns:1fr;padding:10px 10px 80px;gap:0}
+ .side{display:none}
+ .tabs{display:flex;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);z-index:9}
+ .tabs button{flex:1;border:0;background:none;padding:8px 0 7px;font:inherit;font-size:11px;color:var(--mut);cursor:pointer}
+ .tabs button i{display:block;font-style:normal;font-size:19px}.tabs button.on{color:var(--o);font-weight:600}
+ .hide-m{display:none}
+}
+@media print{header,.tabs,.side,.toast,.noprint{display:none!important}.modal{position:static;background:none}.modal .box{max-height:none}.shell,.login{display:none}}
+</style>
+</head>
+<body>
+<header>
+  <h1 style="white-space:nowrap"><b>EGM</b> · Кабинет</h1><span class="tag">демо</span><span class="sp"></span>
+  <button class="btn" id="outBtn" style="display:none" onclick="logout()">Выйти</button>
+  <button class="btn" style="white-space:nowrap" onclick="resetDemo()">Сбросить</button>
+</header>
+<div id="app"></div>
+<div class="modal" id="modal"><div class="box" id="mbox"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const LS='egm_cabinet_v1';
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const rub=n=>Math.round(n).toLocaleString('ru-RU')+' ₽';
+const fmtD=iso=>{const d=new Date(iso);return String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+d.getFullYear()};
+const dShort=iso=>fmtD(iso).slice(0,5);
+const NOW=new Date(2026,10,7,11,30);
+const day=n=>{const d=new Date(NOW);d.setDate(d.getDate()+n);d.setHours(0,0,0,0);return d.toISOString()};
+const phoneDigits=s=>s.replace(/\D/g,'').replace(/^8/,'7');
+const fmtPhone=p=>{p=phoneDigits(p);return '+7 ('+p.slice(1,4)+') '+p.slice(4,7)+'-'+p.slice(7,9)+'-'+p.slice(9,11)};
+const ROLES={owner:{n:'Руководитель',perm:['order','docs','money','staff']},foreman:{n:'Прораб',perm:['order']},acc:{n:'Бухгалтер',perm:['docs','money']}};
+const PERM={order:'Заказывать материалы',docs:'Видеть документы',money:'Видеть взаиморасчёты',staff:'Управлять сотрудниками'};
+const MATS={
+ g2040:{n:'Щебень гранитный 20-40',u:'т',base:2480},g520:{n:'Щебень гранитный 5-20',u:'т',base:2600},
+ gr2040:{n:'Щебень гравийный 20-40',u:'т',base:2050},
+ l4070:{n:'Щебень известняковый 40-70',u:'т',base:1750},
+ sand:{n:'Песок карьерный',u:'т',base:780},sandm:{n:'Песок мытый',u:'т',base:980},
+ pgs:{n:'ПГС',u:'т',base:690},rec:{n:'Щебень вторичный 0-40',u:'т',base:950},
+ soil:{n:'Грунт плодородный',u:'м³',base:850}};
+const PERSONAL={g2040:2390,g520:2490,gr2040:1980,sand:740,sandm:930,pgs:650,rec:900,soil:800};
+const DELIVERY=[['Реутов (склад)',1900],['Балашиха, Железнодорожный',2400],['Мытищи, Королёв',2900],['Люберцы, Котельники',3000],['Красногорск, Химки',3400],['Подольск, Домодедово',3600]];
+const ST=['Принят','Загружается','В пути','Доставлен'];
+
+function seed(){
+ const objects=[
+  {id:'P1',name:'ЖК «Речной», корпус 2',addr:'г. Балашиха, ул. Советская, 54',zone:1},
+  {id:'P2',name:'Склад в Люберцах',addr:'г. Люберцы, Проектируемый пр-д, 12',zone:3},
+  {id:'P3',name:'Коттеджи «Сосны»',addr:'Раменский г.о., д. Ганусово, уч. 18',zone:5}];
+ const o=(id,days,obj,items,st,veh,drv,note)=>({id,date:day(days),obj,items,st,veh,drv,by:'E2',note:note||'',pos:st==2?.55:st==3?1:0});
+ const orders=[
+  {id:'З-1042',date:day(0),obj:'P1',items:[{m:'g2040',q:60},{m:'sand',q:40}],st:2,veh:'М742КА790',drv:'Кузнецов А.',by:'E2',pos:.55,note:'Рейс 2 из 5, ориентир — 14:10',eta:'14:10'},
+  {id:'З-1041',date:day(0),obj:'P2',items:[{m:'pgs',q:40}],st:1,veh:'К507МО790',drv:'Гасанов Р.',by:'E2',pos:0,note:'Загрузка на карьере',eta:'15:30'},
+  {id:'З-1038',date:day(-3),obj:'P1',items:[{m:'g2040',q:80},{m:'sandm',q:20}],st:3,veh:'А214ВС750',drv:'Сергеев И.',by:'E2',pos:1,note:'Принято Козловым П.',eta:''},
+  {id:'З-1031',date:day(-9),obj:'P3',items:[{m:'g520',q:40},{m:'sand',q:20}],st:3,veh:'Х331ТР750',drv:'Орлов В.',by:'E1',pos:1,note:'',eta:''},
+  {id:'З-1024',date:day(-16),obj:'P1',items:[{m:'g2040',q:100}],st:3,veh:'О118НЕ750',drv:'Петров Д.',by:'E2',pos:1,note:'',eta:''},
+  {id:'З-1017',date:day(-24),obj:'P2',items:[{m:'rec',q:60},{m:'pgs',q:20}],st:3,veh:'Т655УХ790',drv:'Мамедов Э.',by:'E2',pos:1,note:'',eta:''},
+  {id:'З-1009',date:day(-35),obj:'P1',items:[{m:'sand',q:60}],st:3,veh:'В903РА750',drv:'Васильев С.',by:'E1',pos:1,note:'',eta:''}];
+ const staff=[
+  {id:'E1',name:'Смирнов Андрей Павлович',phone:'79162451830',role:'owner',post:'Генеральный директор',on:true},
+  {id:'E2',name:'Козлов Павел Игоревич',phone:'79035556712',role:'foreman',post:'Прораб',on:true},
+  {id:'E3',name:'Лаптева Ирина Сергеевна',phone:'79266034485',role:'acc',post:'Главный бухгалтер',on:true}];
+ const docs=[
+  {id:'D1',type:'Счёт',num:'Сч-2371',date:day(0),sum:226400,order:'З-1042',paid:false},
+  {id:'D2',type:'Счёт',num:'Сч-2368',date:day(0),sum:96000,order:'З-1041',paid:false},
+  {id:'D3',type:'УПД',num:'УПД-4418',date:day(-3),sum:222400,order:'З-1038',paid:false},
+  {id:'D5',type:'ТТН',num:'ТТН-9120',date:day(-3),sum:0,order:'З-1038',paid:true},
+  {id:'D6',type:'УПД',num:'УПД-4361',date:day(-9),sum:148000,order:'З-1031',paid:true},
+  {id:'D7',type:'УПД',num:'УПД-4297',date:day(-16),sum:239000,order:'З-1024',paid:true},
+  {id:'D8',type:'УПД',num:'УПД-4230',date:day(-24),sum:93000,order:'З-1017',paid:true},
+  {id:'D9',type:'Акт',num:'Акт-0187',date:day(-35),sum:44400,order:'З-1009',paid:true}];
+ const pay=[
+  {date:day(-33),sum:44400,doc:'платёж № 417'},{date:day(-22),sum:93000,doc:'платёж № 502'},{date:day(-14),sum:239000,doc:'платёж № 566'},{date:day(-7),sum:148000,doc:'платёж № 611'},{date:day(-2),sum:100000,doc:'платёж № 648 (частично по УПД-4418)'}];
+ return {phone:'',auth:false,tab:'home',fo:'all',objects,orders,staff,docs,pay,user:null,cart:null,nid:{o:1043,obj:4,e:4,d:10,doc:2372}};
+}
+let S;
+function load(){try{S=JSON.parse(localStorage.getItem(LS))}catch(e){}if(!S||!S.orders)S=seed()}
+function save(){localStorage.setItem(LS,JSON.stringify(S))}
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),2400)}
+function resetDemo(){if(confirm('Сбросить все данные демо и выйти?')){localStorage.removeItem(LS);load();render();toast('Демо сброшено')}}
+function openM(h){$('#mbox').innerHTML=h;$('#modal').classList.add('on')}
+function closeM(){$('#modal').classList.remove('on')}
+$('#modal').onclick=e=>{if(e.target.id=='modal')closeM()};
+const me=()=>S.staff.find(e=>e.id==S.user);
+const can=p=>{const u=me();return u&&u.on&&ROLES[u.role].perm.includes(p)};
+const objOf=id=>S.objects.find(o=>o.id==id)||{name:'—',addr:'—'};
+const price=m=>PERSONAL[m]||MATS[m].base;
+const orderSum=(o)=>o.items.reduce((a,i)=>a+i.q*price(i.m),0)+(o.deliv||deliveryFor(o.obj)*Math.ceil(o.items.reduce((a,i)=>a+i.q,0)/20));
+function deliveryFor(objId){const o=S.objects.find(x=>x.id==objId);return DELIVERY[o&&o.zone!=null?o.zone:1][1]}
+function orderTotal(o){return o.sum||orderSum(o)}
+const stChip=s=>`<span class="chip ${s==3?'g':s==0?'o':'b'}">${ST[s]}</span>`;
+
+/* ===== вход ===== */
+function renderLogin(){
+ $('#outBtn').style.display='none';
+ const step=S.loginStep||1;
+ $('#app').innerHTML=`<div class="login"><div class="card"><div style="font-size:34px">🪨</div><h2 style="margin:4px 0">Личный кабинет клиента</h2><div class="mut">Заказы, документы и взаиморасчёты с ЕГМ в одном месте.</div>
+ ${step==1?`<label>Номер телефона</label><input id="ph" type="tel" inputmode="tel" value="${esc(S.phone?fmtPhone(S.phone):'+7 (916) 245-18-30')}" oninput="fmtInput(this)" onkeydown="if(event.key=='Enter')sendCode()">
+ <button class="btn p full" style="margin-top:14px" onclick="sendCode()">Получить код</button>
+ <div class="mut" style="margin-top:12px">Демо-номера: <a href="#" onclick="fillPh('79162451830');return false">руководитель</a> · <a href="#" onclick="fillPh('79035556712');return false">прораб</a> · <a href="#" onclick="fillPh('79266034485');return false">бухгалтер</a></div>`
+ :`<div class="mut" style="margin-top:12px">Код отправлен на ${fmtPhone(S.phone)}. Демо-код: <b>1234</b></div><div class="code">${[0,1,2,3].map(i=>`<input maxlength="1" inputmode="numeric" data-i="${i}" oninput="codeIn(this)" onkeydown="codeKey(event,this)">`).join('')}</div><div id="codeErr"></div>
+ <button class="btn p full" onclick="checkCode()">Войти</button><button class="btn full" style="margin-top:8px" onclick="S.loginStep=1;save();render()">Другой номер</button>`}
+ </div></div>`;
+ if(step==2){const f=document.querySelector('.code input');if(f)f.focus()}}
+function fmtInput(el){let d=phoneDigits(el.value);if(d[0]!='7')d='7'+d;d=d.slice(0,11);let s='+7';if(d.length>1)s+=' ('+d.slice(1,4);if(d.length>=4)s+=')';if(d.length>4)s+=' '+d.slice(4,7);if(d.length>7)s+='-'+d.slice(7,9);if(d.length>9)s+='-'+d.slice(9,11);el.value=s}
+function fillPh(p){$('#ph').value=fmtPhone(p)}
+function sendCode(){const p=phoneDigits($('#ph').value);if(p.length!=11){toast('Введите номер полностью');return}
+ if(!S.staff.some(e=>e.phone==p&&e.on)){toast('Номера нет среди сотрудников компании. Попробуйте демо-номер.');return}
+ S.phone=p;S.loginStep=2;save();render()}
+function codeIn(el){el.value=el.value.replace(/\D/g,'');const n=document.querySelector(`.code input[data-i="${+el.dataset.i+1}"]`);if(el.value&&n)n.focus();else if(el.value&&+el.dataset.i==3)checkCode()}
+function codeKey(e,el){if(e.key=='Backspace'&&!el.value){const p=document.querySelector(`.code input[data-i="${+el.dataset.i-1}"]`);if(p)p.focus()}}
+function checkCode(){const v=[...document.querySelectorAll('.code input')].map(i=>i.value).join('');if(v=='1234'){const e=S.staff.find(x=>x.phone==S.phone);S.auth=true;S.user=e.id;S.loginStep=1;S.tab=can2(e,'order')?'home':'docs';save();render();}
+ else{$('#codeErr').innerHTML='<div class="alert e">Неверный код. В демо — 1234.</div>'}}
+const can2=(e,p)=>ROLES[e.role].perm.includes(p);
+function logout(){S.auth=false;S.user=null;S.loginStep=1;save();render()}
+
+/* ===== каркас ===== */
+const TABS=[['home','🏠','Главная'],['orders','📦','Заказы'],['docs','📄','Документы'],['money','💰','Расчёты'],['more','⚙','Ещё']];
+const SIDE=[['home','🏠','Главная'],['orders','📦','Мои заказы'],['docs','📄','Документы'],['money','💰','Акт сверки и долг'],['prices','🏷','Мои цены'],['objects','📍','Мои объекты'],['staff','👥','Сотрудники']];
+function renderApp(){
+ $('#outBtn').style.display='';const u=me();
+ const sideTabs=SIDE;
+ const body=({home:vHome,orders:vOrders,docs:vDocs,money:vMoney,prices:vPrices,objects:vObjects,staff:vStaff,more:vMore})[S.tab]();
+ $('#app').innerHTML=`<div class="shell"><div class="side"><div class="who"><b>${esc(u.name)}</b><div class="mut">${ROLES[u.role].n} · ООО «СтройИнвест»</div></div>${sideTabs.map(t=>`<button class="${S.tab==t[0]?'on':''}" onclick="nav('${t[0]}')"><span>${t[1]}</span>${t[2]}</button>`).join('')}</div><div class="main">${body}</div></div>
+ <div class="tabs">${TABS.map(t=>`<button class="${S.tab==t[0]||(t[0]=='more'&&['prices','objects','staff'].includes(S.tab))?'on':''}" onclick="nav('${t[0]}')"><i>${t[1]}</i>${t[2]}</button>`).join('')}</div>`}
+function nav(t){S.tab=t;save();render();scrollTo(0,0)}
+function deny(p){return `<div class="card"><div class="empty"><div style="font-size:30px">🔒</div><b>Нет доступа</b><div class="mut" style="margin-top:6px">У вашей роли («${ROLES[me().role].n}») нет права «${PERM[p]}». Обратитесь к руководителю компании.</div></div></div>`}
+
+/* ===== главная ===== */
+function debt(){const inv=S.docs.filter(d=>d.type=='УПД'||d.type=='Акт').reduce((a,d)=>a+d.sum,0);const paid=S.pay.reduce((a,p)=>a+p.sum,0);return inv-paid}
+function vHome(){const u=me();const act=S.orders.filter(o=>o.st<3);const last=S.orders.filter(o=>o.st==3)[0];
+ return `<div class="hello"><div class="mut">Здравствуйте, ${esc(u.name.split(' ')[1])}</div><div style="font-size:18px;font-weight:600;margin:2px 0 10px">ООО «СтройИнвест»</div>
+ ${can('money')?`<div class="mut">Текущий долг</div><div class="big">${rub(Math.max(0,debt()))}</div>`:`<div class="mut">Машин в пути сегодня</div><div class="big">${act.length}</div>`}</div>
+ ${can('order')?`<div class="row" style="margin-bottom:12px"><button class="btn p" style="flex:1" onclick="newOrder()">+ Новый заказ</button>${last?`<button class="btn" style="flex:1" onclick="repeat('${last.id}')">↻ Как в прошлый раз</button>`:''}</div>`:''}
+ <h2>Едут сейчас</h2>${act.map(orderCard).join('')||'<div class="card empty">Сейчас активных заказов нет</div>'}
+ ${last&&can('order')?`<h2>Последний заказ</h2>${orderCard(last)}`:''}`}
+
+/* ===== заказы ===== */
+function itemsText(o){return o.items.map(i=>MATS[i.m].n+' — '+i.q+' '+MATS[i.m].u).join('; ')}
+function orderCard(o){const by=S.staff.find(e=>e.id==o.by);
+ return `<div class="card" onclick="openOrder('${o.id}')" style="cursor:pointer"><div class="row"><b>${o.id}</b>${stChip(o.st)}<span class="sp"></span><span class="mut">${dShort(o.date)}</span></div>
+ <div style="margin:6px 0">${esc(itemsText(o))}</div><div class="mut">${esc(objOf(o.obj).name)} · ${esc(objOf(o.obj).addr)}</div>
+ ${o.st<3?`<div class="tl">${ST.map((s,i)=>`<i class="${i<o.st?'done':i==o.st?'on':''}"></i>`).join('')}</div><div class="mut">${o.st==2?'Машина '+esc(o.veh)+' в пути, ждите около '+o.eta:o.st==1?'Загружаем, выезд ориентировочно в '+o.eta:'Заказ принят, назначаем машину'}</div>`:''}
+ <div class="row" style="margin-top:8px"><b>${rub(orderTotal(o))}</b><span class="sp"></span>${can('order')?`<button class="btn sm" onclick="event.stopPropagation();repeat('${o.id}')">↻ Повторить</button>`:''}</div></div>`}
+function vOrders(){const f=S.fo;const list=S.orders.filter(o=>f=='all'||(f=='act'?o.st<3:o.st==3));
+ return `<div class="row"><h2>Мои заказы</h2><span class="sp"></span>${can('order')?'<button class="btn p sm" onclick="newOrder()">+ Новый</button>':''}</div>
+ <div class="pills">${[['all','Все'],['act','Активные'],['done','Доставленные']].map(p=>`<button class="${f==p[0]?'on':''}" onclick="S.fo='${p[0]}';save();render()">${p[1]}</button>`).join('')}</div>${list.map(orderCard).join('')||'<div class="card empty">Нет заказов</div>'}`}
+function track(o){const p=Math.round(o.pos*100);
+ return `<div class="map"><svg viewBox="0 0 400 130" preserveAspectRatio="none"><path d="M20 95 C 100 20, 180 120, 260 60 S 360 40, 380 35" fill="none" stroke="#c4cbd3" stroke-width="7" stroke-linecap="round"/><path d="M20 95 C 100 20, 180 120, 260 60 S 360 40, 380 35" fill="none" stroke="#F07A1A" stroke-width="3" stroke-dasharray="6 7" stroke-linecap="round"/><circle cx="20" cy="95" r="7" fill="#1F2329"/><circle cx="380" cy="35" r="8" fill="#1E9E5A"/></svg><div class="truck" style="left:${6+p*.88}%">🚛</div></div>
+ <div class="row" style="justify-content:space-between"><span class="mut">Склад ЕГМ</span><span class="mut">${esc(objOf(o.obj).addr)}</span></div>`}
+function openOrder(id){const o=S.orders.find(x=>x.id==id);const by=S.staff.find(e=>e.id==o.by);const dl=(o.deliv||deliveryFor(o.obj));const trips=Math.ceil(o.items.reduce((a,i)=>a+i.q,0)/20);
+ const docs=S.docs.filter(d=>d.order==id);
+ openM(`<div class="row"><h3 style="margin:0">Заказ ${o.id}</h3>${stChip(o.st)}<span class="sp"></span><button class="btn sm" onclick="closeM()">Закрыть</button></div>
+ <div class="mut" style="margin:4px 0 8px">${fmtD(o.date)} · заказал ${esc(by?by.name:'—')}</div>
+ ${o.st==2||o.st==1?track(o)+`<div class="kv"><span>Машина</span><b>${esc(o.veh)}</b></div><div class="kv"><span>Водитель</span><b>${esc(o.drv)}</b></div><div class="kv"><span>Ожидаем</span><b>${esc(o.eta)}</b></div>${o.st==2?`<div class="row" style="margin-top:8px"><button class="btn sm" onclick="toast('Демо: звонок водителю '+'${esc(o.drv)}')">📞 Позвонить водителю</button><button class="btn sm" onclick="advTrack('${o.id}')">Обновить положение</button></div>`:''}`:''}
+ <div class="tl">${ST.map((s,i)=>`<i class="${i<o.st||o.st==3?'done':i==o.st?'on':''}"></i>`).join('')}</div>
+ <table class="tbl"><tr><th>Материал</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></tr>${o.items.map(i=>`<tr><td>${MATS[i.m].n}</td><td>${i.q} ${MATS[i.m].u}</td><td>${rub(price(i.m))}${PERSONAL[i.m]?'<br><span class="mut">ваша цена</span>':''}</td><td>${rub(i.q*price(i.m))}</td></tr>`).join('')}<tr><td colspan=3>Доставка, ${trips} рейс. × ${rub(dl)}</td><td>${rub(dl*trips)}</td></tr><tr><td colspan=3><b>Итого</b></td><td><b>${rub(orderTotal(o))}</b></td></tr></table>
+ <div class="kv" style="margin-top:6px"><span>Объект</span><b>${esc(objOf(o.obj).name)}<br><span class="mut">${esc(objOf(o.obj).addr)}</span></b></div>
+ ${o.note?`<div class="kv"><span>Заметка</span><b>${esc(o.note)}</b></div>`:''}
+ ${can('docs')&&docs.length?`<div class="mut" style="margin-top:8px">Документы по заказу:</div><div class="pills" style="margin-top:4px">${docs.map(d=>`<button onclick="openDoc('${d.id}')">${d.type} ${d.num}</button>`).join('')}</div>`:''}
+ ${can('order')?`<button class="btn p full" style="margin-top:12px" onclick="closeM();repeat('${o.id}')">↻ Повторить этот заказ</button>`:''}`)}
+function advTrack(id){const o=S.orders.find(x=>x.id==id);o.pos=Math.min(1,o.pos+.15);if(o.pos>=.99){o.st=3;o.pos=1;o.note='Машина прибыла, принято на объекте';toast('Машина на объекте!')}else toast('Машина проехала ещё немного');save();openOrder(id);render()}
+
+/* ===== повтор и новый заказ ===== */
+function repeat(id){if(!can('order')){toast('Нет права заказывать');return}const o=S.orders.find(x=>x.id==id);S.cart={obj:o.obj,items:JSON.parse(JSON.stringify(o.items)),when:'Завтра, 08:00–12:00',com:'',from:id};save();cartView(true)}
+function newOrder(){if(!can('order')){toast('Нет права заказывать');return}S.cart={obj:S.objects[0].id,items:[{m:'g2040',q:20}],when:'Завтра, 08:00–12:00',com:'',from:null};save();cartView(false)}
+function cartTotals(){const c=S.cart;const mat=c.items.reduce((a,i)=>a+i.q*price(i.m),0);const t=c.items.reduce((a,i)=>a+i.q,0);const tr=Math.max(1,Math.ceil(t/20));const dl=deliveryFor(c.obj);return {mat,t,tr,dl,total:mat+dl*tr}}
+function cartView(quick){const c=S.cart;const T=cartTotals();
+ openM(`<div class="row"><h3 style="margin:0">${c.from?'Повторить заказ '+c.from:'Новый заказ'}</h3><span class="sp"></span><button class="btn sm" onclick="closeM()">Закрыть</button></div>
+ ${quick?`<div class="alert s" style="margin-top:8px">Всё как в прошлый раз. Проверьте и нажмите «Заказать» — это второе нажатие.</div>`:''}
+ <label>Объект доставки</label><select onchange="S.cart.obj=this.value;save();cartView(${quick})">${S.objects.map(o=>`<option value="${o.id}" ${c.obj==o.id?'selected':''}>${esc(o.name)} — ${esc(o.addr)}</option>`).join('')}</select>
+ <label>Материалы</label>${c.items.map((it,i)=>`<div class="row" style="margin-bottom:8px;flex-wrap:nowrap"><select style="flex:1;min-width:0" onchange="S.cart.items[${i}].m=this.value;save();cartView(${quick})">${Object.keys(MATS).map(k=>`<option value="${k}" ${it.m==k?'selected':''}>${MATS[k].n} — ${rub(price(k))}/${MATS[k].u}</option>`).join('')}</select><div class="qty"><button onclick="qty(${i},-20,${quick})">−</button><input type="number" min="1" value="${it.q}" onchange="S.cart.items[${i}].q=Math.max(1,+this.value||1);save();cartView(${quick})"><button onclick="qty(${i},20,${quick})">+</button></div>${c.items.length>1?`<button class="btn sm" onclick="S.cart.items.splice(${i},1);save();cartView(${quick})">✖</button>`:''}</div>`).join('')}
+ <button class="btn sm" onclick="S.cart.items.push({m:'sand',q:20});save();cartView(${quick})">+ Добавить материал</button>
+ <label>Когда привезти</label><select onchange="S.cart.when=this.value;save()">${['Сегодня до 18:00','Завтра, 08:00–12:00','Завтра, 12:00–18:00','Послезавтра, с утра'].map(w=>`<option ${c.when==w?'selected':''}>${w}</option>`).join('')}</select>
+ <label>Комментарий водителю</label><textarea rows="2" oninput="S.cart.com=this.value;save()" placeholder="Позвонить за 30 минут, въезд со двора">${esc(c.com)}</textarea>
+ <div style="margin-top:12px" class="card"><div class="kv"><span>Материал, ${T.t} ${'т/м³'}</span><b>${rub(T.mat)}</b></div><div class="kv"><span>Доставка: ${T.tr} рейс. × ${rub(T.dl)}</span><b>${rub(T.dl*T.tr)}</b></div><div class="kv"><span><b>Итого</b></span><b style="font-size:18px">${rub(T.total)}</b></div><div class="mut">Цены — по вашему персональному прайсу. В рейс входит 20 т.</div></div>
+ <button class="btn p full" onclick="placeOrder()">Заказать</button>`)}
+function qty(i,d,q){S.cart.items[i].q=Math.max(1,S.cart.items[i].q+d);save();cartView(q)}
+function placeOrder(){const c=S.cart;const T=cartTotals();const id='З-'+(S.nid.o++);
+ const o={id,date:new Date().toISOString(),obj:c.obj,items:c.items,st:0,veh:'',drv:'',by:S.user,note:c.when+(c.com?'. '+c.com:''),pos:0,eta:'',deliv:T.dl,sum:T.total};
+ S.orders.unshift(o);S.docs.unshift({id:'D'+(S.nid.d++),type:'Счёт',num:'Сч-'+(S.nid.doc++),date:o.date,sum:T.total,order:id,paid:false});S.cart=null;S.tab='orders';S.fo='all';save();closeM();render();toast('Заказ '+id+' принят. Счёт появился в документах.');
+ setTimeout(()=>{const x=S.orders.find(z=>z.id==id);if(x&&x.st==0){x.st=1;x.veh='А597РО790';x.drv='Белов Г.';x.eta='через 2 часа';x.note+=' · машина назначена';save();if(S.auth)render()}},6000)}
+
+/* ===== документы ===== */
+const DI={'Счёт':'🧾','УПД':'📑','Акт':'📝','ТТН':'🚚'};
+function vDocs(){if(!can('docs'))return deny('docs');const f=S.df||'all';const list=S.docs.filter(d=>f=='all'||d.type==f).sort((a,b)=>b.date.localeCompare(a.date));
+ return `<h2>Документы</h2><div class="pills">${['all','Счёт','УПД','Акт','ТТН'].map(t=>`<button class="${f==t?'on':''}" onclick="S.df='${t}';save();render()">${t=='all'?'Все':t}</button>`).join('')}</div>
+ <div class="card">${list.map(d=>`<div class="doc" onclick="openDoc('${d.id}')"><div class="ic">${DI[d.type]}</div><div class="t"><b>${d.type} ${d.num}</b><div class="mut">${dShort(d.date)} · заказ ${d.order}</div></div><div style="text-align:right">${d.sum?`<b>${rub(d.sum)}</b>`:''}<div>${d.type=='Счёт'?`<span class="chip ${d.paid?'g':'o'}">${d.paid?'оплачен':'к оплате'}</span>`:`<span class="chip g">подписан</span>`}</div></div></div>`).join('')||'<div class="empty">Нет документов</div>'}</div>`}
+function openDoc(id){if(!can('docs')){toast('Нет права видеть документы');return}const d=S.docs.find(x=>x.id==id);const o=S.orders.find(x=>x.id==d.order);const nm={Счёт:'СЧЁТ НА ОПЛАТУ',УПД:'УНИВЕРСАЛЬНЫЙ ПЕРЕДАТОЧНЫЙ ДОКУМЕНТ',Акт:'АКТ ВЫПОЛНЕННЫХ РАБОТ',ТТН:'ТРАНСПОРТНАЯ НАКЛАДНАЯ'}[d.type];
+ const rows=o?o.items.map(i=>({n:MATS[i.m].n,q:i.q,u:MATS[i.m].u,p:price(i.m)})):[];const dl=o?(o.deliv||deliveryFor(o.obj)):0,tr=o?Math.ceil(o.items.reduce((a,i)=>a+i.q,0)/20):0;
+ openM(`<div class="paper"><h4>${nm} № ${d.num}<br><span class="mut" style="font-weight:400">от ${fmtD(d.date)}</span></h4>
+ <p><b>Поставщик:</b> ООО «ЕГМ», ИНН 5003112456, КПП 500301001, Московская обл., г. Реутов<br><b>Покупатель:</b> ООО «СтройИнвест», ИНН 5001087342<br><b>Основание:</b> заказ ${d.order}${o?', объект: '+esc(objOf(o.obj).addr):''}</p>
+ ${d.type=='ТТН'?`<p>Груз: ${rows.map(r=>r.n+' '+r.q+' '+r.u).join(', ')}.<br>Автомобиль: ${o?esc(o.veh):''}, водитель ${o?esc(o.drv):''}.</p>`:`<div class="tw"><table class="tbl"><tr><th>Наименование</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></tr>${rows.map(r=>`<tr><td>${r.n}</td><td>${r.q} ${r.u}</td><td>${rub(r.p)}</td><td>${rub(r.q*r.p)}</td></tr>`).join('')}${rows.length?`<tr><td>Доставка автотранспортом</td><td>${tr} рейс.</td><td>${rub(dl)}</td><td>${rub(dl*tr)}</td></tr>`:''}<tr><td colspan=3><b>Итого${d.type=='Счёт'?' к оплате':''}</b></td><td><b>${rub(d.sum||0)}</b></td></tr></table></div>`}
+ <p class="mut">Демонстрационный документ. Сумма в документе может отличаться от расчёта заказа на величину округления.</p>
+ <div class="row noprint"><button class="btn" onclick="window.print()">Печать / PDF</button>${d.type=='Счёт'&&!d.paid&&can('money')?`<button class="btn p" onclick="payDoc('${d.id}')">Оплатить</button>`:''}<span class="sp"></span><button class="btn" onclick="closeM()">Закрыть</button></div></div>`)}
+function payDoc(id){const d=S.docs.find(x=>x.id==id);openM(`<h3 style="margin-top:0">Оплата счёта ${d.num}</h3><div class="big">${rub(d.sum)}</div><div class="mut" style="margin:6px 0 12px">Демо: выберите способ, платёж отметится сразу.</div><button class="btn p full" onclick="doPay('${id}','по счёту')">Оплатить онлайн картой</button><button class="btn full" style="margin-top:8px" onclick="doPay('${id}','платёжное поручение')">Я оплатил платёжным поручением</button><button class="btn full" style="margin-top:8px" onclick="closeM()">Отмена</button>`)}
+function doPay(id,how){const d=S.docs.find(x=>x.id==id);d.paid=true;S.pay.push({date:new Date().toISOString(),sum:d.sum,doc:how+' '+d.num});
+ // УПД на этот заказ — создаём, если оплачен (чтобы взаиморасчёты сходились)
+ save();closeM();render();toast('Платёж '+rub(d.sum)+' принят')}
+
+/* ===== расчёты ===== */
+function ledger(){const L=[];S.docs.filter(d=>d.type=='УПД'||d.type=='Акт').forEach(d=>L.push({date:d.date,t:d.type+' '+d.num,dt:d.sum,kt:0}));S.pay.forEach(p=>L.push({date:p.date,t:'Оплата, '+p.doc,dt:0,kt:p.sum}));L.sort((a,b)=>a.date.localeCompare(b.date));let b=0;L.forEach(r=>{b+=r.dt-r.kt;r.bal=b});return L}
+function vMoney(){if(!can('money'))return deny('money');const L=ledger();const dbt=debt();const unpaid=S.docs.filter(d=>d.type=='Счёт'&&!d.paid);
+ return `<h2>Акт сверки и долг</h2><div class="hello"><div class="mut">Задолженность перед ЕГМ на ${fmtD(NOW.toISOString())}</div><div class="big">${rub(Math.max(0,dbt))}</div><div class="mut">${dbt>0?'по закрывающим документам (УПД), не оплачено':'долга нет'}</div></div>
+ ${unpaid.length?`<div class="card"><h3>Счета к оплате</h3>${unpaid.map(d=>`<div class="kv"><span>${d.num} от ${dShort(d.date)} · заказ ${d.order}</span><b>${rub(d.sum)} <button class="btn sm p" onclick="payDoc('${d.id}')">Оплатить</button></b></div>`).join('')}</div>`:''}
+ <div class="card"><div class="row"><h3 style="margin:0">Акт сверки</h3><span class="sp"></span><button class="btn sm" onclick="openRecon()">Открыть для печати</button></div><div class="mut" style="margin:4px 0 8px">Период: с 01.10.2026 по ${fmtD(NOW.toISOString())}</div>
+ <div class="tw"><table class="tbl"><tr><th>Дата</th><th>Документ</th><th>Отгрузка</th><th>Оплата</th><th>Сальдо</th></tr>${L.map(r=>`<tr><td>${dShort(r.date)}</td><td>${esc(r.t)}</td><td>${r.dt?rub(r.dt):''}</td><td>${r.kt?rub(r.kt):''}</td><td><b>${rub(r.bal)}</b></td></tr>`).join('')}</table></div></div>
+ <div class="card"><button class="btn full" onclick="confirmRecon()">Подтвердить сверку без замечаний</button><button class="btn full" style="margin-top:8px" onclick="remark()">Есть замечание</button>${S.recon?`<div class="alert s">${esc(S.recon)}</div>`:''}</div>`}
+function openRecon(){const L=ledger();openM(`<div class="paper"><h4>АКТ СВЕРКИ ВЗАИМНЫХ РАСЧЁТОВ<br><span class="mut" style="font-weight:400">за период 01.10.2026 — ${fmtD(NOW.toISOString())}</span></h4><p>Между ООО «ЕГМ» (ИНН 5003112456) и ООО «СтройИнвест» (ИНН 5001087342).</p><div class="tw"><table class="tbl"><tr><th>Дата</th><th>Документ</th><th>Дебет</th><th>Кредит</th></tr>${L.map(r=>`<tr><td>${dShort(r.date)}</td><td>${esc(r.t)}</td><td>${r.dt?rub(r.dt):''}</td><td>${r.kt?rub(r.kt):''}</td></tr>`).join('')}<tr><td colspan=2><b>Обороты</b></td><td><b>${rub(L.reduce((a,r)=>a+r.dt,0))}</b></td><td><b>${rub(L.reduce((a,r)=>a+r.kt,0))}</b></td></tr></table></div><p>Задолженность в пользу ООО «ЕГМ»: <b>${rub(Math.max(0,debt()))}</b>.</p><div class="row noprint"><button class="btn" onclick="window.print()">Печать / PDF</button><span class="sp"></span><button class="btn" onclick="closeM()">Закрыть</button></div></div>`)}
+function confirmRecon(){S.recon='Сверка подтверждена '+fmtD(new Date().toISOString())+', '+me().name;save();render();toast('Сверка подтверждена')}
+function remark(){openM(`<h3 style="margin-top:0">Замечание к сверке</h3><textarea id="rm" rows="4" placeholder="Что не сходится: номер документа, сумма"></textarea><div class="row" style="margin-top:10px"><button class="btn p" onclick="sendRemark()">Отправить бухгалтеру ЕГМ</button><button class="btn" onclick="closeM()">Отмена</button></div>`)}
+function sendRemark(){const v=$('#rm').value.trim();if(!v){toast('Опишите замечание');return}S.recon='Замечание отправлено: «'+v+'»';save();closeM();render();toast('Отправлено бухгалтеру ЕГМ')}
+
+/* ===== цены / объекты / сотрудники ===== */
+function vPrices(){return `<h2>Мои цены</h2><div class="alert s">Цены закреплены договором до 31.03.2027. Скидка считается от общего прайса.</div><div class="card"><div class="tw"><table class="tbl"><tr><th>Материал</th><th>Общий прайс</th><th>Ваша цена</th><th>Выгода</th></tr>${Object.keys(MATS).map(k=>{const m=MATS[k];const p=PERSONAL[k];return `<tr><td>${m.n}</td><td>${p?`<span class="price-old">${rub(m.base)}</span>`:rub(m.base)}</td><td><b>${rub(price(k))}</b>/${m.u}</td><td>${p?`<span class="chip g">−${rub(m.base-p)} (${Math.round((m.base-p)/m.base*100)}%)</span>`:'<span class="mut">общая</span>'}</td></tr>`}).join('')}</table></div></div>
+ <div class="card"><h3>Доставка по вашему договору</h3>${DELIVERY.map(d=>`<div class="kv"><span>${d[0]}</span><b>${rub(d[1])} / рейс 20 т</b></div>`).join('')}</div>`}
+function vObjects(){const cn=can('staff')||can('order');return `<div class="row"><h2>Мои объекты</h2><span class="sp"></span>${can('order')?'<button class="btn p sm" onclick="addObj()">+ Объект</button>':''}</div>
+ ${S.objects.map(o=>`<div class="card"><b>${esc(o.name)}</b><div class="mut">${esc(o.addr)}</div><div class="row" style="margin-top:8px"><span class="chip">доставка ${rub(DELIVERY[o.zone][1])}/рейс</span><span class="chip">заказов: ${S.orders.filter(x=>x.obj==o.id).length}</span><span class="sp"></span>${can('order')?`<button class="btn sm" onclick="orderTo('${o.id}')">Заказать сюда</button>`:''}</div></div>`).join('')}`}
+function orderTo(id){newOrder();if(S.cart){S.cart.obj=id;save();cartView(false)}}
+function addObj(){openM(`<h3 style="margin-top:0">Новый объект</h3><label>Название</label><input id="nn" placeholder="Например: ЖК «Заречье», корпус 1"><label>Адрес</label><input id="na" placeholder="г. Мытищи, ул. Мира, 4"><label>Зона доставки</label><select id="nz">${DELIVERY.map((d,i)=>`<option value="${i}" ${i==1?'selected':''}>${d[0]} — ${rub(d[1])}/рейс</option>`).join('')}</select><div class="row" style="margin-top:12px"><button class="btn p" onclick="saveObj()">Сохранить</button><button class="btn" onclick="closeM()">Отмена</button></div>`)}
+function saveObj(){const n=$('#nn').value.trim(),a=$('#na').value.trim();if(!n||!a){toast('Заполните название и адрес');return}S.objects.push({id:'P'+(S.nid.obj++),name:n,addr:a,zone:+$('#nz').value});save();closeM();render();toast('Объект добавлен')}
+function vStaff(){if(!can('staff'))return deny('staff');
+ return `<div class="row"><h2>Сотрудники компании</h2><span class="sp"></span><button class="btn p sm" onclick="addEmp()">+ Сотрудник</button></div><div class="mut" style="margin:0 2px 10px">Права определяют, что человек видит и делает в кабинете. Попробуйте войти под прорабом или бухгалтером — меню изменится.</div>
+ ${S.staff.map(e=>`<div class="card" style="${e.on?'':'opacity:.55'}"><div class="row"><b>${esc(e.name)}</b><span class="chip ${e.role=='owner'?'o':'b'}">${ROLES[e.role].n}</span><span class="sp"></span>${e.id!=S.user?`<button class="btn sm" onclick="toggleEmp('${e.id}')">${e.on?'Отключить':'Включить'}</button>`:'<span class="mut">это вы</span>'}</div><div class="mut">${esc(e.post)} · ${fmtPhone(e.phone)}</div>
+ <div class="perm">${Object.keys(PERM).map(p=>`<label><input type="checkbox" ${can2(e,p)?'checked':''} disabled>${PERM[p]}</label>`).join('')}</div>
+ ${e.id!=S.user?`<div class="row" style="margin-top:8px"><span class="mut">Роль:</span><select style="width:auto" onchange="setRole('${e.id}',this.value)">${Object.keys(ROLES).map(r=>`<option value="${r}" ${e.role==r?'selected':''}>${ROLES[r].n}</option>`).join('')}</select></div>`:''}</div>`).join('')}`}
+function setRole(id,r){S.staff.find(e=>e.id==id).role=r;save();render();toast('Роль изменена')}
+function toggleEmp(id){const e=S.staff.find(x=>x.id==id);e.on=!e.on;save();render();toast(e.on?'Доступ включён':'Доступ отключён')}
+function addEmp(){openM(`<h3 style="margin-top:0">Новый сотрудник</h3><label>ФИО</label><input id="en" placeholder="Иванов Иван Иванович"><label>Телефон</label><input id="ep" type="tel" value="+7" oninput="fmtInput(this)"><label>Должность</label><input id="epo" placeholder="Мастер участка"><label>Роль</label><select id="er">${Object.keys(ROLES).filter(r=>r!='owner').map(r=>`<option value="${r}">${ROLES[r].n} — ${ROLES[r].perm.map(p=>PERM[p].toLowerCase()).join(', ')}</option>`).join('')}</select><div class="row" style="margin-top:12px"><button class="btn p" onclick="saveEmp()">Пригласить</button><button class="btn" onclick="closeM()">Отмена</button></div>`)}
+function saveEmp(){const n=$('#en').value.trim(),p=phoneDigits($('#ep').value);if(!n||p.length!=11){toast('Укажите ФИО и телефон полностью');return}if(S.staff.some(e=>e.phone==p)){toast('Этот номер уже есть');return}
+ S.staff.push({id:'E'+(S.nid.e++),name:n,phone:p,role:$('#er').value,post:$('#epo').value||ROLES[$('#er').value].n,on:true});save();closeM();render();toast('Сотрудник добавлен. Он может войти по номеру телефона.')}
+function vMore(){const links=[['prices','🏷','Мои цены'],['objects','📍','Мои объекты'],...(can('staff')?[['staff','👥','Сотрудники и права']]:[])];
+ return `<h2>Ещё</h2><div class="card">${links.map(l=>`<div class="doc" onclick="nav('${l[0]}')"><div class="ic">${l[1]}</div><div class="t"><b>${l[2]}</b></div><span class="mut">›</span></div>`).join('')}<div class="doc" onclick="logout()"><div class="ic">🚪</div><div class="t"><b>Выйти</b></div></div></div><div class="card mut">Вопросы по заказу: менеджер ЕГМ +7 (495) 000-00-00 (демо)</div>`}
+
+function render(){if(!S.auth||!me()){renderLogin();return}renderApp()}
+load();render();
+</script>
+</body>
+</html>

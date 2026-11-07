@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EGM · Контроль долгов</title>
+<style>
+:root{--or:#F07A1A;--or2:#d96a10;--gr:#1F2329;--bg:#f4f5f7;--line:#e3e6ea;--mut:#6b7380;--ok:#1e9e57;--bad:#d63b3b;--warn:#e6a100}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--gr);font-size:15px;line-height:1.4}
+header{background:var(--gr);color:#fff;padding:12px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+header h1{font-size:18px;margin:0;font-weight:600}header h1 b{color:var(--or)}
+.tag{font-size:11px;background:var(--or);color:#fff;border-radius:10px;padding:2px 8px;text-transform:uppercase;letter-spacing:.5px}
+.sp{flex:1}
+header label{font-size:13px;color:#cfd3d9;display:flex;gap:6px;align-items:center}
+header input[type=date]{padding:4px 6px;border-radius:6px;border:1px solid #555c66;background:#2b3037;color:#fff;font:inherit;font-size:13px}
+header button{background:transparent;border:1px solid #555c66;color:#cfd3d9;border-radius:8px;padding:6px 10px;font-size:13px;cursor:pointer}
+nav.tabs{display:flex;background:#fff;border-bottom:1px solid var(--line);overflow-x:auto;position:sticky;top:0;z-index:5}
+nav.tabs button{flex:0 0 auto;padding:13px 16px;border:0;background:none;font-size:15px;font-weight:600;color:var(--mut);border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
+nav.tabs button.on{color:var(--gr);border-bottom-color:var(--or)}
+main{max-width:1400px;margin:0 auto;padding:14px}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+.card h2,.card h3{margin:0 0 10px;font-size:17px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.mut{color:var(--mut);font-size:13px}
+.btn{background:var(--or);color:#fff;border:0;border-radius:9px;padding:10px 15px;font-size:15px;font-weight:600;cursor:pointer;min-height:42px}
+.btn:hover{background:var(--or2)}
+.btn.sec{background:#fff;color:var(--gr);border:1.5px solid var(--gr)}.btn.sec:hover{background:#f0f1f3}
+.btn.dark{background:var(--gr)}.btn.red{background:var(--bad)}.btn.green{background:var(--ok)}
+.btn.sm{padding:6px 11px;font-size:13px;min-height:32px}
+.btn:disabled{background:#cfd3d9;color:#fff;cursor:not-allowed;border-color:#cfd3d9}
+select,input[type=text],input[type=number],input[type=date],textarea{padding:9px 10px;border:1.5px solid var(--line);border-radius:9px;font:inherit;background:#fff;min-width:0;width:100%}
+textarea{min-height:120px;resize:vertical}
+label.f{display:block;font-size:12px;color:var(--mut);margin-bottom:3px}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:12px}
+@media(min-width:900px){.kpis{grid-template-columns:repeat(4,1fr)}}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;border-left:5px solid var(--or)}
+.kpi b{display:block;font-size:22px;margin-top:2px}
+.kpi.r{border-left-color:var(--bad)}.kpi.g{border-left-color:var(--ok)}.kpi.d{border-left-color:var(--gr)}
+.charts{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+@media(min-width:900px){.charts{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+svg text{font-family:inherit}
+.tblwrap{overflow-x:auto}
+table.t{width:100%;border-collapse:collapse;font-size:14px}
+table.t th,table.t td{text-align:left;padding:8px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+table.t th{font-size:12px;text-transform:uppercase;color:var(--mut);white-space:nowrap}
+table.t td.n,table.t th.n{text-align:right;white-space:nowrap}
+table.t tr.clk{cursor:pointer}table.t tr.clk:hover{background:#fff8f1}
+.rk{display:inline-block;font-size:12px;font-weight:700;padding:3px 10px;border-radius:10px;white-space:nowrap}
+.rk.g{background:#e0f5ea;color:#157a43}.rk.y{background:#fff3cc;color:#8a6500}.rk.o{background:#ffe3cc;color:#b24a00}.rk.r{background:#fde2e2;color:#b52626}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+.dot.g{background:var(--ok)}.dot.y{background:var(--warn)}.dot.o{background:var(--or)}.dot.r{background:var(--bad)}
+.stop{background:var(--bad);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 7px;margin-left:6px;white-space:nowrap}
+.meter{height:8px;background:#eceff2;border-radius:5px;overflow:hidden;min-width:70px}
+.meter i{display:block;height:100%}
+.split{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}.split>*{min-width:0}
+@media(min-width:1000px){.split{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+.kv{display:grid;grid-template-columns:140px 1fr;gap:4px 10px;font-size:14px}.kv span:nth-child(odd){color:var(--mut)}
+.box{border:1.5px solid var(--line);border-radius:10px;padding:12px;background:#fafbfc}
+.alert{border-radius:10px;padding:10px 12px;margin:10px 0;font-weight:600}
+.alert.bad{background:#fde2e2;color:#8f1d1d;border:1px solid #f5b5b5}.alert.ok{background:#e0f5ea;color:#12663a;border:1px solid #b3e3c7}
+.pill{display:inline-block;padding:2px 9px;border-radius:10px;font-size:12px;font-weight:600;background:#eceff2;margin-right:4px}
+.pill.sent{background:#e0f5ea;color:#157a43}.pill.today{background:#fff0e0;color:#b85a00}.pill.late{background:#fde2e2;color:#b52626}
+.preview{white-space:pre-wrap;background:#fff;border:1.5px dashed #c5cad2;border-radius:10px;padding:12px;font-size:14px;line-height:1.5}
+.sms{max-width:340px;background:#e6f0ff;border-radius:14px 14px 14px 2px;padding:10px 12px;font-size:14px;white-space:pre-wrap}
+.tabs2{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.tabs2 button{border:1.5px solid var(--line);background:#fff;border-radius:20px;padding:6px 14px;font-weight:600;cursor:pointer;font-size:14px}
+.tabs2 button.on{background:var(--gr);color:#fff;border-color:var(--gr)}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--gr);color:#fff;padding:10px 18px;border-radius:20px;font-size:14px;opacity:0;transition:.3s;pointer-events:none;z-index:30;max-width:92%}
+.toast.on{opacity:1}
+.hide{display:none!important}
+.switch{display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-weight:600}
+.switch input{width:18px;height:18px;accent-color:var(--or)}
+@media(max-width:700px){.hm{display:none}main{padding:10px}}
+</style>
+</head>
+<body>
+<header>
+  <h1><b>EGM</b> · Контроль долгов</h1><span class="tag">демо</span><span class="sp"></span>
+  <label>Сегодня: <input type="date" id="today"></label>
+  <button id="reset">Сбросить демо</button>
+</header>
+<nav class="tabs" id="tabs">
+  <button data-t="sum" class="on">Итоги</button>
+  <button data-t="list">Клиенты и долги</button>
+  <button data-t="rem">Напоминания</button>
+  <button data-t="stop">Стоп-отгрузка</button>
+</nav>
+<main id="main"></main>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+'use strict';
+var KEY='egm_debts_demo_v1';
+var S,tab='sum',sel=null,F={q:'',risk:'',stop:''},remSel=null,remStage='m3',remCh='email',tplTab='email';
+var ST=[['m3','За 3 дня до оплаты',-3],['d0','В день оплаты',0],['p3','Просрочка 3 дня',3],['p10','Просрочка 10 дней',10]];
+var TPL_DEFAULT={
+ email:{
+  m3:'Здравствуйте, {контакт}!\n\nНапоминаем: счёт № {счёт} на сумму {сумма} ₽ ({клиент}) нужно оплатить до {срок}. Осталось 3 дня.\n\nРеквизиты есть в счёте. Если уже оплатили — просто пришлите платёжку в ответ на это письмо.\n\nС уважением, {менеджер}, ООО «ЕГМ»',
+  d0:'Здравствуйте, {контакт}!\n\nСегодня, {срок}, последний день оплаты по счёту № {счёт} на сумму {сумма} ₽.\n\nПожалуйста, оплатите сегодня, чтобы отгрузки шли без остановок. Если оплата уже ушла — пришлите платёжное поручение.\n\n{менеджер}, ООО «ЕГМ»',
+  p3:'Здравствуйте, {контакт}!\n\nПо счёту № {счёт} оплата не поступила, срок был {срок}, просрочка — {дней} дн. Сумма к оплате: {сумма} ₽. Общий долг {клиент}: {долг} ₽.\n\nПросим оплатить в ближайшие дни или сообщить дату оплаты.\n\n{менеджер}, ООО «ЕГМ»',
+  p10:'Здравствуйте, {контакт}!\n\nПросрочка по счёту № {счёт} — {дней} дн. (срок {срок}). Сумма: {сумма} ₽, общий долг {клиент}: {долг} ₽.\n\nЕсли оплата не поступит до конца недели, мы будем вынуждены остановить отгрузки по вашим заявкам. Давайте решим вопрос сегодня: {менеджер}, +7 (495) 000-00-00.\n\nООО «ЕГМ»'},
+ sms:{
+  m3:'ЕГМ: счёт {счёт} на {сумма} р. оплатить до {срок}. Уже оплатили — пришлите платёжку.',
+  d0:'ЕГМ: сегодня последний день оплаты счёта {счёт}, {сумма} р. Спасибо!',
+  p3:'ЕГМ: счёт {счёт} просрочен на {дней} дн., {сумма} р. Оплатите или сообщите дату: +7 495 000-00-00',
+  p10:'ЕГМ: просрочка {дней} дн. по счёту {счёт}, долг {долг} р. Без оплаты отгрузки будут остановлены. Позвоните: +7 495 000-00-00'}
+};
+function seedData(){
+  var T='2026-11-07';
+  function inv(no,date,sum,paid){return{no:String(no),date:date,sum:sum,paid:paid||0}}
+  var C=[
+   {id:1,name:'ООО «СтройАльянс»',inn:'7701123451',contact:'Андрей Павлович',phone:'+7 916 245-31-08',email:'ap@stroyalyans.example',mgr:'Елена',limit:600000,terms:10,stopManual:false,auto:true,
+    inv:[inv(1031,'2026-10-14',215600),inv(1038,'2026-10-26',186200),inv(1046,'2026-11-03',158400)],pay:[['2026-10-01',240000,'п/п 6120'],['2026-10-18',180000,'п/п 6388']]},
+   {id:2,name:'ООО «ДорСтрой»',inn:'7726345181',contact:'Ирина Власова',phone:'+7 925 710-44-92',email:'snab@dorstroy.example',mgr:'Елена',limit:800000,terms:14,stopManual:false,auto:true,
+    inv:[inv(1020,'2026-09-22',274800),inv(1027,'2026-10-06',352000),inv(1040,'2026-10-29',410500),inv(1047,'2026-11-05',296000)],pay:[['2026-09-10',310000,'п/п 2204'],['2026-10-02',150000,'п/п 2297']]},
+   {id:3,name:'АО «Бетон-Центр»',inn:'5029017648',contact:'Диспетчер БЗ',phone:'+7 495 540-12-77',email:'zakaz@betoncentr.example',mgr:'Павел',limit:1500000,terms:21,stopManual:false,auto:true,
+    inv:[inv(1033,'2026-10-20',642000),inv(1043,'2026-11-01',588700)],pay:[['2026-09-28',700000,'п/п 9012'],['2026-10-15',520000,'п/п 9144']]},
+   {id:4,name:'ООО «ГринЛайн Благоустройство»',inn:'5077042193',contact:'Олег Рябов',phone:'+7 903 661-20-15',email:'ryabov@greenline.example',mgr:'Павел',limit:300000,terms:7,stopManual:false,auto:true,
+    inv:[inv(1015,'2026-09-12',96300),inv(1024,'2026-09-30',142900),inv(1035,'2026-10-22',118700),inv(1044,'2026-11-02',127400)],pay:[['2026-09-05',90000,'п/п 311'],['2026-10-09',60000,'п/п 340']]},
+   {id:5,name:'ООО «МонолитСтрой»',inn:'5036118252',contact:'Наталья Сергеевна',phone:'+7 926 300-91-44',email:'buh@monolitstroy.example',mgr:'Елена',limit:500000,terms:10,stopManual:false,auto:true,
+    inv:[inv(1036,'2026-10-24',208400),inv(1048,'2026-11-06',174500)],pay:[['2026-10-11',350000,'п/п 774'],['2026-10-29',120000,'п/п 802']]},
+   {id:6,name:'ООО «Магистраль-Подряд»',inn:'7705690437',contact:'Максим Кузин',phone:'+7 985 112-60-03',email:'mkuzin@magistral.example',mgr:'Павел',limit:900000,terms:14,stopManual:false,auto:false,
+    inv:[inv(1009,'2026-08-25',187000),inv(1018,'2026-09-15',231600),inv(1030,'2026-10-12',264800)],pay:[['2026-08-12',400000,'п/п 5071'],['2026-09-20',120000,'п/п 5133']]},
+   {id:7,name:'ООО «Мосрегионтранс»',inn:'5040113761',contact:'Сергей Викторович',phone:'+7 909 244-17-38',email:'sv@mrt.example',mgr:'Елена',limit:400000,terms:7,stopManual:false,auto:true,
+    inv:[inv(1045,'2026-11-04',132800)],pay:[['2026-10-05',210000,'п/п 1180'],['2026-10-27',190000,'п/п 1212']]},
+   {id:8,name:'ИП Захаров Виктор Андреевич',inn:'502900732251',contact:'Виктор Андреевич',phone:'+7 903 118-76-20',email:'zakharov.va@example.ru',mgr:'Павел',limit:150000,terms:3,stopManual:false,auto:true,
+    inv:[inv(1032,'2026-10-18',68400),inv(1041,'2026-10-30',59700)],pay:[['2026-10-03',65000,'на карту']]},
+   {id:9,name:'ТСЖ «Лесной квартал»',inn:'5047198340',contact:'Галина Ивановна',phone:'+7 916 880-23-51',email:'tszh.lk@example.ru',mgr:'Елена',limit:250000,terms:14,stopManual:false,auto:true,
+    inv:[inv(1039,'2026-10-28',94500)],pay:[['2026-10-14',88000,'п/п 57'],['2026-09-15',92000,'п/п 49']]},
+   {id:10,name:'ООО «ТехСтрой Групп»',inn:'7743308158',contact:'Руслан',phone:'+7 977 450-12-09',email:'info@techstroy.example',mgr:'Павел',limit:350000,terms:10,stopManual:false,auto:true,
+    inv:[inv(1004,'2026-08-04',152000),inv(1012,'2026-09-02',118900)],pay:[['2026-07-20',200000,'п/п 903']]}
+  ];
+  C.forEach(function(c){c.invoices=c.inv.map(function(x){x.due=addDays(x.date,c.terms);return x});delete c.inv;
+    c.payments=c.pay.map(function(p){return{date:p[0],sum:p[1],doc:p[2]}}).sort(function(a,b){return a.date<b.date?1:-1});delete c.pay;
+    // раскладываем часть оплат: старые счета закрываем платежами (FIFO), чтобы остаток был правдоподобным
+  });
+  // пред-закрытие: учтём оплаты по самым ранним счетам не делаем автоматически — остаток задан явно ниже
+  var pre={1:{1031:215600},2:{1020:274800,1027:150000},3:{1033:520000},4:{1015:90000,1024:60000},5:{1036:208400-120000},6:{1009:187000,1018:120000},7:{},8:{1032:65000},9:{},10:{1004:152000-0}};
+  C.forEach(function(c){var m=pre[c.id]||{};c.invoices.forEach(function(i){i.paid=m[i.no]||0})});
+  C[0].invoices[0].paid=215600; // СтройАльянс: старый счёт закрыт
+  C[9].invoices[0].paid=152000;
+  return{today:T,clients:C,log:[
+   {ts:'2026-11-02 09:00',cid:2,stage:'p3',ch:'email',text:'Письмо отправлено автоматически: просрочка по счёту № 1027'},
+   {ts:'2026-11-04 09:00',cid:6,stage:'p10',ch:'sms',text:'SMS отправлено автоматически: просрочка по счёту № 1009'}],
+   sent:{'2:1027:p3':'2026-11-02','6:1009:p10':'2026-11-04'},nextPay:9000};
+}
+function addDays(iso,n){var d=new Date(iso+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)}
+function diffDays(a,b){return Math.round((Date.parse(a+'T12:00:00Z')-Date.parse(b+'T12:00:00Z'))/864e5)}
+function r2(x){return Math.round(x*100)/100}
+function fm(v){return Math.round(v).toString().replace(/\B(?=(\d{3})+(?!\d))/g,'\u00a0')}
+function fd(iso){var p=iso.split('-');return p[2]+'.'+p[1]+'.'+p[0]}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function $(s,r){return(r||document).querySelector(s)}
+function $$(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
+function toast(t){var e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(function(){e.classList.remove('on')},2400)}
+function load(){try{var s=JSON.parse(localStorage.getItem(KEY));if(s&&s.clients){S=s;return}}catch(e){}S=seedData();save()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function cById(id){for(var i=0;i<S.clients.length;i++)if(S.clients[i].id===id)return S.clients[i]}
+
+/* расчёты */
+function open(c){return c.invoices.filter(function(i){return r2(i.sum-i.paid)>0}).sort(function(a,b){return a.due<b.due?-1:1})}
+function rest(i){return r2(i.sum-i.paid)}
+function calc(c){
+  var T=S.today,debt=0,over=0,maxDays=0,nextDue=null,week=0;
+  open(c).forEach(function(i){var r=rest(i);debt+=r;var d=diffDays(T,i.due);
+    if(d>0){over+=r;if(d>maxDays)maxDays=d}else{if(!nextDue||i.due<nextDue)nextDue=i.due}
+    if(i.due>=T&&i.due<=addDays(T,7))week+=r});
+  debt=r2(debt);over=r2(over);
+  var usage=c.limit?debt/c.limit:0,autoStop=debt>c.limit,stop=c.stopManual||autoStop;
+  var risk=maxDays>14||usage>1?'r':maxDays>7?'o':(maxDays>0||usage>.8||(nextDue&&diffDays(nextDue,T)<=3))?'y':'g';
+  if(debt===0)risk='g';
+  var firstDue=open(c).length?open(c)[0].due:null;
+  return{debt:debt,over:over,maxDays:maxDays,nextDue:nextDue,firstDue:firstDue,week:r2(week),usage:usage,autoStop:autoStop,stop:stop,risk:risk};
+}
+var RK={g:'Низкий',y:'Внимание',o:'Высокий',r:'Критичный'};
+function stageDate(i,st){return addDays(i.due,st[2])}
+function stageStatus(c,i,st){
+  var k=c.id+':'+i.no+':'+st[0];if(S.sent[k])return{k:'sent',date:S.sent[k]};
+  var d=stageDate(i,st);
+  if(d===S.today)return{k:'today',date:d};
+  if(d<S.today)return{k:'late',date:d};
+  return{k:'wait',date:d};
+}
+function fill(tpl,c,i){
+  var cc=calc(c),dd=Math.max(0,diffDays(S.today,i.due));
+  return tpl.replace(/\{клиент\}/g,c.name).replace(/\{контакт\}/g,c.contact).replace(/\{счёт\}/g,i.no).replace(/\{сумма\}/g,fm(rest(i))).replace(/\{срок\}/g,fd(i.due)).replace(/\{дней\}/g,String(dd)).replace(/\{долг\}/g,fm(cc.debt)).replace(/\{менеджер\}/g,c.mgr);
+}
+function tpl(ch,st){return(S.tpl&&S.tpl[ch]&&S.tpl[ch][st])||TPL_DEFAULT[ch][st]}
+function setTpl(ch,st,v){S.tpl=S.tpl||{email:{},sms:{}};S.tpl[ch][st]=v;save()}
+
+/* итоги */
+function totals(){
+  var debt=0,over=0,week=0,buckets=[0,0,0,0,0],days=[0,0,0,0,0,0,0,0];
+  S.clients.forEach(function(c){open(c).forEach(function(i){var r=rest(i),d=diffDays(S.today,i.due);debt+=r;
+    if(d>0){over+=r;buckets[d<=7?1:d<=14?2:d<=30?3:4]+=r}else buckets[0]+=r;
+    var k=diffDays(i.due,S.today);if(k>=0&&k<=7){week+=r;days[k]+=r}})});
+  return{debt:r2(debt),over:r2(over),week:r2(week),buckets:buckets,days:days};
+}
+function barSvg(vals,labels,colors,w,h,unit){
+  var max=Math.max.apply(null,vals.concat([1])),n=vals.length,pl=10,pr=10,pt=24,pb=38,bw=(w-pl-pr)/n,s='<svg viewBox="0 0 '+w+' '+h+'" width="100%" role="img" style="max-width:'+w+'px;display:block">';
+  for(var g=0;g<=3;g++){var y=pt+(h-pt-pb)*(1-g/3);s+='<line x1="'+pl+'" x2="'+(w-pr)+'" y1="'+y+'" y2="'+y+'" stroke="#e3e6ea"/>'}
+  vals.forEach(function(v,i){var bh=(h-pt-pb)*v/max,x=pl+i*bw+bw*.15,y=h-pb-bh;
+    s+='<rect x="'+x+'" y="'+y+'" width="'+bw*.7+'" height="'+Math.max(bh,v>0?2:0)+'" rx="4" fill="'+colors[i%colors.length]+'"/>';
+    s+='<text x="'+(x+bw*.35)+'" y="'+(y-6)+'" font-size="11" text-anchor="middle" fill="#1F2329" font-weight="600">'+(v>0?fm(v/1000)+' т':'')+'</text>';
+    s+='<text x="'+(x+bw*.35)+'" y="'+(h-pb+16)+'" font-size="11" text-anchor="middle" fill="#6b7380">'+labels[i][0]+'</text>';
+    if(labels[i][1])s+='<text x="'+(x+bw*.35)+'" y="'+(h-pb+30)+'" font-size="10" text-anchor="middle" fill="#9aa1ac">'+labels[i][1]+'</text>';
+  });
+  return s+'</svg>';
+}
+function renderSum(){
+  var t=totals(),stops=S.clients.filter(function(c){return calc(c).stop}).length,od=S.clients.filter(function(c){return calc(c).over>0}).length;
+  var h='<div class="kpis"><div class="kpi d">Общая дебиторка<b>'+fm(t.debt)+' ₽</b><span class="mut">клиентов с долгом: '+S.clients.filter(function(c){return calc(c).debt>0}).length+'</span></div>'+
+   '<div class="kpi r">Просрочено<b>'+fm(t.over)+' ₽</b><span class="mut">'+(t.debt?Math.round(t.over/t.debt*100):0)+'% долга · клиентов: '+od+'</span></div>'+
+   '<div class="kpi">Ожидается на неделе<b>'+fm(t.week)+' ₽</b><span class="mut">по сроку до '+fd(addDays(S.today,7))+'</span></div>'+
+   '<div class="kpi r">Стоп-отгрузка<b>'+stops+'</b><span class="mut">клиентов заблокировано</span></div></div>';
+  var dl=[];for(var k=0;k<8;k++){var d=addDays(S.today,k),p=d.split('-');dl.push([['Сег','Завт','','','','','',''][k]||p[2]+'.'+p[1],k===0?fd(d).slice(0,5):k===1?fd(d).slice(0,5):''])}
+  dl=dl.map(function(x,k){var d=addDays(S.today,k).split('-');return[x[0]||(d[2]+'.'+d[1]),'']});
+  h+='<div class="charts"><div class="card"><h3>Дебиторка по срокам, тыс. ₽</h3>'+barSvg(t.buckets,[['Не просрочено','до срока'],['1–7 дн',''],['8–14 дн',''],['15–30 дн',''],['30+ дн','']],['#1e9e57','#e6a100','#F07A1A','#d63b3b','#8f1d1d'],520,230)+'</div>'+
+   '<div class="card"><h3>Ожидаем оплат на 7 дней, тыс. ₽</h3>'+barSvg(t.days,dl,['#F07A1A'],520,230)+'<div class="mut">Считаем по сроку оплаты счетов. Просроченные сюда не входят.</div></div></div>';
+  var top=S.clients.map(function(c){return{c:c,k:calc(c)}}).filter(function(x){return x.k.debt>0}).sort(function(a,b){return b.k.over-a.k.over||b.k.debt-a.k.debt}).slice(0,5);
+  h+='<div class="card"><h3>Кого звонить в первую очередь</h3><div class="tblwrap"><table class="t"><tr><th>Клиент</th><th class="n">Просрочено</th><th class="n">Дней</th><th>Риск</th><th></th></tr>';
+  top.forEach(function(x){h+='<tr><td>'+esc(x.c.name)+(x.k.stop?'<span class="stop">СТОП</span>':'')+'<div class="mut">'+esc(x.c.contact)+', '+esc(x.c.phone)+'</div></td><td class="n"><b>'+fm(x.k.over)+' ₽</b></td><td class="n">'+x.k.maxDays+'</td><td><span class="rk '+x.k.risk+'">'+RK[x.k.risk]+'</span></td><td><button class="btn sm" data-open="'+x.c.id+'">Открыть</button></td></tr>'});
+  h+='</table></div></div>';
+  $('#main').innerHTML=h;
+  $$('[data-open]').forEach(function(b){b.onclick=function(){sel=+b.dataset.open;setTab('list')}});
+}
+
+/* список */
+function renderList(){
+  if(sel)return renderCard(cById(sel));
+  var rows=S.clients.map(function(c){return{c:c,k:calc(c)}}).filter(function(x){
+    if(F.q&&(x.c.name+' '+x.c.inn).toLowerCase().indexOf(F.q.toLowerCase())<0)return false;
+    if(F.risk==='over'&&!(x.k.over>0))return false;
+    if(F.risk&&F.risk!=='over'&&x.k.risk!==F.risk)return false;
+    if(F.stop==='1'&&!x.k.stop)return false;
+    if(F.stop==='0'&&x.k.stop)return false;
+    return x.k.debt>0||F.q}).sort(function(a,b){return b.k.maxDays-a.k.maxDays||b.k.debt-a.k.debt});
+  var h='<div class="card"><div class="fields"><div><label class="f">Поиск по названию или ИНН</label><input type="text" id="q" value="'+esc(F.q)+'" placeholder="Например, ДорСтрой"></div>'+
+   '<div><label class="f">Риск</label><select id="fr"><option value="">Любой</option><option value="over"'+(F.risk==='over'?' selected':'')+'>Есть просрочка</option><option value="g"'+(F.risk==='g'?' selected':'')+'>Низкий</option><option value="y"'+(F.risk==='y'?' selected':'')+'>Внимание</option><option value="o"'+(F.risk==='o'?' selected':'')+'>Высокий</option><option value="r"'+(F.risk==='r'?' selected':'')+'>Критичный</option></select></div>'+
+   '<div><label class="f">Отгрузка</label><select id="fs"><option value="">Все</option><option value="1"'+(F.stop==='1'?' selected':'')+'>Остановлена</option><option value="0"'+(F.stop==='0'?' selected':'')+'>Идёт</option></select></div></div></div>';
+  h+='<div class="card"><div class="tblwrap"><table class="t"><tr><th>Клиент</th><th class="n">Долг, ₽</th><th class="hm">Лимит, ₽</th><th class="hm">Использовано</th><th>Срок оплаты</th><th class="n">Просрочка</th><th>Риск</th></tr>';
+  rows.forEach(function(x){var u=Math.min(100,Math.round(x.k.usage*100)),col=x.k.usage>1?'var(--bad)':x.k.usage>.8?'var(--warn)':'var(--ok)';
+    h+='<tr class="clk" data-id="'+x.c.id+'"><td><b>'+esc(x.c.name)+'</b>'+(x.k.stop?'<span class="stop">СТОП</span>':'')+'<div class="mut">ИНН '+x.c.inn+'</div></td><td class="n"><b>'+fm(x.k.debt)+'</b></td><td class="n hm">'+fm(x.c.limit)+'</td><td class="hm" style="min-width:110px"><div class="meter"><i style="width:'+u+'%;background:'+col+'"></i></div><span class="mut">'+Math.round(x.k.usage*100)+'%</span></td><td>'+(x.k.firstDue?fd(x.k.firstDue):'—')+'</td><td class="n">'+(x.k.maxDays>0?'<b style="color:var(--bad)">'+x.k.maxDays+' дн.</b>':'нет')+'</td><td><span class="dot '+x.k.risk+'"></span><span class="rk '+x.k.risk+'">'+RK[x.k.risk]+'</span></td></tr>'});
+  if(!rows.length)h+='<tr><td colspan="7" class="mut">Никого не найдено</td></tr>';
+  var tot=rows.reduce(function(a,x){return a+x.k.debt},0);
+  h+='</table></div><div class="mut" style="margin-top:8px">Показано: '+rows.length+' · долг на экране: <b>'+fm(tot)+' ₽</b>. Нажмите на строку, чтобы открыть карточку клиента.</div></div>';
+  $('#main').innerHTML=h;
+  $('#q').oninput=function(){F.q=this.value;var p=this.selectionStart;renderList();var q=$('#q');q.focus();q.setSelectionRange(p,p)};
+  $('#fr').onchange=function(){F.risk=this.value;renderList()};
+  $('#fs').onchange=function(){F.stop=this.value;renderList()};
+  $$('tr[data-id]').forEach(function(r){r.onclick=function(){sel=+r.dataset.id;renderList();window.scrollTo(0,0)}});
+}
+function renderCard(c){
+  var k=calc(c),h='<button class="btn sec sm" id="back" style="margin-bottom:10px">← Все клиенты</button>';
+  h+='<div class="card"><div class="row"><h2 style="margin:0">'+esc(c.name)+'</h2><span class="rk '+k.risk+'">Риск: '+RK[k.risk]+'</span>'+(k.stop?'<span class="stop">СТОП-ОТГРУЗКА</span>':'')+'</div>'+
+   (k.stop?'<div class="alert bad">Отгрузка остановлена'+(k.autoStop?': долг '+fm(k.debt)+' ₽ больше лимита '+fm(c.limit)+' ₽.':' вручную.')+(c.stopManual?'':'')+'</div>':'')+
+   '<div class="split"><div class="kv"><span>ИНН</span><span>'+c.inn+'</span><span>Контакт</span><span>'+esc(c.contact)+'</span><span>Телефон</span><span><a href="tel:'+c.phone.replace(/[^+\d]/g,'')+'">'+esc(c.phone)+'</a></span><span>E-mail</span><span>'+esc(c.email)+'</span><span>Менеджер</span><span>'+esc(c.mgr)+'</span><span>Отсрочка</span><span>'+c.terms+' дн.</span></div>'+
+   '<div class="kv"><span>Долг</span><span><b>'+fm(k.debt)+' ₽</b></span><span>Просрочено</span><span style="color:var(--bad)"><b>'+fm(k.over)+' ₽</b>'+(k.maxDays?' ('+k.maxDays+' дн.)':'')+'</span><span>Лимит</span><span><div class="row"><input type="number" id="lim" value="'+c.limit+'" style="width:130px" min="0" step="10000"><button class="btn sm sec" id="limSave">Сохранить</button></div></span><span>Свободно</span><span>'+fm(Math.max(0,c.limit-k.debt))+' ₽</span></div></div>'+
+   '<div class="row" style="margin-top:12px"><label class="switch"><input type="checkbox" id="stopM"'+(c.stopManual?' checked':'')+'> Остановить отгрузку вручную</label><label class="switch"><input type="checkbox" id="autoR"'+(c.auto?' checked':'')+'> Авто-напоминания</label><span class="sp"></span><button class="btn sm" id="toRem">Напоминания клиенту</button></div></div>';
+  h+='<div class="split"><div class="card"><h3>Неоплаченные счета</h3><div class="tblwrap"><table class="t"><tr><th>Счёт</th><th>Срок</th><th class="n">Остаток, ₽</th><th class="n">Дней</th></tr>';
+  open(c).forEach(function(i){var d=diffDays(S.today,i.due);h+='<tr><td>№'+i.no+'<div class="mut">от '+fd(i.date)+'</div></td><td>'+fd(i.due)+'</td><td class="n"><b>'+fm(rest(i))+'</b>'+(i.paid?'<div class="mut">из '+fm(i.sum)+'</div>':'')+'</td><td class="n">'+(d>0?'<b style="color:var(--bad)">+'+d+'</b>':'<span class="mut">через '+(-d)+'</span>')+'</td></tr>'});
+  if(!open(c).length)h+='<tr><td colspan="4" class="mut">Долгов нет</td></tr>';
+  h+='</table></div></div><div class="card"><h3>Принять оплату</h3><div class="fields"><div><label class="f">Сумма, ₽</label><input type="number" id="paySum" min="0" step="1000" placeholder="'+Math.round(k.debt)+'"></div><div><label class="f">Документ</label><input type="text" id="payDoc" placeholder="п/п № ..."></div></div>'+
+   '<div class="row" style="margin-top:10px"><button class="btn green" id="payBtn">Записать оплату</button><button class="btn sec sm" id="payAll">Вся сумма долга</button></div><div class="mut" style="margin-top:6px">Оплата закрывает самые старые счета первыми.</div>'+
+   '<h3 style="margin-top:16px">История оплат</h3><div class="tblwrap"><table class="t"><tr><th>Дата</th><th>Документ</th><th class="n">Сумма, ₽</th></tr>';
+  c.payments.forEach(function(p){h+='<tr><td>'+fd(p.date)+'</td><td>'+esc(p.doc)+'</td><td class="n">'+fm(p.sum)+'</td></tr>'});
+  if(!c.payments.length)h+='<tr><td colspan="3" class="mut">Оплат пока не было</td></tr>';
+  h+='</table></div></div></div>';
+  var lg=S.log.filter(function(l){return l.cid===c.id});
+  h+='<div class="card"><h3>Отправленные напоминания</h3>';
+  if(!lg.length)h+='<div class="mut">Пока ничего не отправляли</div>';
+  lg.forEach(function(l){h+='<div style="padding:6px 0;border-bottom:1px solid var(--line)"><span class="mut">'+esc(l.ts)+'</span> · '+(l.ch==='sms'?'SMS':'письмо')+' — '+esc(l.text)+'</div>'});
+  h+='</div>';
+  $('#main').innerHTML=h;
+  $('#back').onclick=function(){sel=null;renderList()};
+  $('#limSave').onclick=function(){var v=+$('#lim').value;if(!(v>=0)){toast('Введите лимит');return}c.limit=v;save();renderList();toast('Лимит сохранён')};
+  $('#stopM').onchange=function(){c.stopManual=this.checked;logEvt(c,'Стоп-отгрузка '+(c.stopManual?'включена вручную':'снята'));save();renderList()};
+  $('#autoR').onchange=function(){c.auto=this.checked;save();toast(c.auto?'Авто-напоминания включены':'Авто-напоминания выключены')};
+  $('#toRem').onclick=function(){remSel=c.id;setTab('rem')};
+  $('#payAll').onclick=function(){$('#paySum').value=Math.round(k.debt)};
+  $('#payBtn').onclick=function(){
+    var v=+$('#paySum').value;if(!(v>0)){toast('Введите сумму оплаты');return}
+    v=r2(v);S.nextPay++;c.payments.unshift({date:S.today,sum:v,doc:$('#payDoc').value.trim()||('п/п № '+S.nextPay)});
+    var left=v;open(c).forEach(function(i){if(left<=0)return;var t=Math.min(left,rest(i));i.paid=r2(i.paid+t);left=r2(left-t)});
+    logEvt(c,'Принята оплата '+fm(v)+' ₽');
+    save();renderList();toast('Оплата записана'+(left>0?' (переплата '+fm(left)+' ₽)':''));
+  };
+}
+function logEvt(c,text){S.log.unshift({ts:S.today+' '+new Date().toTimeString().slice(0,5),cid:c.id,stage:'',ch:'',text:text});}
+
+/* напоминания */
+function renderRem(){
+  if(!remSel)remSel=S.clients[0].id;
+  var c=cById(remSel),ops=open(c);
+  // сводка по сегодняшним
+  var due=[];S.clients.forEach(function(x){if(!x.auto)return;open(x).forEach(function(i){ST.forEach(function(st){var s=stageStatus(x,i,st);if(s.k==='today')due.push({c:x,i:i,st:st})})})});
+  var h='<div class="card"><div class="row"><div><h3 style="margin:0">Сегодня к отправке: '+due.length+'</h3><div class="mut">Сработавшие этапы графика у клиентов с включёнными авто-напоминаниями (дата в шапке: '+fd(S.today)+')</div></div><span class="sp"></span><button class="btn" id="runAuto"'+(due.length?'':' disabled')+'>Отправить все сегодняшние</button></div>';
+  if(due.length){h+='<div style="margin-top:8px">';due.forEach(function(d){h+='<span class="pill today">'+esc(d.c.name)+' · счёт '+d.i.no+' · '+d.st[1]+'</span>'});h+='</div>'}
+  h+='</div>';
+  h+='<div class="split"><div><div class="card"><h3>График напоминаний</h3><label class="f">Клиент</label><select id="rc">';
+  S.clients.forEach(function(x){h+='<option value="'+x.id+'"'+(x.id===remSel?' selected':'')+'>'+esc(x.name)+(open(x).length?'':' (долгов нет)')+'</option>'});
+  h+='</select><div class="mut" style="margin:8px 0">Этапы считаются от срока оплаты каждого счёта: за 3 дня, в день, +3 и +10 дней.</div>';
+  h+='<div class="tblwrap"><table class="t"><tr><th>Счёт</th><th class="n">Сумма</th>';ST.forEach(function(st){h+='<th>'+st[1].replace('Просрочка ','+').replace('За 3 дня до оплаты','−3 дня').replace('В день оплаты','День оплаты').replace(' дня','').replace(' дней','')+'</th>'});h+='<th></th></tr>';
+  ops.forEach(function(i){h+='<tr><td>№'+i.no+'<div class="mut">срок '+fd(i.due)+'</div></td><td class="n">'+fm(rest(i))+'</td>';
+    ST.forEach(function(st){var s=stageStatus(c,i,st),lbl={sent:'отправлено',today:'сегодня',late:'пропущено',wait:fd(s.date).slice(0,5)}[s.k];h+='<td><span class="pill '+(s.k==='sent'?'sent':s.k==='today'?'today':s.k==='late'?'late':'')+'">'+lbl+'</span></td>'});
+    h+='<td><button class="btn sm sec" data-pv="'+i.no+'">Текст</button></td></tr>'});
+  if(!ops.length)h+='<tr><td colspan="7" class="mut">У клиента нет неоплаченных счетов</td></tr>';
+  h+='</table></div></div></div>';
+  var inv=ops.filter(function(i){return String(i.no)===String(S.remInv)})[0]||ops[0];
+  if(inv&&S.remStageFor!==c.id+':'+inv.no){S.remStageFor=c.id+':'+inv.no;var dd0=diffDays(S.today,inv.due);remStage=dd0>=10?'p10':dd0>=3?'p3':dd0>=0&&dd0<3&&dd0>0?'p3':dd0===0?'d0':'m3'}
+  h+='<div class="card"><h3>Предпросмотр и отправка</h3>';
+  if(!inv)h+='<div class="mut">Выберите клиента с долгом.</div>';
+  else{
+    h+='<div class="fields"><div><label class="f">Счёт</label><select id="ri">';ops.forEach(function(i){h+='<option value="'+i.no+'"'+(i.no===inv.no?' selected':'')+'>№'+i.no+' — '+fm(rest(i))+' ₽, срок '+fd(i.due)+'</option>'});
+    h+='</select></div><div><label class="f">Этап</label><select id="rs">';ST.forEach(function(st){h+='<option value="'+st[0]+'"'+(st[0]===remStage?' selected':'')+'>'+st[1]+'</option>'});h+='</select></div></div>';
+    h+='<div class="tabs2" style="margin-top:10px"><button data-ch="email" class="'+(remCh==='email'?'on':'')+'">Письмо</button><button data-ch="sms" class="'+(remCh==='sms'?'on':'')+'">SMS / мессенджер</button></div>';
+    var txt=fill(tpl(remCh,remStage),c,inv),sub='Счёт № '+inv.no+': напоминание об оплате';
+    h+='<div class="mut" style="margin-bottom:6px">Кому: '+(remCh==='email'?esc(c.email):esc(c.phone))+(remCh==='email'?' · Тема: '+esc(sub):'')+'</div>'+(remCh==='sms'?'<div class="sms">'+esc(txt)+'</div>':'<div class="preview">'+esc(txt)+'</div>');
+    h+='<div class="row" style="margin-top:10px"><button class="btn" id="sendNow">Отправить сейчас</button><button class="btn sec" id="copy">Копировать текст</button></div>';
+    h+='<details style="margin-top:12px"><summary style="cursor:pointer;font-weight:600">Изменить шаблон</summary><div class="mut" style="margin:6px 0">Подстановки: {клиент} {контакт} {счёт} {сумма} {срок} {дней} {долг} {менеджер}</div><textarea id="tplText">'+esc(tpl(remCh,remStage))+'</textarea><div class="row" style="margin-top:8px"><button class="btn sm" id="tplSave">Сохранить шаблон</button><button class="btn sm sec" id="tplReset">Вернуть исходный</button></div></details>';
+  }
+  h+='</div></div>';
+  h+='<div class="card"><h3>Журнал отправок</h3>';
+  var lg=S.log.filter(function(l){return l.ch}).slice(0,15);if(!lg.length)h+='<div class="mut">Пока пусто</div>';
+  lg.forEach(function(l){var x=cById(l.cid);h+='<div style="padding:6px 0;border-bottom:1px solid var(--line)"><span class="mut">'+esc(l.ts)+'</span> · <b>'+esc(x?x.name:'')+'</b> · '+(l.ch==='sms'?'SMS':'письмо')+' — '+esc(l.text)+'</div>'});
+  h+='</div>';
+  $('#main').innerHTML=h;
+  $('#runAuto').onclick=function(){due.forEach(function(d){doSend(d.c,d.i,d.st[0],d.c.phone&&(d.st[0]==='p10')?'sms':'email',true)});save();renderRem();toast('Отправлено напоминаний: '+due.length)};
+  $('#rc').onchange=function(){remSel=+this.value;S.remInv=null;renderRem()};
+  if(inv){
+    $('#ri').onchange=function(){S.remInv=this.value;renderRem()};
+    $('#rs').onchange=function(){remStage=this.value;renderRem()};
+    $$('[data-ch]').forEach(function(b){b.onclick=function(){remCh=b.dataset.ch;renderRem()}});
+    $('#sendNow').onclick=function(){doSend(c,inv,remStage,remCh,false);save();renderRem();toast('Напоминание отправлено (демо — сообщение не уходит)')};
+    $('#copy').onclick=function(){var t=fill(tpl(remCh,remStage),c,inv);if(navigator.clipboard)navigator.clipboard.writeText(t).then(function(){toast('Скопировано')},function(){toast('Не удалось скопировать')});else toast('Копирование недоступно')};
+    $('#tplSave').onclick=function(){setTpl(remCh,remStage,$('#tplText').value);renderRem();toast('Шаблон сохранён')};
+    $('#tplReset').onclick=function(){setTpl(remCh,remStage,TPL_DEFAULT[remCh][remStage]);renderRem();toast('Шаблон возвращён')};
+  }
+  $$('[data-pv]').forEach(function(b){b.onclick=function(){S.remInv=b.dataset.pv;renderRem();window.scrollTo(0,document.body.scrollHeight>900?200:0)}});
+}
+function doSend(c,i,stage,ch,auto){
+  var st=ST.filter(function(x){return x[0]===stage})[0];
+  S.sent[c.id+':'+i.no+':'+stage]=S.today;
+  S.log.unshift({ts:S.today+' '+new Date().toTimeString().slice(0,5),cid:c.id,stage:stage,ch:ch,text:(auto?'автоматически: ':'вручную: ')+st[1].toLowerCase()+', счёт № '+i.no+', '+fm(rest(i))+' ₽'});
+}
+
+/* стоп-отгрузка */
+function renderStop(){
+  var rows=S.clients.map(function(c){return{c:c,k:calc(c)}});
+  var h='<div class="card"><h3>Проверка новой заявки</h3><div class="mut" style="margin-bottom:8px">Диспетчер вводит клиента и сумму заказа — система говорит, можно ли отгружать.</div><div class="fields"><div><label class="f">Клиент</label><select id="oc">';
+  S.clients.forEach(function(c){h+='<option value="'+c.id+'">'+esc(c.name)+'</option>'});
+  h+='</select></div><div><label class="f">Материал и количество</label><select id="om"><option value="49000">Щебень гранитный 20-40, 20 т (≈ 49 000 ₽)</option><option value="52500">Щебень 5-20 + доставка (≈ 52 500 ₽)</option><option value="18400">Песок, 20 т (≈ 18 400 ₽)</option><option value="196000">Щебень, 4 рейса (≈ 196 000 ₽)</option></select></div><div style="align-self:end"><button class="btn" id="oBtn">Проверить</button></div></div><div id="oRes"></div></div>';
+  h+='<div class="card"><h3>Клиенты и блокировки</h3><div class="tblwrap"><table class="t"><tr><th>Клиент</th><th class="n">Долг</th><th class="n hm">Лимит</th><th>Состояние</th><th></th></tr>';
+  rows.sort(function(a,b){return(b.k.stop?1:0)-(a.k.stop?1:0)||b.k.usage-a.k.usage}).forEach(function(x){
+    h+='<tr><td><b>'+esc(x.c.name)+'</b></td><td class="n">'+fm(x.k.debt)+'</td><td class="n hm">'+fm(x.c.limit)+'</td><td>'+(x.k.stop?'<span class="stop" style="margin:0">СТОП</span> <span class="mut">'+(x.k.autoStop?'лимит превышен':'вручную')+(x.k.autoStop&&x.c.stopManual?' + вручную':'')+'</span>':'<span class="rk g">Отгрузка идёт</span> <span class="mut">'+Math.round(x.k.usage*100)+'% лимита</span>')+'</td><td><button class="btn sm '+(x.c.stopManual?'sec':'red')+'" data-tg="'+x.c.id+'">'+(x.c.stopManual?'Снять ручной стоп':'Остановить вручную')+'</button></td></tr>'});
+  h+='</table></div><div class="mut" style="margin-top:8px">Автоматический стоп включается, когда долг больше лимита, и снимается сам после оплаты. Ручной стоп держится, пока его не снимут.</div></div>';
+  $('#main').innerHTML=h;
+  $$('[data-tg]').forEach(function(b){b.onclick=function(){var c=cById(+b.dataset.tg);c.stopManual=!c.stopManual;logEvt(c,'Стоп-отгрузка '+(c.stopManual?'включена вручную':'снята'));save();renderStop();toast(c.stopManual?'Отгрузка остановлена':'Ручной стоп снят')}});
+  $('#oBtn').onclick=function(){
+    var c=cById(+$('#oc').value),sum=+$('#om').value,k=calc(c),after=k.debt+sum,o=$('#oRes');
+    if(k.stop)o.innerHTML='<div class="alert bad">ОТГРУЗКА ЗАПРЕЩЕНА. '+(k.autoStop?'Долг '+fm(k.debt)+' ₽ уже больше лимита '+fm(c.limit)+' ₽.':'Включён ручной стоп.')+' Нужна оплата'+(k.autoStop?' не менее '+fm(k.debt-c.limit)+' ₽':'')+' или решение руководителя.</div>';
+    else if(after>c.limit)o.innerHTML='<div class="alert bad">ОТГРУЗКА ЗАПРЕЩЕНА: с этой заявкой долг станет '+fm(after)+' ₽ при лимите '+fm(c.limit)+' ₽ (превышение '+fm(after-c.limit)+' ₽). Нужна предоплата или согласование.</div>';
+    else o.innerHTML='<div class="alert ok">Можно отгружать. Долг после заявки: '+fm(after)+' ₽ из '+fm(c.limit)+' ₽ ('+Math.round(after/c.limit*100)+'%).'+(k.over>0?' Внимание: есть просрочка '+fm(k.over)+' ₽.':'')+'</div>';
+  };
+}
+
+function setTab(t){tab=t;if(t!=='list'&&t!=='sum')sel=sel;$$('#tabs button').forEach(function(b){b.classList.toggle('on',b.dataset.t===t)});render();window.scrollTo(0,0)}
+function render(){({sum:renderSum,list:renderList,rem:renderRem,stop:renderStop})[tab]()}
+$$('#tabs button').forEach(function(b){b.onclick=function(){if(b.dataset.t==='list')sel=null;setTab(b.dataset.t)}});
+$('#today').onchange=function(){if(this.value){S.today=this.value;save();render()}};
+$('#reset').onclick=function(){if(confirm('Сбросить демо-данные?')){localStorage.removeItem(KEY);load();sel=null;remSel=null;$('#today').value=S.today;render()}};
+load();$('#today').value=S.today;render();
+})();
+</script>
+</body>
+</html>

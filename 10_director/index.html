@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EGM · Сводка директора</title>
+<style>
+:root{--or:#F07A1A;--or2:#fff1e4;--g:#1F2329;--g2:#5b636d;--line:#e5e8ec;--bg:#f5f6f8;--ok:#1e9e5a;--bad:#d93a3a;--warn:#e6a100}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:system-ui,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--g);font-size:15px;line-height:1.4}
+header{background:var(--g);color:#fff;position:sticky;top:0;z-index:20}
+.hw{max-width:1400px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.logo{font-weight:700;font-size:18px;letter-spacing:.2px}
+.logo b{color:var(--or)}
+.badge{font-size:11px;background:var(--or);color:#fff;border-radius:10px;padding:2px 8px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.sp{flex:1}
+.seg{display:inline-flex;background:#363c44;border-radius:10px;padding:3px}
+.seg button{border:0;background:none;color:#cfd4da;padding:7px 16px;border-radius:8px;font:inherit;font-weight:600;cursor:pointer}
+.seg button.on{background:var(--or);color:#fff}
+main{max-width:1400px;margin:0 auto;padding:16px;display:grid;gap:16px}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;min-width:0}
+.card h2{margin:0 0 12px;font-size:16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.card h2 small{font-weight:400;color:var(--g2);font-size:13px}
+.top{display:grid;grid-template-columns:minmax(320px,460px) 1fr;gap:16px}
+.chat{background:#dfe9f2;border-radius:14px;padding:14px;border:1px solid var(--line)}
+.chat .who{font-size:12px;color:var(--g2);margin:0 0 6px 4px}
+.bubble{background:#fff;border-radius:4px 16px 16px 16px;padding:12px 14px;box-shadow:0 1px 2px rgba(0,0,0,.12);font-size:14.5px;white-space:pre-line}
+.bubble b{font-weight:700}
+.bubble .t{display:block;text-align:right;color:#8a95a0;font-size:11px;margin-top:4px}
+.chat .acts{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:#fff;color:var(--g);border-radius:9px;padding:8px 13px;font:inherit;font-weight:600;cursor:pointer;font-size:13.5px}
+.btn:hover{border-color:var(--or);color:var(--or)}
+.btn.pr{background:var(--or);border-color:var(--or);color:#fff}
+.btn.pr:hover{background:#d96a0f;color:#fff}
+.btn.sm{padding:5px 10px;font-size:12.5px}
+.btn.done{background:#e8f6ee;border-color:#bfe5cf;color:var(--ok);cursor:default}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;align-content:start}
+.kpi{border:1px solid var(--line);border-radius:12px;padding:12px;background:#fff}
+.kpi .l{color:var(--g2);font-size:12.5px}
+.kpi .v{font-size:24px;font-weight:700;margin:2px 0}
+.kpi .v small{font-size:13px;font-weight:600;color:var(--g2)}
+.d{font-size:12.5px;font-weight:600}
+.d.up{color:var(--ok)}.d.dn{color:var(--bad)}.d.eq{color:var(--g2)}
+.d span{font-weight:400;color:var(--g2)}
+.grid2{align-items:start;display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:16px}
+.grid3{align-items:start;display:grid;grid-template-columns:2fr 1fr;gap:16px}
+svg{display:block;width:100%;height:auto}
+svg text{font-family:inherit}
+.bars .row{display:grid;grid-template-columns:150px 1fr 90px;gap:8px;align-items:center;padding:5px 0;font-size:13.5px}
+.bars .tr{background:#eef0f3;border-radius:6px;height:16px;overflow:hidden}
+.bars .tr i{display:block;height:100%;background:var(--or);border-radius:6px;transition:width .4s}
+.bars .n{text-align:right;font-weight:600;white-space:nowrap}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;color:var(--g2);font-weight:600;font-size:12px;padding:6px 8px;border-bottom:1px solid var(--line)}
+td small{white-space:nowrap}
+td{padding:8px;border-bottom:1px solid #f0f2f4;vertical-align:middle}
+td.r,th.r{text-align:right;white-space:nowrap}
+.share{display:inline-block;height:6px;border-radius:3px;background:var(--or);vertical-align:middle}
+.tag{display:inline-block;font-size:11.5px;padding:2px 8px;border-radius:10px;background:var(--or2);color:#b85a0a;font-weight:600;white-space:nowrap}
+.tag.red{background:#fde8e8;color:var(--bad)}.tag.gr{background:#e8f6ee;color:var(--ok)}.tag.gy{background:#eef0f3;color:var(--g2)}
+.legend{display:grid;gap:6px;font-size:13.5px}
+.legend div{display:flex;align-items:center;gap:8px}
+.legend i{width:12px;height:12px;border-radius:3px;display:inline-block}
+.legend b{margin-left:auto}
+.donut{display:grid;grid-template-columns:170px 1fr;gap:16px;align-items:center}
+.over .it{display:flex;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid #f0f2f4;flex-wrap:wrap}
+.over .it .nm{flex:1;min-width:160px}
+.over .it .nm small{display:block;color:var(--g2)}
+.sum{font-weight:700}
+.sumbar{display:flex;justify-content:space-between;padding-top:10px;font-weight:700}
+.cap{font-size:13px;color:var(--g2);min-height:20px;margin-top:6px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--g);color:#fff;padding:10px 18px;border-radius:10px;opacity:0;pointer-events:none;transition:.3s;z-index:50;font-size:14px}
+.toast.on{opacity:1}
+.scroll{overflow-x:auto}
+@media(max-width:900px){.top,.grid3{grid-template-columns:1fr}.grid2{grid-template-columns:1fr}}
+@media(max-width:520px){
+ .hw{padding:8px 12px}.logo{font-size:16px}.seg{width:100%}.seg button{flex:1;padding:8px 4px}
+ main{padding:10px;gap:12px}.card{padding:12px}
+ .kpis{grid-template-columns:1fr 1fr}.kpi .v{font-size:21px}
+ .bars .row{grid-template-columns:100px 1fr 74px;font-size:12.5px}
+ .donut{grid-template-columns:1fr}.donut svg{max-width:190px;margin:0 auto}
+ table{font-size:12.5px}td,th{padding:6px 4px}
+ #reqT td:nth-child(4),#reqT th:nth-child(4),#cli td:nth-child(3),#cli th:nth-child(3){display:none}
+ .tag{white-space:nowrap}
+}
+</style>
+</head>
+<body>
+<header><div class="hw">
+ <div class="logo"><b>EGM</b> · Сводка директора</div><span class="badge">демо</span>
+ <div class="sp"></div>
+ <div class="seg" id="seg"><button data-p="day">День</button><button data-p="week">Неделя</button><button data-p="month">Месяц</button></div>
+</div></header>
+
+<main>
+ <section class="top">
+  <div class="chat">
+   <p class="who">EGM · Сводка — бот в Telegram</p>
+   <div class="bubble" id="tg"></div>
+   <div class="acts">
+    <button class="btn pr" id="bCopy">Скопировать текст</button>
+    <button class="btn" id="bSend">Отправить себе (демо)</button>
+    <button class="btn" id="bRegen">Обновить данные</button>
+   </div>
+  </div>
+  <div class="kpis" id="kpis"></div>
+ </section>
+
+ <section class="card">
+  <h2>Выручка по дням <small id="revSub">за 30 дней, тыс. ₽</small></h2>
+  <svg id="chRev" viewBox="0 0 700 240" role="img" aria-label="Выручка по дням"></svg>
+  <div class="cap" id="revCap">Нажмите на столбик, чтобы увидеть день.</div>
+ </section>
+
+ <section class="grid2">
+  <div class="card"><h2>Тонны по материалам <small id="matSub"></small></h2><div class="bars" id="mat"></div></div>
+  <div class="card"><h2>Загрузка техники <small id="loadSub"></small></h2><svg id="chLoad" viewBox="0 0 410 250"></svg>
+   <div class="cap">Зелёный — больше 75%, жёлтый — 50–75%, красный — меньше 50%. Машина стоит — деньги не зарабатывает.</div></div>
+ </section>
+
+ <section class="grid2">
+  <div class="card"><h2>Откуда заявки <small id="srcSub"></small></h2>
+   <div class="donut"><svg id="chSrc" viewBox="0 0 160 160"></svg><div class="legend" id="srcLg"></div></div></div>
+  <div class="card"><h2>Новые заявки <small>последние</small></h2><div class="scroll"><table id="reqT"></table></div></div>
+ </section>
+
+ <section class="grid3">
+  <div class="card"><h2>Топ-клиенты <small id="cliSub"></small></h2><div class="scroll"><table id="cli"></table></div></div>
+  <div class="card over"><h2>Просрочили оплату <small>на сегодня</small></h2><div id="over"></div><div class="sumbar"><span>Всего долг</span><span id="overSum"></span></div></div>
+ </section>
+</main>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+'use strict';
+var KEY='egm_director_v1';
+var MON=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+var MATS=[
+ {n:'Щебень гранитный 5–20',p:2480},{n:'Щебень гранитный 20–40',p:2320},{n:'Щебень известняковый 40–70',p:2050},
+ {n:'Щебень вторичный 20–40',p:1350},{n:'Песок карьерный',p:880},{n:'Песок строительный',p:760},{n:'ПГС',p:720},{n:'Вывоз грунта',p:290}];
+var MW=[18,12,9,8,22,10,12,9];
+var SRC=['Сайт','Звонки','Авито','Обзвон','Бот в Telegram'];
+var SW=[34,30,14,12,10];
+var SCOL=['#F07A1A','#1F2329','#3a8dde','#1e9e5a','#8e6ccf'];
+var VEH=[
+ {id:'А 214 ВТ 750',nm:'КАМАЗ 6520',t:'d'},{id:'В 508 КН 750',nm:'КАМАЗ 6520',t:'d'},{id:'Е 331 МР 190',nm:'КАМАЗ 65115',t:'d'},
+ {id:'К 877 ОС 750',nm:'Shacman X3000',t:'d'},{id:'М 120 ТУ 150',nm:'Shacman X3000',t:'d'},{id:'О 645 АА 750',nm:'HOWO A7',t:'d'},
+ {id:'Р 902 ХН 190',nm:'HOWO A7',t:'d'},{id:'Т 077 ЕК 750',nm:'КАМАЗ 6520',t:'d'},
+ {id:'Х 415 РС 50',nm:'Погрузчик XCMG',t:'s'},{id:'С 288 УМ 750',nm:'Экскаватор JCB',t:'s'},{id:'Н 633 ОВ 750',nm:'Манипулятор',t:'s'}];
+var CLI=[
+ {n:'ООО «СтройМонтаж-М»',inn:'5024187431',w:14},{n:'ООО «ДорСтройСервис»',inn:'5042136705',w:13},{n:'ГБУ «Мособлблагоустройство»',inn:'5000012946',w:10},
+ {n:'ООО «БетонПро»',inn:'5018193350',w:9},{n:'АО «ТехноСтрой»',inn:'5029074618',w:9},{n:'ООО «Подольский РБУ»',inn:'5036152290',w:7},
+ {n:'УК «Комфорт-Сервис»',inn:'5047201834',w:6},{n:'ТЦ «Мега-Ритейл»',inn:'5003098127',w:4},{n:'ГК «Вектор»',inn:'7716856024',w:6},
+ {n:'ИП Саргсян А. Р.',inn:'503807415236',w:3},{n:'ООО «Ландшафт-М»',inn:'5030071469',w:4},{n:'ООО «СМУ-7»',inn:'5032214087',w:6},
+ {n:'ООО «Раменский бетон»',inn:'5040118775',w:5},{n:'ООО «ПромТрансСтрой»',inn:'5022089341',w:4}];
+var DEBT=[
+ {c:0,doc:'УПД № 1184',sum:486000,ago:12},{c:3,doc:'УПД № 1169',sum:312500,ago:9},{c:4,doc:'УПД № 1142',sum:874000,ago:21},
+ {c:9,doc:'УПД № 1190',sum:96800,ago:5},{c:7,doc:'Акт № 77 (вывоз снега)',sum:228000,ago:15},{c:11,doc:'УПД № 1177',sum:541200,ago:7}];
+var STAT=['Новая','В работе','Рассчитано','Назначена машина'];
+
+function rng(seed){var s=seed>>>0;return function(){s=(s+0x6D2B79F5)>>>0;var t=s;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
+function pick(r,w){var s=0,i;for(i=0;i<w.length;i++)s+=w[i];var x=r()*s;for(i=0;i<w.length;i++){x-=w[i];if(x<0)return i}return w.length-1}
+function dstr(o){var d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-o);return d}
+function key(d){return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()}
+function gen(){
+ var days=[],o,r,v,i,k;
+ for(o=60;o>=1;o--){
+  var d=dstr(o),dow=d.getDay();r=rng(d.getFullYear()*1000+d.getMonth()*40+d.getDate()+7);
+  var f=dow==0?0.3:dow==6?0.55:1;
+  var rec={off:o,trips:[],reqs:[]};
+  for(v=0;v<VEH.length;v++){
+   if(VEH[v].t=='d'){
+    var nt=r()<0.08*(1/f)?0:Math.round((2.2+r()*2.0)*f);
+    for(i=0;i<nt;i++){
+     var m=pick(r,MW),c=pick(r,CLI.map(function(x){return x.w})),tn=m==7?20:18+Math.round(r()*2*10)/10;
+     if(tn>20)tn=20;
+     var rev=Math.round((tn*MATS[m].p*(0.95+r()*0.12)+3500+r()*5500)/100)*100;
+     rec.trips.push({v:v,c:c,m:m,t:tn,r:rev,h:2.6+r()*0.9});
+    }
+   }else if(r()<0.85*(f+0.2)){
+    var h=4+Math.round(r()*6),c2=pick(r,CLI.map(function(x){return x.w}));
+    rec.trips.push({v:v,c:c2,m:-1,t:0,r:h*(v==9?3200:v==8?2600:2900),h:h});
+   }
+  }
+  var nr=Math.round((14+r()*12)*f);
+  for(i=0;i<nr;i++){rec.reqs.push({s:pick(r,SW),m:pick(r,MW),c:pick(r,CLI.map(function(x){return x.w})),q:[40,60,80,100,120,200][Math.floor(r()*6)]})}
+  days.push(rec);
+ }
+ var reqs=[];
+ for(i=0;i<8;i++){var rr=rng(100+i);reqs.push({id:5230+i,src:pick(rr,SW),m:pick(rr,MW),c:pick(rr,CLI.map(function(x){return x.w})),q:[40,60,80,100,120,200][Math.floor(rr()*6)],st:0,min:5+i*37})}
+ return {anchor:key(dstr(0)),days:days,reqs:reqs,rem:{}};
+}
+var DB=null;
+function load(){try{DB=JSON.parse(localStorage.getItem(KEY))}catch(e){DB=null}
+ if(!DB||DB.anchor!==key(dstr(0))){var old=DB&&DB.rem||{};DB=gen();DB.rem=old}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){}}
+load();save();
+
+var P=localStorage.getItem(KEY+'_p')||'day';
+var N={day:1,week:7,month:30};
+var LBL={day:'вчера',week:'7 дней',month:'30 дней'};
+function fmt(n){return Math.round(n).toLocaleString('ru-RU')}
+function mln(n){return n>=1e6?(n/1e6).toFixed(2).replace('.',',')+' млн ₽':fmt(n/1e3)+' тыс. ₽'}
+function slice(from,len){return DB.days.filter(function(d){return d.off>=from&&d.off<from+len})}
+function agg(ds){
+ var a={trips:0,tons:0,rev:0,reqs:0,hrs:0,mat:{},cli:{},veh:{},src:[0,0,0,0,0],n:ds.length};
+ ds.forEach(function(d){
+  d.trips.forEach(function(t){
+   if(t.m>=0)a.trips++;a.tons+=t.t;a.rev+=t.r;a.hrs+=t.h;
+   if(t.m>=0)a.mat[t.m]=(a.mat[t.m]||0)+t.t;
+   a.cli[t.c]=(a.cli[t.c]||0)+t.r;
+   a.veh[t.v]=(a.veh[t.v]||0)+(VEH[t.v].t=='d'?t.h:t.h);
+  });
+  a.reqs+=d.reqs.length;d.reqs.forEach(function(q){a.src[q.s]++});
+ });
+ a.load=0;var k;for(k=0;k<VEH.length;k++)a.load+=Math.min(100,(a.veh[k]||0)/(a.n*10)*100);
+ a.load/=VEH.length;
+ return a;
+}
+function delta(cur,prev,inv,unit){
+ if(!prev)return '<div class="d eq">—</div>';
+ var p=(cur-prev)/prev*100,cl=Math.abs(p)<0.5?'eq':((p>0)!==!!inv?'up':'dn'),ar=Math.abs(p)<0.5?'●':p>0?'▲':'▼';
+ return '<div class="d '+cl+'">'+ar+' '+(p>0?'+':'')+p.toFixed(1).replace('.',',')+'% <span>к прошлому периоду</span></div>';
+}
+function dateRange(from,len){var a=dstr(from+len-1),b=dstr(from);
+ if(len==1)return b.getDate()+' '+MON[b.getMonth()];
+ return a.getDate()+' '+MON[a.getMonth()].slice(0,3)+' — '+b.getDate()+' '+MON[b.getMonth()].slice(0,3)}
+function debtDays(x){return x.ago}
+function totalDebt(){return DEBT.reduce(function(s,x){return s+x.sum},0)}
+
+function render(){
+ var len=N[P],cur=agg(slice(1,len)),prv=agg(slice(1+len,len)),k,h;
+ var seg=document.querySelectorAll('#seg button');for(k=0;k<seg.length;k++)seg[k].className=seg[k].dataset.p==P?'on':'';
+ var range=dateRange(1,len);
+ var title=P=='day'?'вчера, '+range:'за '+LBL[P]+' ('+range+')';
+ // telegram
+ var srcLine=SRC.map(function(s,i){return s+' '+cur.src[i]}).join(' · ');
+ var dl=DEBT.slice().sort(function(a,b){return b.sum-a.sum}).slice(0,3).map(function(x){return '• '+CLI[x.c].n.replace(/[«»]/g,'')+' — '+fmt(x.sum)+' ₽, '+x.ago+' дн.'}).join('\n');
+ var topC=Object.keys(cur.cli).sort(function(a,b){return cur.cli[b]-cur.cli[a]})[0];
+ var msg='<b>Доброе утро! Сводка '+title+'</b>\n\n'+
+  '🚚 Рейсов: <b>'+fmt(cur.trips)+'</b>\n'+
+  '⚖️ Тонн: <b>'+fmt(cur.tons)+'</b>\n'+
+  '💰 Выручка: <b>'+mln(cur.rev)+'</b>\n'+
+  '📊 Загрузка машин: <b>'+Math.round(cur.load)+'%</b>\n'+
+  '📥 Новых заявок: <b>'+cur.reqs+'</b>\n'+
+  '   '+srcLine+'\n'+
+  '🏆 Лучший клиент: '+CLI[topC].n.replace(/[«»]/g,'')+' — '+mln(cur.cli[topC])+'\n\n'+
+  '⚠️ <b>Просрочили оплату</b> (всего '+mln(totalDebt())+', крупнейшие 3):\n'+dl+'\n\n'+
+  (cur.load<60?'❗ Загрузка ниже 60% — есть свободные машины, можно взять ещё рейсы.':'✅ Загрузка парка в норме.');
+ document.getElementById('tg').innerHTML=msg+'<span class="t">08:00 ✓✓</span>';
+ // kpi
+ var K=[['Рейсов',fmt(cur.trips),'',cur.trips,prv.trips,0],['Тонн',fmt(cur.tons),' т',cur.tons,prv.tons,0],
+  ['Выручка',mln(cur.rev),'',cur.rev,prv.rev,0],['Загрузка машин',Math.round(cur.load),' %',cur.load,prv.load,0],
+  ['Новых заявок',cur.reqs,'',cur.reqs,prv.reqs,0],['Средний чек рейса',fmt(cur.rev/Math.max(1,cur.trips)),' ₽',cur.rev/Math.max(1,cur.trips),prv.rev/Math.max(1,prv.trips),0],
+  ['Просрочка оплат',mln(totalDebt()),'',totalDebt(),totalDebt()*0.87,1],['Выручка на машину',fmt(cur.rev/VEH.length/len/1000),' тыс. ₽/день',cur.rev/VEH.length/len,prv.rev/VEH.length/len,0]];
+ document.getElementById('kpis').innerHTML=K.map(function(x){return '<div class="kpi"><div class="l">'+x[0]+'</div><div class="v">'+x[1]+'<small>'+x[2]+'</small></div>'+delta(x[3],x[4],x[5])+'</div>'}).join('');
+ // revenue chart (30 days)
+ var ds=slice(1,30).sort(function(a,b){return b.off-a.off}),rv=ds.map(function(d){return d.trips.reduce(function(s,t){return s+t.r},0)});
+ var mx=Math.max.apply(null,rv),step=500000,top=Math.ceil(mx/step)*step,W=Math.max(300,Math.round(document.getElementById('chRev').parentNode.clientWidth-32)),H=W<500?220:240,L=40,B=26,T=10,bw=(W-L-4)/30,lab=W<500?5:2;
+ var s='',g;
+ for(g=0;g<=top;g+=step){var y=T+(H-T-B)*(1-g/top);s+='<line x1="'+L+'" x2="'+W+'" y1="'+y+'" y2="'+y+'" stroke="#e5e8ec"/><text x="'+(L-6)+'" y="'+(y+4)+'" text-anchor="end" font-size="11" fill="#5b636d">'+(g/1000)+'</text>'}
+ ds.forEach(function(d,i){var hh=(H-T-B)*rv[i]/top,x=L+i*bw+2,inP=d.off<=len,dt=dstr(d.off);
+  s+='<rect data-i="'+i+'" x="'+x+'" y="'+(H-B-hh)+'" width="'+(bw-4)+'" height="'+hh+'" rx="3" fill="'+(inP?'#F07A1A':'#f6c9a2')+'" style="cursor:pointer"><title>'+dt.getDate()+' '+MON[dt.getMonth()]+': '+fmt(rv[i])+' ₽</title></rect>';
+  if(i%lab==lab-1||i==29&&(29%lab)>1)s+='<text x="'+(x+(bw-4)/2)+'" y="'+(H-8)+'" text-anchor="middle" font-size="10.5" fill="#5b636d">'+dt.getDate()+'.'+('0'+(dt.getMonth()+1)).slice(-2)+'</text>'});
+ var avg=rv.reduce(function(a,b){return a+b},0)/30,ya=T+(H-T-B)*(1-avg/top);
+ s+='<line x1="'+L+'" x2="'+W+'" y1="'+ya+'" y2="'+ya+'" stroke="#1F2329" stroke-dasharray="5 4"/><text x="'+(L+4)+'" y="'+(ya-4)+'" font-size="11" font-weight="700" fill="#1F2329" stroke="#fff" stroke-width="3" paint-order="stroke">среднее '+fmt(avg/1000)+'</text>';
+ var C=document.getElementById('chRev');C.setAttribute('viewBox','0 0 '+W+' '+H);C.innerHTML=s;
+ document.getElementById('revSub').textContent='за 30 дней, тыс. ₽ · оранжевым выделен выбранный период';
+ C.onclick=function(e){var t=e.target;if(t.dataset&&t.dataset.i!==undefined){var i=+t.dataset.i,dt=dstr(ds[i].off);document.getElementById('revCap').textContent=dt.getDate()+' '+MON[dt.getMonth()]+': выручка '+fmt(rv[i])+' ₽, рейсов '+ds[i].trips.filter(function(x){return x.m>=0}).length+', тонн '+fmt(ds[i].trips.reduce(function(a,x){return a+x.t},0))}};
+ // materials
+ var mk=Object.keys(cur.mat).sort(function(a,b){return cur.mat[b]-cur.mat[a]}),mm=cur.mat[mk[0]]||1;
+ document.getElementById('matSub').textContent=title;
+ document.getElementById('mat').innerHTML=mk.length?mk.map(function(m){var p=prv.mat[m]||0,dd=p?((cur.mat[m]-p)/p*100):0;
+  return '<div class="row"><span>'+MATS[m].n+'</span><div class="tr"><i style="width:'+(cur.mat[m]/mm*100)+'%"></i></div><span class="n">'+fmt(cur.mat[m])+' т <span class="d '+(dd>0?'up':dd<0?'dn':'eq')+'">'+(dd>0?'▲':dd<0?'▼':'●')+Math.abs(Math.round(dd))+'%</span></span></div>'}).join(''):'Нет данных';
+ // load
+ document.getElementById('loadSub').textContent=title;
+ var ls='',bh=16,gap=8,x0=112;
+ VEH.forEach(function(v,i){var p=Math.min(100,(cur.veh[i]||0)/(cur.n*10)*100),y=i*(bh+gap)+4,c=p>75?'#1e9e5a':p>=50?'#e6a100':'#d93a3a';
+  ls+='<text x="0" y="'+(y+12)+'" font-size="13" fill="#1F2329">'+v.id+'</text><rect x="'+x0+'" y="'+y+'" width="240" height="'+bh+'" rx="5" fill="#eef0f3"/><rect x="'+x0+'" y="'+y+'" width="'+(2.4*p)+'" height="'+bh+'" rx="5" fill="'+c+'"/><text x="'+(x0+248)+'" y="'+(y+13)+'" font-size="13" font-weight="700" fill="#1F2329">'+Math.round(p)+'%</text>'});
+ document.getElementById('chLoad').setAttribute('viewBox','0 0 410 '+(VEH.length*(bh+gap)+6));
+ document.getElementById('chLoad').innerHTML=ls;
+ // sources donut
+ document.getElementById('srcSub').textContent=title;
+ var tot=cur.src.reduce(function(a,b){return a+b},0)||1,off=0,ds2='',R=56,Cc=2*Math.PI*R;
+ cur.src.forEach(function(n,i){var l=n/tot*Cc;ds2+='<circle cx="80" cy="80" r="'+R+'" fill="none" stroke="'+SCOL[i]+'" stroke-width="26" stroke-dasharray="'+l+' '+(Cc-l)+'" stroke-dashoffset="'+(-off)+'" transform="rotate(-90 80 80)"/>';off+=l});
+ ds2+='<text x="80" y="78" text-anchor="middle" font-size="26" font-weight="700" fill="#1F2329">'+tot+'</text><text x="80" y="96" text-anchor="middle" font-size="11" fill="#5b636d">заявок</text>';
+ document.getElementById('chSrc').innerHTML=ds2;
+ document.getElementById('srcLg').innerHTML=SRC.map(function(s,i){var pp=prv.src[i],dd=pp?Math.round((cur.src[i]-pp)/pp*100):0;return '<div><i style="background:'+SCOL[i]+'"></i>'+s+'<b>'+cur.src[i]+' · '+Math.round(cur.src[i]/tot*100)+'% <span class="d '+(dd>0?'up':dd<0?'dn':'eq')+'">'+(dd>0?'▲':dd<0?'▼':'●')+Math.abs(dd)+'%</span></b></div>'}).join('');
+ // requests
+ document.getElementById('reqT').innerHTML='<tr><th>№</th><th>Клиент</th><th>Что</th><th>Откуда</th><th>Статус</th></tr>'+DB.reqs.map(function(q,i){
+  var cl=q.st==0?'':q.st==3?'gr':'gy';
+  return '<tr><td>'+q.id+'<br><small style="color:#5b636d">'+(q.min<60?q.min+' мин':Math.floor(q.min/60)+' ч')+' назад</small></td><td>'+CLI[q.c].n+'</td><td>'+MATS[q.m].n+', '+q.q+' т</td><td>'+SRC[q.src]+'</td><td><button class="btn sm" data-q="'+i+'">'+(q.st==0?'<span class="tag">'+STAT[q.st]+'</span>':'<span class="tag '+cl+'">'+STAT[q.st]+'</span>')+'</button></td></tr>'}).join('');
+ // clients
+ var ck=Object.keys(cur.cli).sort(function(a,b){return cur.cli[b]-cur.cli[a]}).slice(0,8),cm=cur.cli[ck[0]]||1;
+ document.getElementById('cliSub').textContent=title;
+ document.getElementById('cli').innerHTML='<tr><th>Клиент</th><th class="r">Выручка</th><th class="r">Доля</th><th class="r">К прошл.</th></tr>'+ck.map(function(c){
+  var p=prv.cli[c]||0,dd=p?(cur.cli[c]-p)/p*100:0;
+  return '<tr><td>'+CLI[c].n+'<br><small style="color:#5b636d">ИНН '+CLI[c].inn+'</small></td><td class="r"><b>'+fmt(cur.cli[c])+' ₽</b></td><td class="r">'+(cur.cli[c]/cur.rev*100).toFixed(1).replace('.',',')+'% <span class="share" style="width:'+(cur.cli[c]/cm*40)+'px"></span></td><td class="r"><span class="d '+(dd>=0?'up':'dn')+'">'+(p?(dd>=0?'▲':'▼')+Math.abs(Math.round(dd))+'%':'новый')+'</span></td></tr>'}).join('');
+ // debts
+ document.getElementById('over').innerHTML=DEBT.slice().sort(function(a,b){return b.ago-a.ago}).map(function(x,i){
+  var id=x.doc,d=DB.rem[id];
+  return '<div class="it"><div class="nm"><b>'+CLI[x.c].n+'</b><small>'+x.doc+' · просрочка '+x.ago+' дн.</small></div><span class="sum">'+fmt(x.sum)+' ₽</span>'+
+   (d?'<button class="btn sm done">Напомнили ✓</button>':'<button class="btn sm pr" data-d="'+id+'">Напомнить</button>')+'</div>'}).join('');
+ document.getElementById('overSum').textContent=fmt(totalDebt())+' ₽';
+}
+function toast(t){var e=document.getElementById('toast');e.textContent=t;e.className='toast on';clearTimeout(toast.t);toast.t=setTimeout(function(){e.className='toast'},2200)}
+document.getElementById('seg').onclick=function(e){var p=e.target.dataset&&e.target.dataset.p;if(p){P=p;localStorage.setItem(KEY+'_p',P);render()}};
+document.addEventListener('click',function(e){
+ var t=e.target.closest('button');if(!t)return;
+ if(t.dataset.d){DB.rem[t.dataset.d]=1;save();render();toast('Напоминание клиенту отправлено (демо)')}
+ if(t.dataset.q!==undefined){var q=DB.reqs[+t.dataset.q];q.st=(q.st+1)%4;save();render()}
+ if(t.id=='bCopy'){var txt=document.getElementById('tg').innerText.replace(/\d\d:\d\d ✓✓$/,'').trim();
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(function(){toast('Текст скопирован')},function(){fb(txt)})}else fb(txt)}
+ if(t.id=='bSend')toast('В боевой версии сводка приходит в Telegram каждое утро в 8:00');
+ if(t.id=='bRegen'){var rem=DB.rem;DB=gen();DB.rem=rem;var r=rng(Date.now());DB.days.forEach(function(d){d.trips.forEach(function(x){x.r=Math.round(x.r*(0.9+r()*0.2)/100)*100})});save();render();toast('Данные обновлены')}
+});
+function fb(txt){var a=document.createElement('textarea');a.value=txt;document.body.appendChild(a);a.select();try{document.execCommand('copy');toast('Текст скопирован')}catch(e){toast('Не удалось скопировать')}document.body.removeChild(a)}
+render();
+})();
+</script>
+</body>
+</html>
